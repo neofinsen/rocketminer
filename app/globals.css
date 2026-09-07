@@ -1,0 +1,627 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '../components/game/game.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: 0.35rem;
+  --radius-md: 0.45rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.55rem;
+}
+
+:root,
+.dark {
+  --background: #07111d;
+  --foreground: #f4f7fb;
+  --card: #111c29;
+  --card-foreground: #f4f7fb;
+  --popover: #111c29;
+  --popover-foreground: #f4f7fb;
+  --primary: #54c3ff;
+  --primary-foreground: #04111c;
+  --secondary: #1c2f3f;
+  --secondary-foreground: #e7f4ff;
+  --muted: #172536;
+  --muted-foreground: #aebdcb;
+  --accent: #31495c;
+  --accent-foreground: #f4f7fb;
+  --destructive: #ff544d;
+  --border: rgba(164, 203, 231, 0.2);
+  --input: rgba(164, 203, 231, 0.24);
+  --ring: #64d6ff;
+  --sidebar: #0d1825;
+  --sidebar-foreground: #eaf5ff;
+  --sidebar-primary: #54c3ff;
+  --sidebar-primary-foreground: #04111c;
+  --sidebar-accent: #1a2a38;
+  --sidebar-accent-foreground: #eaf5ff;
+  --sidebar-border: rgba(164, 203, 231, 0.2);
+  --sidebar-ring: #64d6ff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body {
+    width: 100%;
+    min-width: 1180px;
+    min-height: 100%;
+    overflow: hidden;
+    background: #07111d;
+    color: var(--foreground);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  }
+
+  button {
+    font: inherit;
+  }
+}
+
+.game-shell {
+  display: grid;
+  grid-template-rows: 70px minmax(0, 1fr) 118px;
+  height: 100vh;
+  min-height: 760px;
+  background:
+    radial-gradient(circle at 58% 18%, rgba(48, 112, 155, 0.18), transparent 34%),
+    linear-gradient(135deg, #07111d 0%, #0a1724 55%, #111823 100%);
+}
+
+.top-bar {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 280px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 16, 25, 0.92);
+}
+
+.empire-mark,
+.resource-cell,
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.empire-mark {
+  gap: 14px;
+  padding: 0 18px;
+}
+
+.empire-mark strong,
+.resource-cell strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.empire-mark small,
+.resource-cell small,
+.sector-status small,
+.side-panel small {
+  color: #84e979;
+  font-size: 13px;
+}
+
+.crest {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 199, 74, 0.6);
+  border-radius: 50%;
+  color: #ffd463;
+  font-weight: 900;
+}
+
+.resource-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+}
+
+.resource-cell {
+  gap: 12px;
+  padding: 0 18px;
+  border-left: 1px solid var(--border);
+}
+
+.resource-icon {
+  display: inline-grid;
+  min-width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  color: #07111d;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.resource-icon.gold { background: linear-gradient(#ffe177, #cf941d); }
+.resource-icon.wood { background: linear-gradient(#b9844d, #5c3820); color: white; }
+.resource-icon.metal { background: linear-gradient(#f1f4f6, #858d98); }
+.resource-icon.energy { background: linear-gradient(#8ae8ff, #2479d9); }
+.resource-icon.crystal { background: linear-gradient(#f0b3ff, #7937d7); color: white; }
+.resource-icon.titan { background: linear-gradient(#c5d1cf, #60726f); color: white; }
+.resource-icon.silicon { background: linear-gradient(#e9f4ff, #95b1c8); }
+.resource-icon.alien { background: linear-gradient(#ff9af2, #7d2dbe); color: white; }
+
+.header-actions {
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 18px;
+}
+
+.header-actions button,
+.sector-map button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(20, 34, 48, 0.84);
+  color: #d8e8f7;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 326px minmax(620px, 1fr) 292px;
+  min-height: 0;
+  gap: 18px;
+  padding: 12px 16px 0;
+}
+
+.side-panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-block,
+.quest-card,
+.sector-status {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: rgba(10, 20, 30, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.panel-block {
+  padding: 16px;
+}
+
+.panel-block h2,
+.quest-card h2,
+.sector-status h2,
+.city-header h2 {
+  margin: 0;
+  color: #f4f7fb;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.panel-block p,
+.quest-card p,
+.city-header p,
+.tech-card p,
+.upgrade-card p {
+  margin: 4px 0 0;
+  color: #c4d1de;
+  font-size: 14px;
+}
+
+.rocket-card {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+}
+
+.rocket-card > div:first-child,
+.fuel-row {
+  grid-column: 1 / -1;
+}
+
+.rocket-preview {
+  position: relative;
+  width: 74px;
+  height: 105px;
+  justify-self: center;
+}
+
+.rocket-body-mini,
+.rocket-body {
+  position: absolute;
+  border: 2px solid #1b2430;
+  background: linear-gradient(90deg, #d4d7db, #fff 48%, #9fa7b2);
+}
+
+.rocket-body-mini {
+  inset: 8px 22px 22px;
+  border-radius: 50% 50% 28% 28%;
+}
+
+.rocket-flame-mini,
+.rocket-flame {
+  position: absolute;
+  background: linear-gradient(#ffd15f, #ff6c2d 55%, transparent);
+  filter: drop-shadow(0 0 10px rgba(255, 117, 40, 0.8));
+  animation: flame 0.32s infinite alternate;
+}
+
+.rocket-flame-mini {
+  left: 29px;
+  bottom: 0;
+  width: 16px;
+  height: 28px;
+}
+
+.fuel-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 42px;
+  align-items: center;
+  gap: 10px;
+}
+
+.fuel-row strong {
+  color: #74df73;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.game-progress {
+  gap: 0;
+}
+
+.game-progress [data-slot='progress-track'] {
+  height: 10px;
+  background: rgba(80, 102, 121, 0.38);
+}
+
+.game-progress [data-slot='progress-indicator'] {
+  background: linear-gradient(90deg, #36aee9, #67e06b);
+}
+
+.module-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.module-row {
+  display: grid;
+  grid-template-columns: 38px 1fr 68px 32px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(164, 203, 231, 0.12);
+  border-radius: 6px;
+  background: rgba(23, 37, 51, 0.72);
+  color: #f0f6fc;
+  padding: 8px;
+  text-align: left;
+}
+
+.module-row:disabled,
+.building-card button:disabled,
+.upgrade-card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.module-row:not(:disabled):hover,
+.building-card button:not(:disabled):hover,
+.upgrade-card button:not(:disabled):hover,
+.primary-action:hover {
+  border-color: rgba(95, 204, 255, 0.7);
+  background: rgba(50, 86, 116, 0.75);
+}
+
+.module-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 6px;
+  color: white;
+}
+
+.module-icon.engine { background: #236b9f; }
+.module-icon.collector { background: #22784b; }
+.module-icon.cargo { background: #6841a9; }
+.module-icon.laser { background: #9c4130; }
+.module-icon.energyCore { background: #8b6c18; }
+
+.stats-block dl {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.stats-block div,
+.cargo-list div,
+.income-list div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.stats-block dt {
+  color: #d2dbe4;
+  font-size: 14px;
+}
+
+.stats-block dd {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+}
+
+.center-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.space-scene,
+.city-view,
+.research-view,
+.rocket-view {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(164, 203, 231, 0.12);
+  border-radius: 8px;
+  background: #0a1624;
+}
+
+.space-scene {
+  background:
+    radial-gradient(circle at 44% 43%, rgba(31, 103, 144, 0.16), transparent 32%),
+    radial-gradient(circle at 70% 72%, rgba(112, 88, 167, 0.11), transparent 26%),
+    #081421;
+}
+
+.sector-status {
+  position: absolute;
+  left: 24px;
+  top: 18px;
+  z-index: 5;
+  width: 250px;
+  padding: 14px 16px;
+}
+
+.stars i,
+.small-rock,
+.fragment,
+.asteroid,
+.rocket,
+.collector-radius,
+.damage-text {
+  position: absolute;
+}
+
+.stars i {
+  display: block;
+  border-radius: 50%;
+  background: rgba(240, 247, 255, 0.84);
+}
+
+.small-rock {
+  border-radius: 45% 55% 58% 42%;
+  background: linear-gradient(140deg, #93979d, #333b43 72%);
+  box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.35);
+  opacity: 0.72;
+}
+
+.collector-radius {
+  width: 380px;
+  height: 380px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(62, 179, 238, 0.36);
+  border-radius: 50%;
+  background: rgba(27, 119, 170, 0.04);
+}
+
+.rocket {
+  z-index: 4;
+  width: 72px;
+  height: 98px;
+  transform: translate(-50%, -50%) rotate(36deg);
+  filter: drop-shadow(0 11px 18px rgba(0, 0, 0, 0.35));
+}
+
+.rocket-body {
+  left: 24px;
+  top: 4px;
+  width: 25px;
+  height: 72px;
+  border-radius: 50% 50% 28% 28%;
+}
+
+.rocket-window {
+  position: absolute;
+  left: 30px;
+  top: 24px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #172536;
+  border-radius: 50%;
+  background: #8de8ff;
+}
+
+.rocket-fin {
+  position: absolute;
+  top: 55px;
+  border-style: solid;
+}
+
+.rocket-fin.left {
+  left: 14px;
+  border-width: 0 13px 22px 0;
+  border-color: transparent #e56b30 transparent transparent;
+}
+
+.rocket-fin.right {
+  right: 12px;
+  border-width: 22px 13px 0 0;
+  border-color: #e56b30 transparent transparent transparent;
+}
+
+.rocket-flame {
+  left: 28px;
+  bottom: 0;
+  width: 18px;
+  height: 32px;
+}
+
+@keyframes flame {
+  from { transform: scaleY(0.72); opacity: 0.75; }
+  to { transform: scaleY(1.05); opacity: 1; }
+}
+
+.asteroid {
+  z-index: 3;
+  width: 142px;
+  height: 142px;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: crosshair;
+}
+
+.asteroid-rock {
+  display: block;
+  width: 112px;
+  height: 98px;
+  margin: 24px auto 0;
+  border: 3px solid #ff554d;
+  border-radius: 44% 56% 49% 51%;
+  background:
+    radial-gradient(circle at 35% 30%, #6d7074 0 8%, transparent 9%),
+    radial-gradient(circle at 65% 56%, #25282d 0 10%, transparent 11%),
+    linear-gradient(145deg, #777b80, #2c3035 72%);
+  box-shadow:
+    inset -14px -16px 0 rgba(0, 0, 0, 0.28),
+    0 0 22px rgba(255, 69, 63, 0.22);
+}
+
+.asteroid-label {
+  position: absolute;
+  left: 16px;
+  top: -50px;
+  width: 150px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(9, 18, 27, 0.92);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.asteroid-label strong,
+.asteroid-label small {
+  display: block;
+  font-size: 12px;
+}
+
+.asteroid-label small {
+  color: #ff7870;
+}
+
+.asteroid-progress [data-slot='progress-track'] {
+  height: 7px;
+}
+
+.asteroid-progress [data-slot='progress-indicator'] {
+  background: linear-gradient(90deg, #fa443d, #f7a84c);
+}
+
+.asteroid-cursor {
+  position: absolute;
+  left: 54px;
+  top: 59px;
+  color: white;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.7));
+}
+
+.fragment {
+  z-index: 2;
+  transform: translate(-50%, -50%) scale(0.76);
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0%, 100% { filter: brightness(0.9); }
+  50% { filter: brightness(1.35); }
+}
+
+.damage-text {
+  z-index: 6;
+  color: #ffd55d;
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 0 2px 4px black;
+  pointer-events: none;
+}
+
+.quest-card {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 5;
+  width: 330px;
+  padding: 14px 16px;
+}
+
+.quest-card span {
+  color: #cdd9e4;
+  font-size: 13px;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

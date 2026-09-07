@@ -1,0 +1,238 @@
+.sector-map svg {
+  width: 100%;
+  height: 145px;
+  margin-top: 6px;
+}
+
+.sector-map path {
+  fill: none;
+  stroke: rgba(139, 182, 213, 0.42);
+  stroke-width: 2;
+}
+
+.sector-map circle {
+  fill: #477da1;
+  stroke: #b9d7ee;
+  stroke-width: 2;
+}
+
+.sector-map circle:nth-of-type(4) {
+  fill: #ff513f;
+}
+
+.income-list,
+.cargo-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.income-list div,
+.cargo-list div {
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  color: #eaf3fb;
+  font-size: 14px;
+}
+
+.cargo-block p {
+  margin: 7px 0 0;
+  color: #86e879;
+  text-align: center;
+}
+
+.primary-action,
+.building-card button,
+.upgrade-card button,
+.tech-card button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(84, 195, 255, 0.5);
+  border-radius: 6px;
+  background: rgba(30, 69, 98, 0.78);
+  color: white;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.primary-action {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.city-view,
+.research-view,
+.rocket-view {
+  padding: 22px;
+  background:
+    linear-gradient(rgba(10, 22, 34, 0.8), rgba(10, 22, 34, 0.9)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 70px,
+      rgba(126, 171, 204, 0.04) 70px 71px
+    ),
+    #0b1725;
+}
+
+.city-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.city-totals,
+.ship-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: 460px;
+}
+
+.city-totals span,
+.ship-stats span {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(17, 30, 43, 0.76);
+  padding: 8px 10px;
+  color: #d8e6f3;
+  font-size: 13px;
+}
+
+.building-grid,
+.tech-grid,
+.module-upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.building-card,
+.tech-card,
+.upgrade-card {
+  min-height: 210px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: rgba(12, 23, 35, 0.86);
+  padding: 14px;
+}
+
+.building-art {
+  display: grid;
+  height: 82px;
+  place-items: center;
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 6px;
+  background: linear-gradient(145deg, #253f4d, #172332);
+  color: #d8e8f7;
+}
+
+.building-art svg {
+  width: 42px;
+  height: 42px;
+}
+
+.building-card h3,
+.tech-card h3,
+.upgrade-card h3 {
+  margin: 12px 0 0;
+  font-size: 16px;
+}
+
+.building-output {
+  display: flex;
+  min-height: 34px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.building-output span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd8e5;
+  font-size: 12px;
+}
+
+.building-output .resource-icon {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.building-card button,
+.tech-card button,
+.upgrade-card button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tech-card,
+.upgrade-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tech-card p,
+.upgrade-card p {
+  min-height: 42px;
+}
+
+.upgrade-card small {
+  min-height: 34px;
+  color: #aebdcb;
+}
+
+.bottom-dock {
+  margin: 10px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(9, 18, 27, 0.94);
+  padding: 12px;
+}
+
+.dock-tabs {
+  display: grid;
+  width: 100%;
+  height: 72px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0;
+}
+
+.dock-tab {
+  height: 100%;
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 7px;
+  background: rgba(20, 32, 45, 0.72);
+  color: #d9e6f2;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+.dock-tab[data-active] {
+  border-color: rgba(84, 195, 255, 0.72);
+  background: linear-gradient(
+    180deg,
+    rgba(41, 93, 129, 0.9),
+    rgba(24, 55, 80, 0.9)
+  );
+  color: white;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
