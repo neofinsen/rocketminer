@@ -25,7 +25,9 @@ export const getModuleUpgradeBenefits = (module: RocketModule) => [
 export const getBuildingUpgradeBenefits = (building: Building) =>
   Object.entries(building.production).map(
     ([resource, value]) =>
-      `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min mehr`,
+      building.level === 0
+        ? `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min`
+        : `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min mehr`,
   );
 
 export const getTechResearchBenefits = (tech: TechNode) => [tech.effect];

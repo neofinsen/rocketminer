@@ -1,7 +1,7 @@
 import { INITIAL_STATE, QUEST_CHAIN } from './constants';
 import type { GameState } from './types';
 
-const SAVE_KEY = 'rocketminer-save-v2';
+const SAVE_KEY = 'rocketminer-save-v3';
 
 const asArray = <T,>(value: unknown, fallback: T[]) =>
   Array.isArray(value) ? (value as T[]) : fallback;

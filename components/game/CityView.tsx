@@ -130,39 +130,54 @@ export function CityView({
 
         {state.buildings.map((building) => {
           const visual = cityLayout[building.key];
+          const isBuilt = building.level > 0;
           const cost = getBuildingCost(building);
           const affordable = canPay(state.resources, cost);
           const output = Object.entries(building.production);
 
           return (
             <button
-              className={`city-building ${visual.variant} ${visual.size}`}
+              className={`city-building ${visual.variant} ${visual.size} ${
+                isBuilt ? 'built' : 'build-site'
+              }`}
               disabled={!affordable}
               key={building.key}
               onClick={() => onUpgradeBuilding(building.key)}
               style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
-              title={`Ausbaukosten: ${formatCostTitle(cost)}`}
+              title={`${isBuilt ? 'Ausbaukosten' : 'Baukosten'}: ${formatCostTitle(cost)}`}
               type="button"
             >
-              <span className="building-pad">
-                <span className={`building-sprite sprite-${visual.sprite}`} />
-              </span>
+              {isBuilt ? (
+                <span className="building-pad">
+                  <span className={`building-sprite sprite-${visual.sprite}`} />
+                </span>
+              ) : (
+                <span className="empty-building-pad">
+                  <span>Baufeld</span>
+                </span>
+              )}
               <span className="building-label">
                 <strong>{building.name}</strong>
-                <small>Stufe {building.level}</small>
+                <small>{isBuilt ? `Stufe ${building.level}` : 'frei'}</small>
               </span>
-              <span className="building-output">
-                {output.map(([resource, value]) => (
-                  <span key={resource} className="output-chip">
-                    <ResourceIcon resource={resource as ResourceKey} />
-                    +{formatNumber((value ?? 0) * building.level)}
-                  </span>
-                ))}
-              </span>
+              {isBuilt ? (
+                <span className="building-output">
+                  {output.map(([resource, value]) => (
+                    <span key={resource} className="output-chip">
+                      <ResourceIcon resource={resource as ResourceKey} />
+                      +{formatNumber((value ?? 0) * building.level)}
+                    </span>
+                  ))}
+                </span>
+              ) : null}
               <UpgradeTooltip
                 benefits={getBuildingUpgradeBenefits(building)}
                 cost={cost}
-                label={`Ausbau auf Stufe ${building.level + 1}`}
+                label={
+                  isBuilt
+                    ? `Ausbau auf Stufe ${building.level + 1}`
+                    : `${building.name} bauen`
+                }
               />
             </button>
           );

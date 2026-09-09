@@ -47,6 +47,41 @@
   transform: translate(-50%, -50%);
 }
 
+.empty-building-pad {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  width: calc(var(--pad-size) * 1.28);
+  height: calc(var(--pad-size) * 0.78);
+  place-items: center;
+  border: 2px dashed rgba(114, 225, 255, 0.72);
+  border-radius: 7px;
+  background:
+    linear-gradient(135deg, rgba(68, 213, 255, 0.18), rgba(8, 21, 34, 0.32)),
+    rgba(5, 13, 23, 0.16);
+  box-shadow:
+    inset 0 0 18px rgba(98, 220, 255, 0.12),
+    0 0 18px rgba(69, 203, 255, 0.12);
+  color: #c8f4ff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-33deg);
+}
+
+.empty-building-pad span {
+  display: block;
+  transform: rotateZ(33deg) rotateX(-58deg);
+}
+
+.city-building.build-site:not(:disabled):hover .empty-building-pad {
+  border-color: rgba(255, 216, 94, 0.9);
+  box-shadow:
+    inset 0 0 20px rgba(255, 217, 94, 0.14),
+    0 0 22px rgba(255, 217, 94, 0.22);
+}
+
 .building-sprite {
   display: block;
   width: 100%;
