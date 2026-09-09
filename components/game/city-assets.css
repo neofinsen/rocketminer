@@ -1,7 +1,7 @@
 .city-map {
   background:
     linear-gradient(rgba(4, 10, 18, 0.12), rgba(4, 10, 18, 0.3)),
-    var(--city-terrain-image) center / cover no-repeat,
+    var(--city-terrain-image) center / 100% 100% no-repeat,
     #0a1723;
 }
 
@@ -15,6 +15,7 @@
   --pad-size: 178px;
   width: 182px;
   min-height: 206px;
+  transform: translate(-50%, -72%);
 }
 
 .city-building.large {
@@ -67,4 +68,8 @@
 
 .city-building.spaceport .building-label {
   margin-top: -22px;
+}
+
+.city-building:not(:disabled):hover {
+  transform: translate(-50%, -76%);
 }
