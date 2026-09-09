@@ -51,6 +51,10 @@ export interface RocketState {
   y: number;
   targetX: number;
   targetY: number;
+  angle: number;
+  status: 'collecting' | 'returning' | 'unloading';
+  returnTimer: number;
+  returnDuration: number;
   cargo: Partial<ResourceBag>;
 }
 

@@ -10,8 +10,17 @@ import type {
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
+export const BASE_POSITION = { x: 16, y: 78 };
+
 export const formatNumber = (value: number) =>
   Math.floor(value).toLocaleString('de-DE');
+
+export const formatSeconds = (seconds: number) => {
+  const safeSeconds = Math.max(0, Math.ceil(seconds));
+  const minutes = Math.floor(safeSeconds / 60);
+  const rest = safeSeconds % 60;
+  return `${minutes}:${rest.toString().padStart(2, '0')}`;
+};
 
 export const getModuleLevel = (state: GameState, key: ModuleKey) =>
   state.modules.find((module) => module.key === key)?.level ?? 1;
@@ -30,6 +39,13 @@ export const getCollectorRange = (state: GameState) =>
 
 export const getRocketSpeed = (state: GameState) =>
   5.2 + getModuleLevel(state, 'engine') * 1.35;
+
+export const getReturnDuration = (state: GameState) => {
+  const sectorBonus = state.currentSector === 'beta' ? 24 : 0;
+  const levelBonus = Math.floor(state.level / 4) * 6;
+  const engineReduction = Math.max(0, getModuleLevel(state, 'engine') - 1) * 5;
+  return clamp(120 + sectorBonus + levelBonus - engineReduction, 90, 210);
+};
 
 export const getSectorLabel = (sector: SectorKey) =>
   sector === 'beta' ? 'Sektor Beta' : 'Sektor Alpha';
@@ -114,6 +130,69 @@ export const unlockBetaCost: Partial<ResourceBag> = {
   energy: 350,
 };
 
+export const startCargoReturn = (state: GameState): GameState => {
+  if (getCargoUsed(state) <= 0 || state.rocket.status !== 'collecting') {
+    return state;
+  }
+
+  return {
+    ...state,
+    rocket: {
+      ...state.rocket,
+      status: 'returning',
+      targetX: BASE_POSITION.x,
+      targetY: BASE_POSITION.y,
+      returnTimer: getReturnDuration(state),
+      returnDuration: getReturnDuration(state),
+    },
+  };
+};
+
+const unloadCargo = (
+  state: GameState,
+  resources: ResourceBag,
+  collectedTotals: Partial<ResourceBag>,
+  rocket: GameState['rocket'],
+) => {
+  const nextResources = addResources(resources, rocket.cargo);
+  const nextTotals = { ...collectedTotals };
+
+  Object.entries(rocket.cargo).forEach(([key, value]) => {
+    nextTotals[key as ResourceKey] =
+      (nextTotals[key as ResourceKey] ?? 0) + (value ?? 0);
+  });
+
+  return {
+    resources: nextResources,
+    collectedTotals: nextTotals,
+    rocket: {
+      ...rocket,
+      cargo: {},
+      status: 'collecting' as const,
+      returnTimer: 0,
+    },
+  };
+};
+
+const updateRocketMovement = (
+  state: GameState,
+  rocket: GameState['rocket'],
+  deltaSeconds: number,
+) => {
+  const dx = rocket.targetX - rocket.x;
+  const dy = rocket.targetY - rocket.y;
+  const distance = Math.hypot(dx, dy);
+  const step = getRocketSpeed(state) * deltaSeconds;
+
+  if (distance > 0.1) {
+    rocket.angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    rocket.x += (dx / distance) * Math.min(step, distance);
+    rocket.y += (dy / distance) * Math.min(step, distance);
+  }
+
+  return distance;
+};
+
 export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   const production = getProductionPerMinute(state.buildings);
   let resources = { ...state.resources };
@@ -126,6 +205,51 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   let fragments = [...state.fragments];
   const capacity = getCargoCapacity(state);
   const used = getCargoUsed(state);
+  let nextCollectedTotals = collectedTotals;
+
+  if (rocket.status === 'unloading') {
+    rocket.returnTimer = Math.max(0, rocket.returnTimer - deltaSeconds);
+
+    if (rocket.returnTimer <= 0) {
+      const unloaded = unloadCargo(state, resources, nextCollectedTotals, rocket);
+      resources = unloaded.resources;
+      nextCollectedTotals = unloaded.collectedTotals;
+      Object.assign(rocket, unloaded.rocket);
+    }
+
+    return {
+      ...state,
+      resources,
+      collectedTotals: nextCollectedTotals,
+      rocket,
+      damageTexts: state.damageTexts
+        .map((text) => ({ ...text, y: text.y - deltaSeconds * 7 }))
+        .filter((text) => text.y > 8),
+    };
+  }
+
+  if (rocket.status === 'returning') {
+    rocket.targetX = BASE_POSITION.x;
+    rocket.targetY = BASE_POSITION.y;
+    const distanceToBase = updateRocketMovement(state, rocket, deltaSeconds);
+
+    if (distanceToBase < 1.1) {
+      rocket.x = BASE_POSITION.x;
+      rocket.y = BASE_POSITION.y;
+      rocket.status = 'unloading';
+      rocket.returnTimer = rocket.returnDuration || getReturnDuration(state);
+    }
+
+    return {
+      ...state,
+      resources,
+      collectedTotals: nextCollectedTotals,
+      rocket,
+      damageTexts: state.damageTexts
+        .map((text) => ({ ...text, y: text.y - deltaSeconds * 7 }))
+        .filter((text) => text.y > 8),
+    };
+  }
 
   if (fragments.length && used < capacity) {
     const nearest = fragments
@@ -142,37 +266,27 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
     rocket.targetY = 50 + Math.cos(Date.now() / 3600) * 12;
   }
 
-  const dx = rocket.targetX - rocket.x;
-  const dy = rocket.targetY - rocket.y;
-  const distance = Math.hypot(dx, dy);
-  const step = getRocketSpeed(state) * deltaSeconds;
+  updateRocketMovement(state, rocket, deltaSeconds);
 
-  if (distance > 0.1) {
-    rocket.x += (dx / distance) * Math.min(step, distance);
-    rocket.y += (dy / distance) * Math.min(step, distance);
-  }
-
-  fragments = fragments.filter((fragment) => {
+  fragments = fragments.flatMap((fragment) => {
     const closeEnough =
       Math.hypot(fragment.x - rocket.x, fragment.y - rocket.y) < 2.2;
     if (!closeEnough || getCargoUsed({ ...state, rocket }) >= capacity) {
-      return true;
+      return [fragment];
     }
 
     const free = capacity - getCargoUsed({ ...state, rocket });
     const amount = Math.min(fragment.amount, free);
     rocket.cargo[fragment.resource] =
       (rocket.cargo[fragment.resource] ?? 0) + amount;
-    return false;
+    return amount < fragment.amount
+      ? [{ ...fragment, amount: fragment.amount - amount }]
+      : [];
   });
 
-  if (getCargoUsed({ ...state, rocket }) > capacity * 0.9) {
-    resources = addResources(resources, rocket.cargo);
-    Object.entries(rocket.cargo).forEach(([key, value]) => {
-      collectedTotals[key as ResourceKey] =
-        (collectedTotals[key as ResourceKey] ?? 0) + (value ?? 0);
-    });
-    rocket.cargo = {};
+  if (getCargoUsed({ ...state, rocket }) >= capacity) {
+    const returning = startCargoReturn({ ...state, rocket });
+    Object.assign(rocket, returning.rocket);
   }
 
   const damageTexts = state.damageTexts
@@ -182,7 +296,7 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   return {
     ...state,
     resources,
-    collectedTotals,
+    collectedTotals: nextCollectedTotals,
     rocket,
     fragments,
     damageTexts,

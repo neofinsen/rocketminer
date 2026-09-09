@@ -3,6 +3,7 @@ import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   formatNumber,
+  formatSeconds,
   getCargoCapacity,
   getCargoUsed,
 } from '@/lib/game/simulation';
@@ -26,6 +27,14 @@ export function RightPanel({
 }) {
   const used = getCargoUsed(state);
   const capacity = getCargoCapacity(state);
+  const isReturning = state.rocket.status === 'returning';
+  const isUnloading = state.rocket.status === 'unloading';
+  const returnProgress =
+    state.rocket.returnDuration > 0
+      ? ((state.rocket.returnDuration - state.rocket.returnTimer) /
+          state.rocket.returnDuration) *
+        100
+      : 0;
 
   return (
     <aside className="side-panel right-panel">
@@ -80,6 +89,18 @@ export function RightPanel({
         <p>
           {formatNumber(used)} / {formatNumber(capacity)}
         </p>
+        <div className="cargo-status">
+          <strong>
+            {isUnloading
+              ? `Entladen ${formatSeconds(state.rocket.returnTimer)}`
+              : isReturning
+                ? 'Rueckflug zur Basis'
+                : 'Sammelt automatisch'}
+          </strong>
+          {(isUnloading || isReturning) && (
+            <Progress className="game-progress" value={returnProgress} />
+          )}
+        </div>
         <div className="cargo-list">
           {cargoResources.map((resource) => (
             <div key={resource}>
@@ -89,9 +110,13 @@ export function RightPanel({
             </div>
           ))}
         </div>
-        <button className="primary-action" onClick={onReturnCargo}>
+        <button
+          className="primary-action"
+          disabled={used <= 0 || isReturning || isUnloading}
+          onClick={onReturnCargo}
+        >
           <Home size={18} />
-          Zurueck zur Basis
+          {isReturning || isUnloading ? 'Basis aktiv' : 'Zurueck zur Basis'}
         </button>
       </section>
     </aside>

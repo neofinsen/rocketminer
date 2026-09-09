@@ -3,6 +3,7 @@ import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   canUnlockBeta,
+  BASE_POSITION,
   formatNumber,
   getSectorDanger,
   getSectorLabel,
@@ -139,13 +140,27 @@ export function SpaceScene({
       ))}
 
       <span
+        className="base-planet"
+        style={{ left: `${BASE_POSITION.x}%`, top: `${BASE_POSITION.y}%` }}
+        aria-label="Baseplanet"
+      >
+        <span className="base-orbit" />
+        <span className="base-glow" />
+        <span className="base-city" />
+      </span>
+
+      <span
         className="collector-radius"
         style={{ left: `${state.rocket.x}%`, top: `${state.rocket.y}%` }}
       />
 
       <span
         className="rocket"
-        style={{ left: `${state.rocket.x}%`, top: `${state.rocket.y}%` }}
+        style={{
+          left: `${state.rocket.x}%`,
+          top: `${state.rocket.y}%`,
+          transform: `translate(-50%, -50%) rotate(${state.rocket.angle}deg)`,
+        }}
         aria-label="Explorer I"
       >
         <span className="rocket-body" />

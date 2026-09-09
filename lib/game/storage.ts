@@ -23,6 +23,11 @@ export function loadGameState(): GameState {
       rocket: {
         ...INITIAL_STATE.rocket,
         ...saved.rocket,
+        angle: saved.rocket?.angle ?? INITIAL_STATE.rocket.angle,
+        status: saved.rocket?.status ?? INITIAL_STATE.rocket.status,
+        returnTimer: saved.rocket?.returnTimer ?? 0,
+        returnDuration:
+          saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration,
         cargo: { ...saved.rocket?.cargo },
       },
       collectedTotals: { ...saved.collectedTotals },

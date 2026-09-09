@@ -171,7 +171,17 @@ export const INITIAL_STATE: GameState = {
   collectedTotals: {},
   modules: INITIAL_MODULES,
   buildings: INITIAL_BUILDINGS,
-  rocket: { x: 33, y: 56, targetX: 54, targetY: 45, cargo: {} },
+  rocket: {
+    x: 33,
+    y: 56,
+    targetX: 54,
+    targetY: 45,
+    angle: 36,
+    status: 'collecting',
+    returnTimer: 0,
+    returnDuration: 120,
+    cargo: {},
+  },
   asteroids: [
     {
       id: 1,

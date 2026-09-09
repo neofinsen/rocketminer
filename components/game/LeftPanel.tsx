@@ -16,6 +16,7 @@ import {
   getLaserDamage,
   getModuleCost,
   getRocketSpeed,
+  getSectorLabel,
 } from '@/lib/game/simulation';
 import type { GameState, ModuleKey } from '@/lib/game/types';
 
@@ -36,13 +37,21 @@ export function LeftPanel({
 }) {
   const cargoUsed = getCargoUsed(state);
   const cargoCapacity = getCargoCapacity(state);
+  const status =
+    state.rocket.status === 'returning'
+      ? 'Rueckflug'
+      : state.rocket.status === 'unloading'
+        ? 'Entlaedt'
+        : 'Sammelt';
 
   return (
     <aside className="side-panel left-panel">
       <section className="panel-block rocket-card">
         <div>
           <h2>RAKETE: EXPLORER I</h2>
-          <p>Fliegt - Sektor Alpha</p>
+          <p>
+            {status} - {getSectorLabel(state.currentSector)}
+          </p>
         </div>
         <div className="rocket-preview" aria-hidden="true">
           <span className="rocket-body-mini" />

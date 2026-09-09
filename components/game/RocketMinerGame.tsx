@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { INITIAL_STATE } from '@/lib/game/constants';
 import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
 import {
-  addResources,
   canPay,
   canUnlockBeta,
   getBuildingCost,
   getLaserDamage,
   getModuleCost,
   payCost,
+  startCargoReturn,
   tickGame,
   unlockBetaCost,
 } from '@/lib/game/simulation';
@@ -199,24 +199,8 @@ export function RocketMinerGame() {
     });
   };
 
-  const returnCargo = () => {
-    setState((current) => {
-      const collectedTotals = { ...current.collectedTotals };
-      Object.entries(current.rocket.cargo).forEach(([key, value]) => {
-        collectedTotals[key as ResourceKey] =
-          (collectedTotals[key as ResourceKey] ?? 0) + (value ?? 0);
-      });
-
-      const returned = {
-        ...current,
-        collectedTotals,
-        resources: addResources(current.resources, current.rocket.cargo),
-        rocket: { ...current.rocket, cargo: {} },
-      };
-
-      return syncQuestProgress(returned);
-    });
-  };
+  const returnCargo = () =>
+    setState((current) => startCargoReturn(current));
 
   const unlockBeta = () => {
     setState((current) => {
