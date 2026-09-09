@@ -1,0 +1,70 @@
+.city-map {
+  background:
+    linear-gradient(rgba(4, 10, 18, 0.12), rgba(4, 10, 18, 0.3)),
+    var(--city-terrain-image) center / cover no-repeat,
+    #0a1723;
+}
+
+.city-grid-glow,
+.city-road,
+.city-plaza {
+  display: none;
+}
+
+.city-building {
+  --pad-size: 178px;
+  width: 182px;
+  min-height: 206px;
+}
+
+.city-building.large {
+  --pad-size: 218px;
+  width: 224px;
+}
+
+.city-building.small {
+  --pad-size: 158px;
+  width: 164px;
+}
+
+.building-pad {
+  width: var(--pad-size);
+  height: calc(var(--pad-size) * 0.72);
+  overflow: visible;
+  clip-path: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.building-sprite {
+  display: block;
+  width: 100%;
+  height: calc(var(--pad-size) * 0.74);
+  background-image: var(--building-sheet-image);
+  background-repeat: no-repeat;
+  background-size: 500% 200%;
+  filter: drop-shadow(0 16px 12px rgba(0, 0, 0, 0.42));
+}
+
+.sprite-townhall { background-position: 0% 0%; }
+.sprite-sawmill { background-position: 25% 0%; }
+.sprite-quarry { background-position: 50% 0%; }
+.sprite-forge { background-position: 75% 0%; }
+.sprite-research { background-position: 100% 0%; }
+.sprite-spaceport { background-position: 0% 100%; }
+.sprite-power { background-position: 25% 100%; }
+.sprite-warehouse { background-position: 50% 100%; }
+
+.city-building:not(:disabled):hover .building-sprite {
+  filter:
+    drop-shadow(0 16px 12px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 18px rgba(93, 207, 255, 0.45));
+}
+
+.building-label {
+  margin-top: -8px;
+}
+
+.city-building.spaceport .building-label {
+  margin-top: -22px;
+}
