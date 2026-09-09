@@ -26,9 +26,17 @@ import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
 
 export function RocketMinerGame() {
-  const [state, setState] = useState<GameState>(() => syncQuestProgress(loadGameState()));
+  const [state, setState] = useState<GameState>(INITIAL_STATE);
   const lastFrame = useRef<number | null>(null);
+  const saveLoaded = useRef(false);
   const latestState = useRef(state);
+
+  useEffect(() => {
+    const loaded = syncQuestProgress(loadGameState());
+    saveLoaded.current = true;
+    latestState.current = loaded;
+    setState(loaded);
+  }, []);
 
   useEffect(() => {
     latestState.current = state;
@@ -51,6 +59,7 @@ export function RocketMinerGame() {
 
   useEffect(() => {
     const autosave = window.setInterval(() => {
+      if (!saveLoaded.current) return;
       saveGameState(latestState.current);
     }, 1500);
 

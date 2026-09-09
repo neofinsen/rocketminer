@@ -466,6 +466,7 @@
 .fragment,
 .grab-beam,
 .projectile,
+.base-planet,
 .asteroid,
 .rocket,
 .collector-radius,
@@ -488,9 +489,11 @@
 
 .base-planet {
   z-index: 2;
+  display: block;
   width: 112px;
   height: 98px;
   transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .base-glow,

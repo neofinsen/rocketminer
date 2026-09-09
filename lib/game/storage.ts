@@ -3,6 +3,9 @@ import type { GameState } from './types';
 
 const SAVE_KEY = 'rocketminer-save-v2';
 
+const asArray = <T,>(value: unknown, fallback: T[]) =>
+  Array.isArray(value) ? (value as T[]) : fallback;
+
 export function loadGameState(): GameState {
   if (typeof window === 'undefined') return INITIAL_STATE;
 
@@ -13,11 +16,22 @@ export function loadGameState(): GameState {
     const saved = JSON.parse(raw) as Partial<GameState>;
     const questIndex = saved.questIndex ?? 0;
 
+    const rocketStatus = ['collecting', 'returning', 'unloading'].includes(
+      saved.rocket?.status ?? '',
+    )
+      ? saved.rocket?.status
+      : INITIAL_STATE.rocket.status;
+
     return {
       ...INITIAL_STATE,
       ...saved,
       damageTexts: [],
-      projectiles: saved.projectiles ?? [],
+      asteroids: asArray(saved.asteroids, INITIAL_STATE.asteroids),
+      fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
+      modules: asArray(saved.modules, INITIAL_STATE.modules),
+      buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
+      projectiles: [],
+      unlockedSectors: asArray(saved.unlockedSectors, INITIAL_STATE.unlockedSectors),
       questIndex,
       quest: saved.quest ?? QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0],
       resources: { ...INITIAL_STATE.resources, ...saved.resources },
@@ -26,7 +40,7 @@ export function loadGameState(): GameState {
         ...INITIAL_STATE.rocket,
         ...saved.rocket,
         angle: saved.rocket?.angle ?? INITIAL_STATE.rocket.angle,
-        status: saved.rocket?.status ?? INITIAL_STATE.rocket.status,
+        status: rocketStatus,
         returnTimer: saved.rocket?.returnTimer ?? 0,
         returnDuration:
           saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration,
