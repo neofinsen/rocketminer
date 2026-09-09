@@ -1,8 +1,12 @@
 .city-map {
+  aspect-ratio: 16 / 10;
+  flex: 0 0 auto;
+  min-height: auto;
   background:
     linear-gradient(rgba(4, 10, 18, 0.12), rgba(4, 10, 18, 0.3)),
     var(--city-terrain-image) center / 100% 100% no-repeat,
     #0a1723;
+  overflow: visible;
 }
 
 .city-grid-glow,
@@ -12,25 +16,25 @@
 }
 
 .city-building {
-  --pad-size: 178px;
-  width: 182px;
-  min-height: 206px;
-  transform: translate(-50%, -72%);
+  --pad-size: 130px;
+  width: 150px;
+  min-height: 176px;
+  transform: translate(-50%, -63%);
 }
 
 .city-building.large {
-  --pad-size: 218px;
-  width: 224px;
+  --pad-size: 168px;
+  width: 190px;
 }
 
 .city-building.small {
-  --pad-size: 158px;
-  width: 164px;
+  --pad-size: 116px;
+  width: 138px;
 }
 
 .building-pad {
   width: var(--pad-size);
-  height: calc(var(--pad-size) * 0.72);
+  height: var(--pad-size);
   overflow: visible;
   clip-path: none;
   background: transparent;
@@ -40,7 +44,7 @@
 .building-sprite {
   display: block;
   width: 100%;
-  height: calc(var(--pad-size) * 0.74);
+  height: 100%;
   background-image: var(--building-sheet-image);
   background-repeat: no-repeat;
   background-size: 500% 200%;
@@ -63,13 +67,13 @@
 }
 
 .building-label {
-  margin-top: -8px;
+  margin-top: -18px;
 }
 
 .city-building.spaceport .building-label {
-  margin-top: -22px;
+  margin-top: -28px;
 }
 
 .city-building:not(:disabled):hover {
-  transform: translate(-50%, -76%);
+  transform: translate(-50%, -67%);
 }
