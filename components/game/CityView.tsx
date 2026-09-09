@@ -16,7 +16,12 @@ import {
   getProductionPerMinute,
 } from '@/lib/game/simulation';
 import type { BuildingKey, GameState, ResourceKey } from '@/lib/game/types';
+import {
+  formatCostTitle,
+  getBuildingUpgradeBenefits,
+} from '@/lib/game/upgradeInfo';
 import { ResourceIcon } from './ResourceIcon';
+import { UpgradeTooltip } from './UpgradeTooltip';
 
 type BuildingVisual = {
   x: number;
@@ -85,14 +90,6 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
   },
 };
 
-const getCostLabel = (cost: Partial<Record<ResourceKey, number>>) =>
-  Object.entries(cost)
-    .map(
-      ([resource, value]) =>
-        `${RESOURCE_LABELS[resource as ResourceKey]} ${formatNumber(value ?? 0)}`,
-    )
-    .join(', ');
-
 export function CityView({
   state,
   onUpgradeBuilding,
@@ -142,7 +139,7 @@ export function CityView({
               key={building.key}
               onClick={() => onUpgradeBuilding(building.key)}
               style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
-              title={`Ausbaukosten: ${getCostLabel(cost)}`}
+              title={`Ausbaukosten: ${formatCostTitle(cost)}`}
               type="button"
             >
               <span className="building-pad">
@@ -165,6 +162,11 @@ export function CityView({
                   </span>
                 ))}
               </span>
+              <UpgradeTooltip
+                benefits={getBuildingUpgradeBenefits(building)}
+                cost={cost}
+                label={`Ausbau auf Stufe ${building.level + 1}`}
+              />
             </button>
           );
         })}

@@ -9,6 +9,8 @@ import {
   getRocketSpeed,
 } from '@/lib/game/simulation';
 import type { GameState, ModuleKey } from '@/lib/game/types';
+import { getModuleUpgradeBenefits } from '@/lib/game/upgradeInfo';
+import { UpgradeTooltip } from './UpgradeTooltip';
 
 const moduleCopy: Record<ModuleKey, string> = {
   engine: 'Mehr Geschwindigkeit und spaeter groessere Sektoren.',
@@ -69,6 +71,11 @@ export function RocketView({
               >
                 Auf Stufe {module.level + 1}
               </button>
+              <UpgradeTooltip
+                benefits={getModuleUpgradeBenefits(module)}
+                cost={cost}
+                label={`Upgrade auf Stufe ${module.level + 1}`}
+              />
             </article>
           );
         })}

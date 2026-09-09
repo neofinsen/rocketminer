@@ -2,6 +2,7 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '../components/game/game.css';
+@import '../components/game/upgrade-tooltip.css';
 
 @custom-variant dark (&:is(.dark *));
 

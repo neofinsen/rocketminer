@@ -20,7 +20,9 @@ import {
 } from '@/lib/game/research';
 import { canPay, formatNumber } from '@/lib/game/simulation';
 import type { GameState, ResourceKey, TechKey } from '@/lib/game/types';
+import { getTechResearchBenefits } from '@/lib/game/upgradeInfo';
 import { ResourceIcon } from './ResourceIcon';
+import { UpgradeTooltip } from './UpgradeTooltip';
 
 const icons: Record<TechKey, typeof Atom> = {
   asteroidSurvey: Radar,
@@ -127,6 +129,13 @@ export function ResearchView({
                   </span>
                 ))}
               </span>
+              {statusClass !== 'complete' ? (
+                <UpgradeTooltip
+                  benefits={getTechResearchBenefits(tech)}
+                  cost={tech.cost}
+                  label="Forschen"
+                />
+              ) : null}
             </button>
           );
         })}

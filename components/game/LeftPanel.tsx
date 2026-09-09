@@ -19,6 +19,8 @@ import {
   getSectorLabel,
 } from '@/lib/game/simulation';
 import type { GameState, ModuleKey } from '@/lib/game/types';
+import { formatCostTitle, getModuleUpgradeBenefits } from '@/lib/game/upgradeInfo';
+import { UpgradeTooltip } from './UpgradeTooltip';
 
 const moduleIcons: Record<ModuleKey, React.ReactNode> = {
   engine: <Gauge size={20} />,
@@ -77,7 +79,7 @@ export function LeftPanel({
                 disabled={!affordable}
                 key={module.key}
                 onClick={() => onUpgradeModule(module.key)}
-                title={`Upgrade: ${formatNumber(cost.credits ?? 0)} Credits`}
+                title={`Upgrade: ${formatCostTitle(cost)}`}
               >
                 <span className={`module-icon ${module.key}`}>
                   {moduleIcons[module.key]}
@@ -85,6 +87,11 @@ export function LeftPanel({
                 <span>{module.name}</span>
                 <small>Stufe {module.level}</small>
                 <ChevronsUp size={18} />
+                <UpgradeTooltip
+                  benefits={getModuleUpgradeBenefits(module)}
+                  cost={cost}
+                  label={`Stufe ${module.level + 1}`}
+                />
               </button>
             );
           })}
