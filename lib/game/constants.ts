@@ -1,3 +1,4 @@
+import { INITIAL_RESEARCH } from './research';
 import type { Building, GameState, Quest, ResourceBag, RocketModule } from './types';
 
 export const RESOURCE_LABELS: Record<keyof ResourceBag, string> = {
@@ -170,6 +171,7 @@ export const INITIAL_STATE: GameState = {
   unlockedSectors: ['alpha'],
   collectedTotals: {},
   destroyedAsteroids: 0,
+  research: INITIAL_RESEARCH,
   modules: INITIAL_MODULES,
   buildings: INITIAL_BUILDINGS,
   rocket: {

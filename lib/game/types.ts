@@ -31,6 +31,20 @@ export type BuildingKey =
   | 'power'
   | 'warehouse';
 
+export type TechKey =
+  | 'asteroidSurvey'
+  | 'automatedDrills'
+  | 'plasmaCutters'
+  | 'cargoDrones'
+  | 'deepStorage'
+  | 'fusionCells'
+  | 'antimatterCore'
+  | 'gravNavigation'
+  | 'warpTheory'
+  | 'stationFrame'
+  | 'orbitalAssembly'
+  | 'galaxyGate';
+
 export interface RocketModule {
   key: ModuleKey;
   name: string;
@@ -118,6 +132,7 @@ export interface GameState {
   unlockedSectors: SectorKey[];
   collectedTotals: Partial<ResourceBag>;
   destroyedAsteroids: number;
+  research: Record<TechKey, boolean>;
   modules: RocketModule[];
   buildings: Building[];
   rocket: RocketState;

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { INITIAL_STATE } from '@/lib/game/constants';
 import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
+import { getTech, isTechAvailable } from '@/lib/game/research';
 import {
   canPay,
   canUnlockBeta,
@@ -15,7 +16,13 @@ import {
   unlockBetaCost,
 } from '@/lib/game/simulation';
 import { loadGameState, resetGameState, saveGameState } from '@/lib/game/storage';
-import type { BuildingKey, GameState, ModuleKey, ViewKey } from '@/lib/game/types';
+import type {
+  BuildingKey,
+  GameState,
+  ModuleKey,
+  TechKey,
+  ViewKey,
+} from '@/lib/game/types';
 import { BottomDock } from './BottomDock';
 import { CityView } from './CityView';
 import { LeftPanel } from './LeftPanel';
@@ -74,9 +81,9 @@ export function RocketMinerGame() {
 
   const upgradeModule = (key: ModuleKey) => {
     setState((current) => {
-      const module = current.modules.find((item) => item.key === key);
-      if (!module) return current;
-      const cost = getModuleCost(key, module.level);
+      const rocketModule = current.modules.find((item) => item.key === key);
+      if (!rocketModule) return current;
+      const cost = getModuleCost(key, rocketModule.level);
       if (!canPay(current.resources, cost)) return current;
 
       const upgraded = {
@@ -90,7 +97,7 @@ export function RocketMinerGame() {
       return applyQuestEvent(upgraded, {
         goal: 'module',
         key,
-        level: module.level + 1,
+        level: rocketModule.level + 1,
       });
     });
   };
@@ -115,6 +122,24 @@ export function RocketMinerGame() {
         key,
         level: building.level + 1,
       });
+    });
+  };
+
+  const researchTech = (key: TechKey) => {
+    setState((current) => {
+      const tech = getTech(key);
+      if (!tech || !isTechAvailable(current, tech) || !canPay(current.resources, tech.cost)) {
+        return current;
+      }
+
+      return {
+        ...current,
+        resources: payCost(current.resources, tech.cost),
+        research: {
+          ...current.research,
+          [key]: true,
+        },
+      };
     });
   };
 
@@ -171,7 +196,9 @@ export function RocketMinerGame() {
           {state.view === 'city' ? (
             <CityView state={state} onUpgradeBuilding={upgradeBuilding} />
           ) : null}
-          {state.view === 'research' ? <ResearchView /> : null}
+          {state.view === 'research' ? (
+            <ResearchView state={state} onResearchTech={researchTech} />
+          ) : null}
           {state.view === 'rocket' ? (
             <RocketView state={state} onUpgradeModule={upgradeModule} />
           ) : null}

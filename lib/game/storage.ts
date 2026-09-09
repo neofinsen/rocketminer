@@ -16,10 +16,11 @@ export function loadGameState(): GameState {
     const saved = JSON.parse(raw) as Partial<GameState>;
     const questIndex = saved.questIndex ?? 0;
 
+    const savedRocketStatus = saved.rocket?.status;
     const rocketStatus = ['collecting', 'returning', 'unloading'].includes(
-      saved.rocket?.status ?? '',
+      savedRocketStatus ?? '',
     )
-      ? saved.rocket?.status
+      ? (savedRocketStatus as GameState['rocket']['status'])
       : INITIAL_STATE.rocket.status;
 
     return {
@@ -30,6 +31,7 @@ export function loadGameState(): GameState {
       fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
       modules: asArray(saved.modules, INITIAL_STATE.modules),
       buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
+      research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
       unlockedSectors: asArray(saved.unlockedSectors, INITIAL_STATE.unlockedSectors),
       questIndex,

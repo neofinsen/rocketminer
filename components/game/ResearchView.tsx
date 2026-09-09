@@ -1,53 +1,133 @@
-import { Atom, Battery, Navigation, Pickaxe } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import {
+  Atom,
+  Battery,
+  Boxes,
+  Cpu,
+  FlaskConical,
+  Gem,
+  Hammer,
+  Network,
+  Orbit,
+  Radar,
+  Rocket,
+  Satellite,
+} from 'lucide-react';
+import {
+  getResearchedCount,
+  isTechAvailable,
+  TECH_TREE,
+  type TechNode,
+} from '@/lib/game/research';
+import { canPay, formatNumber } from '@/lib/game/simulation';
+import type { GameState, ResourceKey, TechKey } from '@/lib/game/types';
+import { ResourceIcon } from './ResourceIcon';
 
-const techs = [
-  {
-    name: 'Industrielle Produktion',
-    icon: Pickaxe,
-    progress: 68,
-    effect: '+12% Grundproduktion',
-  },
-  {
-    name: 'Energiespeicher',
-    icon: Battery,
-    progress: 45,
-    effect: '+300 Energiekapazitaet',
-  },
-  {
-    name: 'Interplanetare Navigation',
-    icon: Navigation,
-    progress: 28,
-    effect: 'Sektor Beta vorbereiten',
-  },
-  {
-    name: 'Alien-Technologie',
-    icon: Atom,
-    progress: 10,
-    effect: 'Spezialmodule spaeter',
-  },
-];
+const icons: Record<TechKey, typeof Atom> = {
+  asteroidSurvey: Radar,
+  automatedDrills: Cpu,
+  plasmaCutters: Gem,
+  cargoDrones: Boxes,
+  deepStorage: Network,
+  fusionCells: Battery,
+  antimatterCore: Atom,
+  gravNavigation: Orbit,
+  warpTheory: FlaskConical,
+  stationFrame: Hammer,
+  orbitalAssembly: Satellite,
+  galaxyGate: Rocket,
+};
 
-export function ResearchView() {
+const getStatus = (state: GameState, tech: TechNode) => {
+  if (state.research[tech.key]) return 'Erforscht';
+  if (isTechAvailable(state, tech)) return 'Bereit';
+  return 'Gesperrt';
+};
+
+const getStatusClass = (state: GameState, tech: TechNode) => {
+  if (state.research[tech.key]) return 'complete';
+  if (isTechAvailable(state, tech)) return 'available';
+  return 'locked';
+};
+
+export function ResearchView({
+  state,
+  onResearchTech,
+}: {
+  state: GameState;
+  onResearchTech: (key: TechKey) => void;
+}) {
+  const researched = getResearchedCount(state);
+  const stationReady = Boolean(state.research.orbitalAssembly);
+  const galaxyReady = Boolean(state.research.galaxyGate);
+
   return (
     <section className="research-view" aria-label="Forschung">
-      <div className="city-header">
+      <div className="city-header research-header">
         <div>
-          <h2>Forschung</h2>
-          <p>Erste Technologiepfade sind vorbereitet und spaeter ausbaubar.</p>
+          <h2>Forschungsbaum</h2>
+          <p>Langfristiges Ziel: Raumstation bauen und neue Galaxien erreichen.</p>
+        </div>
+        <div className="research-goal">
+          <strong>{researched} / {TECH_TREE.length}</strong>
+          <span>{galaxyReady ? 'Galaxiesprung aktiv' : stationReady ? 'Raumstation bereit' : 'Stationsprojekt laeuft'}</span>
         </div>
       </div>
-      <div className="tech-grid">
-        {techs.map((tech) => {
-          const Icon = tech.icon;
+
+      <div className="research-tree" aria-label="Technologiebaum">
+        <svg className="tech-links" viewBox="0 0 100 100" aria-hidden="true">
+          {TECH_TREE.flatMap((tech) =>
+            tech.prerequisites.map((sourceKey) => {
+              const source = TECH_TREE.find((item) => item.key === sourceKey);
+              if (!source) return null;
+              const active = state.research[source.key] || state.research[tech.key];
+              return (
+                <line
+                  className={active ? 'active' : undefined}
+                  key={`${source.key}-${tech.key}`}
+                  x1={source.x}
+                  y1={source.y}
+                  x2={tech.x}
+                  y2={tech.y}
+                />
+              );
+            }),
+          )}
+        </svg>
+
+        {TECH_TREE.map((tech) => {
+          const Icon = icons[tech.key];
+          const statusClass = getStatusClass(state, tech);
+          const affordable = canPay(state.resources, tech.cost);
+          const available = statusClass === 'available';
+          const disabled = !available || !affordable;
+
           return (
-            <article className="tech-card" key={tech.name}>
-              <Icon size={28} />
-              <h3>{tech.name}</h3>
-              <p>{tech.effect}</p>
-              <Progress className="game-progress" value={tech.progress} />
-              <button>Forschen</button>
-            </article>
+            <button
+              className={`tech-node ${tech.branch.toLowerCase()} ${statusClass}`}
+              disabled={disabled}
+              key={tech.key}
+              onClick={() => onResearchTech(tech.key)}
+              style={{ left: `${tech.x}%`, top: `${tech.y}%` }}
+              type="button"
+            >
+              <span className="tech-node-icon">
+                <Icon />
+              </span>
+              <span className="tech-node-copy">
+                <small>{tech.branch}</small>
+                <strong>{tech.name}</strong>
+                <span>{tech.effect}</span>
+              </span>
+              <span className="tech-status">{getStatus(state, tech)}</span>
+              <span className="tech-cost">
+                {Object.entries(tech.cost).map(([resource, value]) => (
+                  <span key={resource}>
+                    <ResourceIcon resource={resource as ResourceKey} />
+                    {formatNumber(value ?? 0)}
+                  </span>
+                ))}
+              </span>
+            </button>
           );
         })}
       </div>

@@ -132,6 +132,31 @@
   font-size: 13px;
 }
 
+.research-header {
+  align-items: center;
+}
+
+.research-goal {
+  display: grid;
+  min-width: 210px;
+  gap: 2px;
+  border: 1px solid rgba(164, 203, 231, 0.2);
+  border-radius: 7px;
+  background: rgba(14, 27, 39, 0.78);
+  padding: 10px 12px;
+  text-align: right;
+}
+
+.research-goal strong {
+  color: #7fe7ff;
+  font-size: 18px;
+}
+
+.research-goal span {
+  color: #cbd8e5;
+  font-size: 13px;
+}
+
 .tech-grid,
 .module-upgrade-grid {
   display: grid;
@@ -439,6 +464,204 @@
   --building-glow: rgba(231, 170, 91, 0.28);
   --tower-dark: #4b3424;
   --tower-light: #bf8750;
+}
+
+.research-tree {
+  position: relative;
+  height: calc(100% - 82px);
+  min-height: 560px;
+  overflow: hidden;
+  border: 1px solid rgba(164, 203, 231, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 90% 57%, rgba(118, 92, 232, 0.18), transparent 18%),
+    radial-gradient(circle at 62% 28%, rgba(64, 189, 255, 0.14), transparent 22%),
+    radial-gradient(circle at 15% 55%, rgba(95, 231, 165, 0.1), transparent 18%),
+    linear-gradient(145deg, rgba(8, 18, 31, 0.94), rgba(12, 26, 39, 0.96));
+  box-shadow: inset 0 0 72px rgba(0, 0, 0, 0.32);
+}
+
+.research-tree::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(116, 178, 219, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116, 178, 219, 0.06) 1px, transparent 1px);
+  background-size: 50px 50px;
+  content: '';
+  opacity: 0.55;
+}
+
+.tech-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tech-links line {
+  stroke: rgba(122, 164, 191, 0.34);
+  stroke-dasharray: 1.7 1.2;
+  stroke-linecap: round;
+  stroke-width: 0.42;
+}
+
+.tech-links line.active {
+  stroke: rgba(100, 218, 255, 0.76);
+  stroke-dasharray: none;
+  stroke-width: 0.62;
+}
+
+.tech-node {
+  position: absolute;
+  display: grid;
+  width: 172px;
+  min-height: 126px;
+  grid-template-columns: 38px 1fr;
+  gap: 8px;
+  border: 1px solid rgba(164, 203, 231, 0.2);
+  border-radius: 7px;
+  background: rgba(9, 20, 32, 0.88);
+  color: #eff8ff;
+  padding: 10px;
+  text-align: left;
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 150ms ease,
+    filter 150ms ease,
+    transform 150ms ease;
+}
+
+.tech-node.available {
+  border-color: rgba(99, 216, 255, 0.64);
+  box-shadow: 0 0 22px rgba(78, 186, 255, 0.12);
+}
+
+.tech-node.complete {
+  border-color: rgba(108, 232, 136, 0.56);
+  background: rgba(11, 37, 33, 0.9);
+}
+
+.tech-node.locked {
+  opacity: 0.58;
+}
+
+.tech-node:not(:disabled):hover {
+  filter: brightness(1.12);
+  transform: translate(-50%, -54%);
+}
+
+.tech-node-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 7px;
+  background: linear-gradient(145deg, var(--tech-light), var(--tech-dark));
+  box-shadow: 0 0 18px var(--tech-glow);
+}
+
+.tech-node-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.tech-node-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tech-node-copy small {
+  color: #9fc6df;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.tech-node-copy strong {
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.tech-node-copy span {
+  color: #c6d5e1;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.tech-status {
+  align-self: center;
+  border-radius: 999px;
+  background: rgba(16, 32, 45, 0.82);
+  padding: 3px 7px;
+  color: #cdddea;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.tech-node.available .tech-status {
+  color: #76e4ff;
+}
+
+.tech-node.complete .tech-status {
+  color: #86ef93;
+}
+
+.tech-cost {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tech-cost span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(164, 203, 231, 0.14);
+  border-radius: 5px;
+  background: rgba(8, 17, 27, 0.62);
+  padding: 2px 4px;
+  color: #dbe8f3;
+  font-size: 12px;
+}
+
+.tech-cost .resource-icon {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.tech-node.bergbau {
+  --tech-dark: #254850;
+  --tech-glow: rgba(93, 230, 210, 0.22);
+  --tech-light: #55c4b4;
+}
+
+.tech-node.logistik {
+  --tech-dark: #30415d;
+  --tech-glow: rgba(107, 160, 255, 0.22);
+  --tech-light: #6b9ce6;
+}
+
+.tech-node.energie {
+  --tech-dark: #544626;
+  --tech-glow: rgba(255, 210, 73, 0.26);
+  --tech-light: #eac245;
+}
+
+.tech-node.navigation {
+  --tech-dark: #413664;
+  --tech-glow: rgba(174, 125, 255, 0.26);
+  --tech-light: #9677ea;
+}
+
+.tech-node.raumstation {
+  --tech-dark: #263d62;
+  --tech-glow: rgba(105, 203, 255, 0.3);
+  --tech-light: #75caff;
 }
 
 .tech-card h3,
