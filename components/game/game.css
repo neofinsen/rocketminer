@@ -85,6 +85,12 @@
   opacity: 0.52;
 }
 
+.city-map-view {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
 .city-view,
 .research-view,
 .rocket-view {
@@ -126,7 +132,6 @@
   font-size: 13px;
 }
 
-.building-grid,
 .tech-grid,
 .module-upgrade-grid {
   display: grid;
@@ -134,7 +139,6 @@
   gap: 14px;
 }
 
-.building-card,
 .tech-card,
 .upgrade-card {
   min-height: 210px;
@@ -144,52 +148,305 @@
   padding: 14px;
 }
 
-.building-art {
+.city-map {
+  position: relative;
+  min-height: 520px;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid rgba(164, 203, 231, 0.2);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 76% 55%, rgba(105, 193, 255, 0.16), transparent 20%),
+    radial-gradient(circle at 28% 34%, rgba(111, 255, 190, 0.1), transparent 18%),
+    linear-gradient(145deg, rgba(9, 21, 33, 0.92), rgba(13, 31, 43, 0.96)),
+    #0a1723;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.38);
+}
+
+.city-grid-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(116, 178, 219, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116, 178, 219, 0.08) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at 50% 50%, black, transparent 78%);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.city-road,
+.city-plaza {
+  position: absolute;
+  pointer-events: none;
+}
+
+.city-road {
+  height: 18px;
+  border: 1px solid rgba(144, 209, 245, 0.18);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(102, 201, 255, 0.28), transparent),
+    rgba(28, 50, 64, 0.78);
+  box-shadow: 0 0 22px rgba(73, 181, 255, 0.08);
+}
+
+.city-road.main {
+  left: 14%;
+  top: 49%;
+  width: 70%;
+  transform: rotate(-5deg);
+}
+
+.city-road.north {
+  left: 28%;
+  top: 35%;
+  width: 40%;
+  transform: rotate(-28deg);
+}
+
+.city-road.south {
+  left: 27%;
+  top: 64%;
+  width: 45%;
+  transform: rotate(18deg);
+}
+
+.city-road.spur {
+  left: 55%;
+  top: 58%;
+  width: 27%;
+  transform: rotate(-36deg);
+}
+
+.city-plaza {
+  width: 210px;
+  height: 130px;
+  border: 1px solid rgba(175, 219, 247, 0.18);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(63, 124, 158, 0.28), rgba(24, 46, 61, 0.42)),
+    rgba(17, 34, 46, 0.74);
+  transform: translate(-50%, -50%);
+}
+
+.city-plaza.core {
+  left: 48%;
+  top: 45%;
+}
+
+.city-plaza.launch {
+  left: 76%;
+  top: 56%;
+  width: 250px;
+  height: 150px;
+}
+
+.city-building {
+  --pad-size: 102px;
+  position: absolute;
   display: grid;
-  height: 82px;
+  width: 150px;
+  min-height: 150px;
+  justify-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #edf7ff;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    filter 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.city-building.large {
+  --pad-size: 126px;
+  width: 178px;
+}
+
+.city-building.small {
+  --pad-size: 84px;
+  width: 132px;
+}
+
+.city-building:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.city-building:not(:disabled):hover {
+  filter: brightness(1.12);
+  transform: translate(-50%, -54%);
+}
+
+.building-pad {
+  position: relative;
+  display: grid;
+  width: var(--pad-size);
+  height: calc(var(--pad-size) * 0.72);
   place-items: center;
-  border: 1px solid rgba(164, 203, 231, 0.16);
+  clip-path: polygon(50% 0, 100% 28%, 100% 72%, 50% 100%, 0 72%, 0 28%);
+  background:
+    linear-gradient(145deg, rgba(121, 176, 207, 0.3), rgba(11, 25, 36, 0.96)),
+    #132638;
+  box-shadow:
+    inset 0 -10px 24px rgba(0, 0, 0, 0.34),
+    0 16px 22px rgba(0, 0, 0, 0.28);
+}
+
+.building-shadow {
+  position: absolute;
+  inset: 12px;
+  clip-path: inherit;
+  background: rgba(0, 0, 0, 0.28);
+  transform: translateY(12px);
+}
+
+.building-core {
+  position: relative;
+  display: grid;
+  width: calc(var(--pad-size) * 0.48);
+  height: calc(var(--pad-size) * 0.56);
+  place-items: center;
+  border: 1px solid rgba(238, 250, 255, 0.24);
+  border-radius: 7px 7px 3px 3px;
+  background: linear-gradient(180deg, var(--tower-light), var(--tower-dark));
+  box-shadow:
+    0 -8px 20px var(--building-glow),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.22);
+}
+
+.building-core svg {
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  color: rgba(245, 252, 255, 0.92);
+}
+
+.tower {
+  position: absolute;
+  bottom: 0;
+  width: 17px;
+  border: 1px solid rgba(239, 249, 255, 0.2);
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, var(--tower-light), var(--tower-dark));
+}
+
+.tower-left {
+  left: -18px;
+  height: 62%;
+}
+
+.tower-right {
+  right: -18px;
+  height: 76%;
+}
+
+.building-label {
+  display: grid;
+  min-width: 118px;
+  gap: 1px;
+  border: 1px solid rgba(164, 203, 231, 0.2);
   border-radius: 6px;
-  background: linear-gradient(145deg, #253f4d, #172332);
-  color: #d8e8f7;
+  background: rgba(8, 17, 27, 0.78);
+  padding: 5px 8px;
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.18);
+  line-height: 1.2;
 }
 
-.building-art svg {
-  width: 42px;
-  height: 42px;
+.building-label strong {
+  font-size: 13px;
 }
 
-.building-card h3,
+.building-label small {
+  color: #9fc6df;
+  font-size: 12px;
+}
+
+.building-output {
+  display: flex;
+  max-width: 138px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.output-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 5px;
+  background: rgba(11, 24, 35, 0.78);
+  padding: 2px 5px;
+  color: #dcecf8;
+  font-size: 12px;
+}
+
+.building-output .resource-icon {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.city-building.civic {
+  --building-glow: rgba(103, 213, 255, 0.32);
+  --tower-dark: #284f6b;
+  --tower-light: #6eb4d0;
+}
+
+.city-building.bio {
+  --building-glow: rgba(95, 232, 159, 0.3);
+  --tower-dark: #214d42;
+  --tower-light: #75c88d;
+}
+
+.city-building.mine {
+  --building-glow: rgba(190, 198, 205, 0.26);
+  --tower-dark: #424b55;
+  --tower-light: #a4b0b7;
+}
+
+.city-building.forge {
+  --building-glow: rgba(255, 111, 73, 0.32);
+  --tower-dark: #5b302c;
+  --tower-light: #d97b4c;
+}
+
+.city-building.research {
+  --building-glow: rgba(170, 108, 255, 0.36);
+  --tower-dark: #423365;
+  --tower-light: #9f81f0;
+}
+
+.city-building.spaceport {
+  --building-glow: rgba(104, 197, 255, 0.38);
+  --tower-dark: #243c59;
+  --tower-light: #80c6ec;
+}
+
+.city-building.power {
+  --building-glow: rgba(255, 215, 90, 0.36);
+  --tower-dark: #4f4728;
+  --tower-light: #f0c64a;
+}
+
+.city-building.storage {
+  --building-glow: rgba(231, 170, 91, 0.28);
+  --tower-dark: #4b3424;
+  --tower-light: #bf8750;
+}
+
 .tech-card h3,
 .upgrade-card h3 {
   margin: 12px 0 0;
   font-size: 16px;
 }
 
-.building-output {
-  display: flex;
-  min-height: 34px;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0;
-}
-
-.building-output span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #cbd8e5;
-  font-size: 12px;
-}
-
-.building-output .resource-icon {
-  min-width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  font-size: 10px;
-}
-
-.building-card button,
 .tech-card button,
 .upgrade-card button {
   width: 100%;

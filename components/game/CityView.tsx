@@ -1,4 +1,13 @@
-import { Factory, Hammer, Rocket, Zap } from 'lucide-react';
+import {
+  Building2,
+  Factory,
+  FlaskConical,
+  Hammer,
+  Landmark,
+  Rocket,
+  Warehouse,
+  Zap,
+} from 'lucide-react';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   canPay,
@@ -6,8 +15,83 @@ import {
   getBuildingCost,
   getProductionPerMinute,
 } from '@/lib/game/simulation';
-import type { BuildingKey, GameState } from '@/lib/game/types';
+import type { BuildingKey, GameState, ResourceKey } from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
+
+type BuildingVisual = {
+  x: number;
+  y: number;
+  size: 'large' | 'medium' | 'small';
+  variant: string;
+  icon: typeof Building2;
+};
+
+const cityLayout: Record<BuildingKey, BuildingVisual> = {
+  townhall: {
+    x: 48,
+    y: 43,
+    size: 'large',
+    variant: 'civic',
+    icon: Landmark,
+  },
+  sawmill: {
+    x: 22,
+    y: 32,
+    size: 'medium',
+    variant: 'bio',
+    icon: Factory,
+  },
+  quarry: {
+    x: 23,
+    y: 68,
+    size: 'medium',
+    variant: 'mine',
+    icon: Building2,
+  },
+  forge: {
+    x: 40,
+    y: 72,
+    size: 'medium',
+    variant: 'forge',
+    icon: Hammer,
+  },
+  research: {
+    x: 64,
+    y: 27,
+    size: 'medium',
+    variant: 'research',
+    icon: FlaskConical,
+  },
+  spaceport: {
+    x: 76,
+    y: 55,
+    size: 'large',
+    variant: 'spaceport',
+    icon: Rocket,
+  },
+  power: {
+    x: 59,
+    y: 74,
+    size: 'medium',
+    variant: 'power',
+    icon: Zap,
+  },
+  warehouse: {
+    x: 34,
+    y: 48,
+    size: 'small',
+    variant: 'storage',
+    icon: Warehouse,
+  },
+};
+
+const getCostLabel = (cost: Partial<Record<ResourceKey, number>>) =>
+  Object.entries(cost)
+    .map(
+      ([resource, value]) =>
+        `${RESOURCE_LABELS[resource as ResourceKey]} ${formatNumber(value ?? 0)}`,
+    )
+    .join(', ');
 
 export function CityView({
   state,
@@ -19,11 +103,11 @@ export function CityView({
   const production = getProductionPerMinute(state.buildings);
 
   return (
-    <section className="city-view" aria-label="Stadtansicht">
+    <section className="city-view city-map-view" aria-label="Stadtansicht">
       <div className="city-header">
         <div>
-          <h2>Stadtzentrum</h2>
-          <p>Produktionslinien laufen, waehrend Explorer I sammelt.</p>
+          <h2>Basisstadt</h2>
+          <p>Futuristische Kolonie mit Raumhafen, Energieachse und Industriebezirk.</p>
         </div>
         <div className="city-totals">
           {Object.entries(production).map(([key, value]) => (
@@ -35,38 +119,53 @@ export function CityView({
         </div>
       </div>
 
-      <div className="building-grid">
+      <div className="city-map" aria-label="Basis-Karte">
+        <span className="city-grid-glow" />
+        <span className="city-plaza core" />
+        <span className="city-plaza launch" />
+        <span className="city-road main" />
+        <span className="city-road north" />
+        <span className="city-road south" />
+        <span className="city-road spur" />
+
         {state.buildings.map((building) => {
+          const visual = cityLayout[building.key];
+          const Icon = visual.icon;
           const cost = getBuildingCost(building);
           const affordable = canPay(state.resources, cost);
+          const output = Object.entries(building.production);
 
           return (
-            <article className="building-card" key={building.key}>
-              <div className={`building-art ${building.icon}`}>
-                {building.key === 'spaceport' ? <Rocket /> : null}
-                {building.key === 'power' ? <Zap /> : null}
-                {building.key === 'forge' ? <Hammer /> : null}
-                {!['spaceport', 'power', 'forge'].includes(building.key) ? (
-                  <Factory />
-                ) : null}
-              </div>
-              <h3>{building.name}</h3>
-              <p>Stufe {building.level}</p>
-              <div className="building-output">
-                {Object.entries(building.production).map(([resource, value]) => (
-                  <span key={resource}>
-                    <ResourceIcon resource={resource as keyof typeof RESOURCE_LABELS} />
-                    +{formatNumber((value ?? 0) * building.level)}/min
+            <button
+              className={`city-building ${visual.variant} ${visual.size}`}
+              disabled={!affordable}
+              key={building.key}
+              onClick={() => onUpgradeBuilding(building.key)}
+              style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
+              title={`Ausbaukosten: ${getCostLabel(cost)}`}
+              type="button"
+            >
+              <span className="building-pad">
+                <span className="building-shadow" />
+                <span className="building-core">
+                  <Icon />
+                  <span className="tower tower-left" />
+                  <span className="tower tower-right" />
+                </span>
+              </span>
+              <span className="building-label">
+                <strong>{building.name}</strong>
+                <small>Stufe {building.level}</small>
+              </span>
+              <span className="building-output">
+                {output.map(([resource, value]) => (
+                  <span key={resource} className="output-chip">
+                    <ResourceIcon resource={resource as ResourceKey} />
+                    +{formatNumber((value ?? 0) * building.level)}
                   </span>
                 ))}
-              </div>
-              <button
-                disabled={!affordable}
-                onClick={() => onUpgradeBuilding(building.key)}
-              >
-                Verbessern
-              </button>
-            </article>
+              </span>
+            </button>
           );
         })}
       </div>
