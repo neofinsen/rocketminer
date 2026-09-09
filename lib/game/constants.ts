@@ -169,6 +169,7 @@ export const INITIAL_STATE: GameState = {
   currentSector: 'alpha',
   unlockedSectors: ['alpha'],
   collectedTotals: {},
+  destroyedAsteroids: 0,
   modules: INITIAL_MODULES,
   buildings: INITIAL_BUILDINGS,
   rocket: {
@@ -180,6 +181,8 @@ export const INITIAL_STATE: GameState = {
     status: 'collecting',
     returnTimer: 0,
     returnDuration: 120,
+    grabTimer: 0,
+    grabDuration: 1.4,
     cargo: {},
   },
   asteroids: [
@@ -216,6 +219,7 @@ export const INITIAL_STATE: GameState = {
     { id: 5, x: 48, y: 49, resource: 'titan', amount: 35 },
     { id: 6, x: 58, y: 58, resource: 'silicon', amount: 26 },
   ],
+  projectiles: [],
   damageTexts: [],
   quest: QUEST_CHAIN[0],
   sectorProgress: 42,

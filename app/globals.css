@@ -464,6 +464,8 @@
 .stars i,
 .small-rock,
 .fragment,
+.grab-beam,
+.projectile,
 .asteroid,
 .rocket,
 .collector-radius,
@@ -486,8 +488,8 @@
 
 .base-planet {
   z-index: 2;
-  width: 132px;
-  height: 132px;
+  width: 112px;
+  height: 98px;
   transform: translate(-50%, -50%);
 }
 
@@ -498,7 +500,7 @@
 }
 
 .base-glow {
-  inset: 18px;
+  inset: 11px 14px;
   border: 2px solid rgba(106, 205, 255, 0.46);
   border-radius: 50%;
   background:
@@ -511,20 +513,20 @@
 }
 
 .base-orbit {
-  left: 0;
-  top: 58px;
-  width: 132px;
-  height: 18px;
+  left: 7px;
+  top: 43px;
+  width: 98px;
+  height: 14px;
   transform: rotate(-18deg);
   border: 1px solid rgba(181, 221, 255, 0.36);
   border-radius: 50%;
 }
 
 .base-city {
-  left: 54px;
-  top: 48px;
-  width: 28px;
-  height: 24px;
+  left: 43px;
+  top: 38px;
+  width: 24px;
+  height: 20px;
   border-radius: 4px 4px 2px 2px;
   background:
     linear-gradient(90deg, transparent 0 5px, #d7ecff 5px 8px, transparent 8px),
@@ -701,6 +703,35 @@
   z-index: 2;
   transform: translate(-50%, -50%) scale(0.76);
   animation: shimmer 1.8s infinite ease-in-out;
+  transition: left 0.1s linear, top 0.1s linear;
+}
+
+.grab-beam {
+  z-index: 3;
+  height: 3px;
+  transform-origin: center;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(90, 216, 255, 0),
+    rgba(128, 238, 255, 0.88),
+    rgba(122, 255, 173, 0)
+  );
+  box-shadow: 0 0 12px rgba(83, 212, 255, 0.85);
+  pointer-events: none;
+}
+
+.projectile {
+  z-index: 7;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff6a8;
+  box-shadow:
+    0 0 8px #ffd55d,
+    0 0 20px rgba(255, 132, 61, 0.9);
+  pointer-events: none;
 }
 
 @keyframes shimmer {

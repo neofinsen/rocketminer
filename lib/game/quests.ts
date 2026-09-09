@@ -44,6 +44,13 @@ export function applyQuestEvent(state: GameState, event: QuestEvent): GameState 
 export function syncQuestProgress(state: GameState): GameState {
   if (state.quest.done) return state;
 
+  if (state.quest.goal === 'destroy') {
+    return applyQuestEvent(state, {
+      goal: 'destroy',
+      amount: Math.max(0, state.destroyedAsteroids - state.quest.current),
+    });
+  }
+
   if (state.quest.goal === 'module') {
     const module = state.modules.find((item) => item.key === state.quest.targetKey);
     return module

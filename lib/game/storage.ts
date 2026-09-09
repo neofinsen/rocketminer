@@ -17,9 +17,11 @@ export function loadGameState(): GameState {
       ...INITIAL_STATE,
       ...saved,
       damageTexts: [],
+      projectiles: saved.projectiles ?? [],
       questIndex,
       quest: saved.quest ?? QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0],
       resources: { ...INITIAL_STATE.resources, ...saved.resources },
+      destroyedAsteroids: saved.destroyedAsteroids ?? 0,
       rocket: {
         ...INITIAL_STATE.rocket,
         ...saved.rocket,
@@ -28,6 +30,10 @@ export function loadGameState(): GameState {
         returnTimer: saved.rocket?.returnTimer ?? 0,
         returnDuration:
           saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration,
+        grabbedFragmentId: saved.rocket?.grabbedFragmentId,
+        grabTimer: saved.rocket?.grabTimer ?? 0,
+        grabDuration:
+          saved.rocket?.grabDuration ?? INITIAL_STATE.rocket.grabDuration,
         cargo: { ...saved.rocket?.cargo },
       },
       collectedTotals: { ...saved.collectedTotals },
@@ -43,6 +49,7 @@ export function saveGameState(state: GameState) {
   const saveData = {
     ...state,
     damageTexts: [],
+    projectiles: [],
   };
 
   window.localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));

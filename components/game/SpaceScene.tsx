@@ -9,7 +9,13 @@ import {
   getSectorLabel,
   unlockBetaCost,
 } from '@/lib/game/simulation';
-import type { Asteroid, DamageText, Fragment, GameState } from '@/lib/game/types';
+import type {
+  Asteroid,
+  DamageText,
+  Fragment,
+  GameState,
+  Projectile,
+} from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
 
 const starSeeds = Array.from({ length: 90 }, (_, index) => ({
@@ -64,6 +70,39 @@ function FragmentSprite({ fragment }: { fragment: Fragment }) {
     >
       <ResourceIcon resource={fragment.resource} />
     </span>
+  );
+}
+
+function GrabBeam({ state }: { state: GameState }) {
+  const fragment = state.fragments.find(
+    (item) => item.id === state.rocket.grabbedFragmentId,
+  );
+  if (!fragment) return null;
+
+  const x = (state.rocket.x + fragment.x) / 2;
+  const y = (state.rocket.y + fragment.y) / 2;
+  const width = Math.hypot(fragment.x - state.rocket.x, fragment.y - state.rocket.y);
+  const angle = Math.atan2(fragment.y - state.rocket.y, fragment.x - state.rocket.x);
+
+  return (
+    <span
+      className="grab-beam"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${width}%`,
+        transform: `translate(-50%, -50%) rotate(${angle}rad)`,
+      }}
+    />
+  );
+}
+
+function ProjectileSprite({ projectile }: { projectile: Projectile }) {
+  return (
+    <span
+      className="projectile"
+      style={{ left: `${projectile.x}%`, top: `${projectile.y}%` }}
+    />
   );
 }
 
@@ -154,6 +193,8 @@ export function SpaceScene({
         style={{ left: `${state.rocket.x}%`, top: `${state.rocket.y}%` }}
       />
 
+      <GrabBeam state={state} />
+
       <span
         className="rocket"
         style={{
@@ -180,6 +221,10 @@ export function SpaceScene({
           key={asteroid.id}
           onHit={onHitAsteroid}
         />
+      ))}
+
+      {state.projectiles.map((projectile) => (
+        <ProjectileSprite key={projectile.id} projectile={projectile} />
       ))}
 
       {state.damageTexts.map((text) => (

@@ -55,6 +55,9 @@ export interface RocketState {
   status: 'collecting' | 'returning' | 'unloading';
   returnTimer: number;
   returnDuration: number;
+  grabbedFragmentId?: number;
+  grabTimer: number;
+  grabDuration: number;
   cargo: Partial<ResourceBag>;
 }
 
@@ -72,8 +75,20 @@ export interface Fragment {
   id: number;
   x: number;
   y: number;
+  originX?: number;
+  originY?: number;
   resource: ResourceKey;
   amount: number;
+}
+
+export interface Projectile {
+  id: number;
+  x: number;
+  y: number;
+  targetX: number;
+  targetY: number;
+  asteroidId: number;
+  damage: number;
 }
 
 export interface DamageText {
@@ -102,11 +117,13 @@ export interface GameState {
   currentSector: SectorKey;
   unlockedSectors: SectorKey[];
   collectedTotals: Partial<ResourceBag>;
+  destroyedAsteroids: number;
   modules: RocketModule[];
   buildings: Building[];
   rocket: RocketState;
   asteroids: Asteroid[];
   fragments: Fragment[];
+  projectiles: Projectile[];
   damageTexts: DamageText[];
   quest: Quest;
   sectorProgress: number;

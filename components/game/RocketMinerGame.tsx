@@ -7,22 +7,15 @@ import {
   canPay,
   canUnlockBeta,
   getBuildingCost,
-  getLaserDamage,
   getModuleCost,
   payCost,
+  queueProjectile,
   startCargoReturn,
   tickGame,
   unlockBetaCost,
 } from '@/lib/game/simulation';
 import { loadGameState, resetGameState, saveGameState } from '@/lib/game/storage';
-import type {
-  Asteroid,
-  BuildingKey,
-  GameState,
-  ModuleKey,
-  ResourceKey,
-  ViewKey,
-} from '@/lib/game/types';
+import type { BuildingKey, GameState, ModuleKey, ViewKey } from '@/lib/game/types';
 import { BottomDock } from './BottomDock';
 import { CityView } from './CityView';
 import { LeftPanel } from './LeftPanel';
@@ -31,50 +24,6 @@ import { RightPanel } from './RightPanel';
 import { RocketView } from './RocketView';
 import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
-
-const asteroidTypes: Asteroid['type'][] = [
-  'iron',
-  'titan',
-  'crystal',
-  'silicon',
-  'alien',
-];
-
-const asteroidResource: Record<Asteroid['type'], ResourceKey> = {
-  iron: 'metal',
-  titan: 'titan',
-  crystal: 'crystal',
-  silicon: 'silicon',
-  alien: 'alien',
-};
-
-function spawnAsteroid(nextId: number, state: GameState): Asteroid {
-  const available =
-    state.currentSector === 'beta' ? asteroidTypes : asteroidTypes.slice(0, 4);
-  const type = available[nextId % available.length];
-  const sectorBonus = state.currentSector === 'beta' ? 520 : 0;
-  const hp = 1250 + (nextId % 4) * 360 + sectorBonus;
-
-  return {
-    id: nextId,
-    type,
-    x: 40 + ((nextId * 19) % 48),
-    y: 18 + ((nextId * 23) % 60),
-    hp,
-    maxHp: hp,
-    resource: asteroidResource[type],
-  };
-}
-
-function fragmentsFromAsteroid(asteroid: Asteroid, nextId: number) {
-  return Array.from({ length: 7 }, (_, index) => ({
-    id: nextId + index,
-    x: asteroid.x + Math.cos(index * 0.9) * (4 + index * 0.45),
-    y: asteroid.y + Math.sin(index * 0.9) * (4 + index * 0.45),
-    resource: asteroid.resource,
-    amount: 34 + index * 8,
-  }));
-}
 
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(() => syncQuestProgress(loadGameState()));
@@ -111,47 +60,8 @@ export function RocketMinerGame() {
   const setView = (view: ViewKey) =>
     setState((current) => ({ ...current, view }));
 
-  const hitAsteroid = (id: number) => {
-    setState((current) => {
-      const damage = getLaserDamage(current);
-      const asteroid = current.asteroids.find((item) => item.id === id);
-      if (!asteroid) return current;
-
-      const nextAsteroid = { ...asteroid, hp: asteroid.hp - damage };
-      const damageText = {
-        id: current.nextId,
-        x: asteroid.x + 8,
-        y: asteroid.y - 5,
-        value: damage,
-      };
-
-      if (nextAsteroid.hp > 0) {
-        return {
-          ...current,
-          asteroids: current.asteroids.map((item) =>
-            item.id === id ? nextAsteroid : item,
-          ),
-          damageTexts: [...current.damageTexts, damageText],
-          nextId: current.nextId + 1,
-        };
-      }
-
-      const fragments = fragmentsFromAsteroid(asteroid, current.nextId + 1);
-      const spawned = spawnAsteroid(current.nextId + fragments.length + 1, current);
-      const updated = {
-        ...current,
-        asteroids: [
-          ...current.asteroids.filter((item) => item.id !== id),
-          spawned,
-        ],
-        fragments: [...current.fragments, ...fragments],
-        damageTexts: [...current.damageTexts, damageText],
-        nextId: current.nextId + fragments.length + 2,
-      };
-
-      return applyQuestEvent(updated, { goal: 'destroy' });
-    });
-  };
+  const hitAsteroid = (id: number) =>
+    setState((current) => queueProjectile(current, id));
 
   const upgradeModule = (key: ModuleKey) => {
     setState((current) => {
@@ -200,7 +110,17 @@ export function RocketMinerGame() {
   };
 
   const returnCargo = () =>
-    setState((current) => startCargoReturn(current));
+    setState((current) =>
+      current.rocket.status === 'unloading'
+        ? {
+            ...current,
+            rocket: {
+              ...current.rocket,
+              returnTimer: Math.max(0, current.rocket.returnTimer - 15),
+            },
+          }
+        : startCargoReturn(current),
+    );
 
   const unlockBeta = () => {
     setState((current) => {

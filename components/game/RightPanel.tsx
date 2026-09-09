@@ -29,6 +29,7 @@ export function RightPanel({
   const capacity = getCargoCapacity(state);
   const isReturning = state.rocket.status === 'returning';
   const isUnloading = state.rocket.status === 'unloading';
+  const isBusy = isReturning || isUnloading;
   const returnProgress =
     state.rocket.returnDuration > 0
       ? ((state.rocket.returnDuration - state.rocket.returnTimer) /
@@ -97,7 +98,7 @@ export function RightPanel({
                 ? 'Rueckflug zur Basis'
                 : 'Sammelt automatisch'}
           </strong>
-          {(isUnloading || isReturning) && (
+          {isBusy && (
             <Progress className="game-progress" value={returnProgress} />
           )}
         </div>
@@ -112,11 +113,15 @@ export function RightPanel({
         </div>
         <button
           className="primary-action"
-          disabled={used <= 0 || isReturning || isUnloading}
+          disabled={used <= 0 || isReturning}
           onClick={onReturnCargo}
         >
           <Home size={18} />
-          {isReturning || isUnloading ? 'Basis aktiv' : 'Zurueck zur Basis'}
+          {isUnloading
+            ? 'Entladen beschleunigen'
+            : isReturning
+              ? 'Rueckflug aktiv'
+              : 'Zurueck zur Basis'}
         </button>
       </section>
     </aside>
