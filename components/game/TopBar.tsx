@@ -42,6 +42,7 @@ export function TopBar({ state }: { state: GameState }) {
       </nav>
 
       <div className="header-actions" aria-label="Menue">
+        <span className="save-pill">Autosave aktiv</span>
         <button aria-label="Nachrichten">
           <Mail size={22} />
         </button>

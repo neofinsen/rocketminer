@@ -1,0 +1,49 @@
+import { INITIAL_STATE, QUEST_CHAIN } from './constants';
+import type { GameState } from './types';
+
+const SAVE_KEY = 'rocketminer-save-v2';
+
+export function loadGameState(): GameState {
+  if (typeof window === 'undefined') return INITIAL_STATE;
+
+  try {
+    const raw = window.localStorage.getItem(SAVE_KEY);
+    if (!raw) return INITIAL_STATE;
+
+    const saved = JSON.parse(raw) as Partial<GameState>;
+    const questIndex = saved.questIndex ?? 0;
+
+    return {
+      ...INITIAL_STATE,
+      ...saved,
+      damageTexts: [],
+      questIndex,
+      quest: saved.quest ?? QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0],
+      resources: { ...INITIAL_STATE.resources, ...saved.resources },
+      rocket: {
+        ...INITIAL_STATE.rocket,
+        ...saved.rocket,
+        cargo: { ...saved.rocket?.cargo },
+      },
+      collectedTotals: { ...saved.collectedTotals },
+    };
+  } catch {
+    return INITIAL_STATE;
+  }
+}
+
+export function saveGameState(state: GameState) {
+  if (typeof window === 'undefined') return;
+
+  const saveData = {
+    ...state,
+    damageTexts: [],
+  };
+
+  window.localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+}
+
+export function resetGameState() {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(SAVE_KEY);
+}

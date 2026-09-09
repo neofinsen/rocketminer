@@ -4,6 +4,7 @@ import type {
   ModuleKey,
   ResourceBag,
   ResourceKey,
+  SectorKey,
 } from './types';
 
 const clamp = (value: number, min: number, max: number) =>
@@ -16,19 +17,24 @@ export const getModuleLevel = (state: GameState, key: ModuleKey) =>
   state.modules.find((module) => module.key === key)?.level ?? 1;
 
 export const getLaserDamage = (state: GameState) =>
-  220 + getModuleLevel(state, 'laser') * 75;
+  260 + getModuleLevel(state, 'laser') * 95;
 
 export const getCargoCapacity = (state: GameState) =>
-  1200 + getModuleLevel(state, 'cargo') * 430;
+  1100 + getModuleLevel(state, 'cargo') * 520;
 
 export const getCargoUsed = (state: GameState) =>
   Object.values(state.rocket.cargo).reduce((sum, value) => sum + (value ?? 0), 0);
 
 export const getCollectorRange = (state: GameState) =>
-  20 + getModuleLevel(state, 'collector') * 6;
+  24 + getModuleLevel(state, 'collector') * 7;
 
 export const getRocketSpeed = (state: GameState) =>
-  4.5 + getModuleLevel(state, 'engine') * 1.25;
+  5.2 + getModuleLevel(state, 'engine') * 1.35;
+
+export const getSectorLabel = (sector: SectorKey) =>
+  sector === 'beta' ? 'Sektor Beta' : 'Sektor Alpha';
+
+export const getSectorDanger = (sector: SectorKey) => (sector === 'beta' ? 4 : 2);
 
 export const getProductionPerMinute = (buildings: Building[]) => {
   const production = { credits: 0, wood: 0, metal: 0, energy: 0, crystal: 0 };
@@ -75,27 +81,43 @@ export const payCost = (
 export const getModuleCost = (key: ModuleKey, level: number) => {
   const scale = level + 1;
   const shared = {
-    credits: 420 * scale,
-    metal: 120 * scale,
-    energy: 35 * scale,
+    credits: 330 * scale,
+    metal: 88 * scale,
+    energy: 28 * scale,
   };
 
-  if (key === 'laser') return { ...shared, titan: 35 * scale };
-  if (key === 'cargo') return { ...shared, wood: 120 * scale };
-  if (key === 'collector') return { ...shared, crystal: 18 * scale };
-  if (key === 'energyCore') return { ...shared, silicon: 16 * scale };
-  return { ...shared, titan: 22 * scale };
+  if (key === 'laser') return { ...shared, titan: 24 * scale };
+  if (key === 'cargo') return { ...shared, wood: 90 * scale };
+  if (key === 'collector') return { ...shared, crystal: 14 * scale };
+  if (key === 'energyCore') return { ...shared, silicon: 12 * scale };
+  return { ...shared, titan: 16 * scale };
 };
 
 export const getBuildingCost = (building: Building) => ({
-  credits: 260 * (building.level + 1),
-  wood: 95 * (building.level + 1),
-  metal: 80 * (building.level + 1),
+  credits: 210 * (building.level + 1),
+  wood: 70 * (building.level + 1),
+  metal: 62 * (building.level + 1),
 });
+
+export const canUnlockBeta = (state: GameState) =>
+  !state.unlockedSectors.includes('beta') &&
+  state.sectorProgress >= 100 &&
+  getModuleLevel(state, 'engine') >= 2 &&
+  getModuleLevel(state, 'laser') >= 2 &&
+  state.resources.titan >= 220 &&
+  state.resources.crystal >= 180 &&
+  state.resources.energy >= 350;
+
+export const unlockBetaCost: Partial<ResourceBag> = {
+  titan: 220,
+  crystal: 180,
+  energy: 350,
+};
 
 export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   const production = getProductionPerMinute(state.buildings);
   let resources = { ...state.resources };
+  const collectedTotals = { ...state.collectedTotals };
   Object.entries(production).forEach(([key, perMinute]) => {
     resources[key as ResourceKey] += (perMinute * deltaSeconds) / 60;
   });
@@ -144,8 +166,12 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
     return false;
   });
 
-  if (getCargoUsed({ ...state, rocket }) > capacity * 0.92) {
+  if (getCargoUsed({ ...state, rocket }) > capacity * 0.9) {
     resources = addResources(resources, rocket.cargo);
+    Object.entries(rocket.cargo).forEach(([key, value]) => {
+      collectedTotals[key as ResourceKey] =
+        (collectedTotals[key as ResourceKey] ?? 0) + (value ?? 0);
+    });
     rocket.cargo = {};
   }
 
@@ -156,9 +182,15 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   return {
     ...state,
     resources,
+    collectedTotals,
     rocket,
     fragments,
     damageTexts,
-    sectorProgress: clamp(state.sectorProgress + deltaSeconds * 0.08, 0, 100),
+    sectorProgress: clamp(
+      state.sectorProgress +
+        deltaSeconds * (state.currentSector === 'beta' ? 0.055 : 0.14),
+      0,
+      100,
+    ),
   };
 };

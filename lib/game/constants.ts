@@ -1,4 +1,4 @@
-import type { Building, GameState, ResourceBag, RocketModule } from './types';
+import type { Building, GameState, Quest, ResourceBag, RocketModule } from './types';
 
 export const RESOURCE_LABELS: Record<keyof ResourceBag, string> = {
   credits: 'Credits',
@@ -100,9 +100,62 @@ export const INITIAL_BUILDINGS: Building[] = [
   },
 ];
 
+export const QUEST_CHAIN: Quest[] = [
+  {
+    title: 'Zerstoere deinen ersten grossen Asteroiden',
+    hint: 'Klicke einen grossen Asteroiden im Weltraum, bis seine HP auf 0 fallen.',
+    goal: 'destroy',
+    current: 0,
+    target: 1,
+    reward: { credits: 900, metal: 240 },
+    done: false,
+  },
+  {
+    title: 'Verbessere den Bergbau-Laser auf Stufe 2',
+    hint: 'Der Laser macht jeden Klick wertvoller.',
+    goal: 'module',
+    targetKey: 'laser',
+    current: 1,
+    target: 2,
+    reward: { titan: 120, energy: 180 },
+    done: false,
+  },
+  {
+    title: 'Sammle 200 Titan fuer die Werft',
+    hint: 'Titan-Asteroiden zerbrechen in hochwertige Fragmente.',
+    goal: 'collect',
+    targetKey: 'titan',
+    current: 0,
+    target: 200,
+    reward: { crystal: 90, credits: 1400 },
+    done: false,
+  },
+  {
+    title: 'Baue das Forschungszentrum auf Stufe 2',
+    hint: 'Forschung bereitet neue Sektoren und spaetere Technologien vor.',
+    goal: 'building',
+    targetKey: 'research',
+    current: 1,
+    target: 2,
+    reward: { silicon: 120, crystal: 140 },
+    done: false,
+  },
+  {
+    title: 'Schalte Sektor Beta frei',
+    hint: 'Erkunde Alpha vollstaendig und bringe Triebwerk, Laser und Ressourcen in Form.',
+    goal: 'sector',
+    targetKey: 'beta',
+    current: 0,
+    target: 1,
+    reward: { alien: 40, credits: 2200 },
+    done: false,
+  },
+];
+
 export const INITIAL_STATE: GameState = {
   view: 'space',
   level: 7,
+  questIndex: 0,
   resources: {
     credits: 12500,
     wood: 8750,
@@ -113,6 +166,9 @@ export const INITIAL_STATE: GameState = {
     silicon: 180,
     alien: 45,
   },
+  currentSector: 'alpha',
+  unlockedSectors: ['alpha'],
+  collectedTotals: {},
   modules: INITIAL_MODULES,
   buildings: INITIAL_BUILDINGS,
   rocket: { x: 33, y: 56, targetX: 54, targetY: 45, cargo: {} },
@@ -151,13 +207,7 @@ export const INITIAL_STATE: GameState = {
     { id: 6, x: 58, y: 58, resource: 'silicon', amount: 26 },
   ],
   damageTexts: [],
-  quest: {
-    title: 'Zerstoere 3 grosse Asteroiden',
-    current: 0,
-    target: 3,
-    reward: { crystal: 80, credits: 1200 },
-    done: false,
-  },
+  quest: QUEST_CHAIN[0],
   sectorProgress: 42,
   nextId: 7,
 };

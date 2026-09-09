@@ -10,6 +10,8 @@ export type ResourceKey =
 
 export type ViewKey = 'space' | 'city' | 'research' | 'rocket';
 
+export type SectorKey = 'alpha' | 'beta';
+
 export type ResourceBag = Record<ResourceKey, number>;
 
 export type ModuleKey =
@@ -54,7 +56,7 @@ export interface RocketState {
 
 export interface Asteroid {
   id: number;
-  type: 'iron' | 'titan' | 'crystal';
+  type: 'iron' | 'titan' | 'crystal' | 'silicon' | 'alien';
   x: number;
   y: number;
   hp: number;
@@ -79,6 +81,9 @@ export interface DamageText {
 
 export interface Quest {
   title: string;
+  hint: string;
+  goal: 'destroy' | 'module' | 'building' | 'collect' | 'sector';
+  targetKey?: string;
   current: number;
   target: number;
   reward: Partial<ResourceBag>;
@@ -88,7 +93,11 @@ export interface Quest {
 export interface GameState {
   view: ViewKey;
   level: number;
+  questIndex: number;
   resources: ResourceBag;
+  currentSector: SectorKey;
+  unlockedSectors: SectorKey[];
+  collectedTotals: Partial<ResourceBag>;
   modules: RocketModule[];
   buildings: Building[];
   rocket: RocketState;

@@ -1,7 +1,13 @@
 import { MousePointer2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
-import { formatNumber } from '@/lib/game/simulation';
+import {
+  canUnlockBeta,
+  formatNumber,
+  getSectorDanger,
+  getSectorLabel,
+  unlockBetaCost,
+} from '@/lib/game/simulation';
 import type { Asteroid, DamageText, Fragment, GameState } from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
 
@@ -74,17 +80,35 @@ function DamageSprite({ text }: { text: DamageText }) {
 export function SpaceScene({
   state,
   onHitAsteroid,
+  onUnlockBeta,
 }: {
   state: GameState;
   onHitAsteroid: (id: number) => void;
+  onUnlockBeta: () => void;
 }) {
+  const betaReady = canUnlockBeta(state);
+
   return (
     <section className="space-scene" aria-label="Weltraumansicht">
       <div className="sector-status">
-        <h2>Sektor Alpha</h2>
-        <span>Gefahrenstufe: 2</span>
+        <h2>{getSectorLabel(state.currentSector)}</h2>
+        <span>Gefahrenstufe: {getSectorDanger(state.currentSector)}</span>
         <Progress className="game-progress" value={state.sectorProgress} />
         <small>{Math.floor(state.sectorProgress)}% erkundet</small>
+        {state.unlockedSectors.includes('beta') ? (
+          <button className="sector-switch">Beta aktiv</button>
+        ) : (
+          <button
+            className="sector-switch"
+            disabled={!betaReady}
+            onClick={onUnlockBeta}
+            title={`${formatNumber(unlockBetaCost.titan ?? 0)} Titan, ${formatNumber(
+              unlockBetaCost.crystal ?? 0,
+            )} Kristall`}
+          >
+            Sektor Beta freischalten
+          </button>
+        )}
       </div>
 
       <div className="stars" aria-hidden="true">
@@ -158,7 +182,8 @@ function QuestCard({ state }: { state: GameState }) {
   return (
     <div className="quest-card">
       <h2>Aktuelle Quest</h2>
-      <p>{state.quest.done ? 'Belohnung eingesammelt' : state.quest.title}</p>
+      <p>{state.quest.done ? 'Quest-Kette abgeschlossen' : state.quest.title}</p>
+      <small>{state.quest.hint}</small>
       <Progress className="game-progress quest-progress" value={percent} />
       <span>
         {state.quest.current} / {state.quest.target}

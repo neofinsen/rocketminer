@@ -192,11 +192,18 @@
 }
 
 .bottom-dock {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 12px;
   margin: 10px 16px 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(9, 18, 27, 0.94);
   padding: 12px;
+}
+
+.dock-shell {
+  min-width: 0;
 }
 
 .dock-tabs {
@@ -226,6 +233,21 @@
     rgba(24, 55, 80, 0.9)
   );
   color: white;
+}
+
+.reset-save {
+  display: inline-flex;
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 7px;
+  background: rgba(35, 27, 31, 0.72);
+  color: #ffc4bf;
+  font-size: 14px;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .sr-only {
