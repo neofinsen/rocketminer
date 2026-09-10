@@ -17,9 +17,12 @@ export function loadGameState(): GameState {
     const questIndex = saved.questIndex ?? 0;
 
     const savedRocketStatus = saved.rocket?.status;
-    const rocketStatus = ['collecting', 'returning', 'unloading'].includes(
-      savedRocketStatus ?? '',
-    )
+    const rocketStatus = [
+      'collecting',
+      'returning',
+      'unloading',
+      'refueling',
+    ].includes(savedRocketStatus ?? '')
       ? (savedRocketStatus as GameState['rocket']['status'])
       : INITIAL_STATE.rocket.status;
 
@@ -47,6 +50,11 @@ export function loadGameState(): GameState {
         ...saved.rocket,
         angle: saved.rocket?.angle ?? INITIAL_STATE.rocket.angle,
         status: rocketStatus,
+        fuel: saved.rocket?.fuel ?? INITIAL_STATE.rocket.fuel,
+        fuelMax: saved.rocket?.fuelMax ?? INITIAL_STATE.rocket.fuelMax,
+        refuelTimer: saved.rocket?.refuelTimer ?? 0,
+        refuelDuration:
+          saved.rocket?.refuelDuration ?? INITIAL_STATE.rocket.refuelDuration,
         returnTimer: saved.rocket?.returnTimer ?? 0,
         returnDuration:
           saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration,

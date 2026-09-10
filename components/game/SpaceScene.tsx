@@ -19,6 +19,7 @@ import type {
 } from '@/lib/game/types';
 import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
 import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
+import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -139,6 +140,7 @@ export function SpaceScene({
         {
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
+          '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
         } as CSSProperties
       }
     >
@@ -208,7 +210,7 @@ export function SpaceScene({
       <GrabBeam state={state} />
 
       <span
-        className="rocket"
+        className={`rocket ${state.rocket.status}`}
         style={{
           left: `${state.rocket.x}%`,
           top: `${state.rocket.y}%`,
@@ -216,10 +218,7 @@ export function SpaceScene({
         }}
         aria-label="Explorer I"
       >
-        <span className="rocket-body" />
-        <span className="rocket-window" />
-        <span className="rocket-fin left" />
-        <span className="rocket-fin right" />
+        <span className="rocket-image" />
         <span className="rocket-flame" />
       </span>
 

@@ -276,40 +276,6 @@
   grid-column: 1 / -1;
 }
 
-.rocket-preview {
-  position: relative;
-  width: 74px;
-  height: 105px;
-  justify-self: center;
-}
-
-.rocket-body-mini,
-.rocket-body {
-  position: absolute;
-  border: 2px solid #1b2430;
-  background: linear-gradient(90deg, #d4d7db, #fff 48%, #9fa7b2);
-}
-
-.rocket-body-mini {
-  inset: 8px 22px 22px;
-  border-radius: 50% 50% 28% 28%;
-}
-
-.rocket-flame-mini,
-.rocket-flame {
-  position: absolute;
-  background: linear-gradient(#ffd15f, #ff6c2d 55%, transparent);
-  filter: drop-shadow(0 0 10px rgba(255, 117, 40, 0.8));
-  animation: flame 0.32s infinite alternate;
-}
-
-.rocket-flame-mini {
-  left: 29px;
-  bottom: 0;
-  width: 16px;
-  height: 28px;
-}
-
 .fuel-row {
   display: grid;
   grid-template-columns: 96px 1fr 42px;
@@ -320,6 +286,14 @@
 .fuel-row strong {
   color: #74df73;
   font-size: 14px;
+  text-transform: uppercase;
+}
+
+.refuel-note {
+  grid-column: 1 / -1;
+  color: #ffd88b;
+  font-size: 12px;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -548,63 +522,6 @@
   border: 1px dashed rgba(62, 179, 238, 0.36);
   border-radius: 50%;
   background: rgba(27, 119, 170, 0.04);
-}
-
-.rocket {
-  z-index: 4;
-  width: 72px;
-  height: 98px;
-  filter: drop-shadow(0 11px 18px rgba(0, 0, 0, 0.35));
-  transition: transform 0.14s linear;
-}
-
-.rocket-body {
-  left: 24px;
-  top: 4px;
-  width: 25px;
-  height: 72px;
-  border-radius: 50% 50% 28% 28%;
-}
-
-.rocket-window {
-  position: absolute;
-  left: 30px;
-  top: 24px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid #172536;
-  border-radius: 50%;
-  background: #8de8ff;
-}
-
-.rocket-fin {
-  position: absolute;
-  top: 55px;
-  border-style: solid;
-}
-
-.rocket-fin.left {
-  left: 14px;
-  border-width: 0 13px 22px 0;
-  border-color: transparent #e56b30 transparent transparent;
-}
-
-.rocket-fin.right {
-  right: 12px;
-  border-width: 22px 13px 0 0;
-  border-color: #e56b30 transparent transparent transparent;
-}
-
-.rocket-flame {
-  left: 28px;
-  bottom: 0;
-  width: 18px;
-  height: 32px;
-}
-
-@keyframes flame {
-  from { transform: scaleY(0.72); opacity: 0.75; }
-  to { transform: scaleY(1.05); opacity: 1; }
 }
 
 

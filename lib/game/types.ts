@@ -68,7 +68,11 @@ export interface RocketState {
   targetX: number;
   targetY: number;
   angle: number;
-  status: 'collecting' | 'returning' | 'unloading';
+  status: 'collecting' | 'returning' | 'unloading' | 'refueling';
+  fuel: number;
+  fuelMax: number;
+  refuelTimer: number;
+  refuelDuration: number;
   returnTimer: number;
   returnDuration: number;
   grabbedFragmentId?: number;

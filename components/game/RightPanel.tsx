@@ -29,9 +29,14 @@ export function RightPanel({
   const capacity = getCargoCapacity(state);
   const isReturning = state.rocket.status === 'returning';
   const isUnloading = state.rocket.status === 'unloading';
-  const isBusy = isReturning || isUnloading;
+  const isRefueling = state.rocket.status === 'refueling';
+  const isBusy = isReturning || isUnloading || isRefueling;
   const returnProgress =
-    state.rocket.returnDuration > 0
+    isRefueling && state.rocket.refuelDuration > 0
+      ? ((state.rocket.refuelDuration - state.rocket.refuelTimer) /
+          state.rocket.refuelDuration) *
+        100
+      : state.rocket.returnDuration > 0
       ? ((state.rocket.returnDuration - state.rocket.returnTimer) /
           state.rocket.returnDuration) *
         100
@@ -94,6 +99,8 @@ export function RightPanel({
           <strong>
             {isUnloading
               ? `Entladen ${formatSeconds(state.rocket.returnTimer)}`
+              : isRefueling
+                ? `Auftanken ${formatSeconds(state.rocket.refuelTimer)}`
               : isReturning
                 ? 'Rueckflug zur Basis'
                 : 'Sammelt automatisch'}
@@ -113,12 +120,14 @@ export function RightPanel({
         </div>
         <button
           className="primary-action"
-          disabled={used <= 0 || isReturning}
+          disabled={used <= 0 || isReturning || isRefueling}
           onClick={onReturnCargo}
         >
           <Home size={18} />
           {isUnloading
             ? 'Entladen beschleunigen'
+            : isRefueling
+              ? 'Tankt auf'
             : isReturning
               ? 'Rueckflug aktiv'
               : 'Zurueck zur Basis'}

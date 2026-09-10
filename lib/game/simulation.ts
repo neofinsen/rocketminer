@@ -66,6 +66,11 @@ export const getReturnDuration = (state: GameState) => {
   return clamp(120 + sectorBonus + levelBonus - engineReduction, 90, 210);
 };
 
+export const getFuelPercent = (state: GameState) =>
+  state.rocket.fuelMax > 0
+    ? clamp((state.rocket.fuel / state.rocket.fuelMax) * 100, 0, 100)
+    : 0;
+
 export const getGrabDuration = (state: GameState, fragment: Fragment) => {
   const collectorLevel = getModuleLevel(state, 'collector');
   return clamp(1.65 + fragment.amount / 90 - collectorLevel * 0.12, 0.85, 2.4);
@@ -306,8 +311,11 @@ const unloadCargo = (
     rocket: {
       ...rocket,
       cargo: {},
-      status: 'collecting' as const,
+      status:
+        rocket.fuel < rocket.fuelMax ? ('refueling' as const) : ('collecting' as const),
       returnTimer: 0,
+      refuelTimer:
+        rocket.fuel < rocket.fuelMax ? rocket.refuelDuration : rocket.refuelTimer,
       grabbedFragmentId: undefined,
       grabTimer: 0,
     },
@@ -352,6 +360,37 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   const used = getCargoUsed(state);
   let nextCollectedTotals = collectedTotals;
 
+  if (rocket.status === 'refueling') {
+    rocket.x = BASE_POSITION.x;
+    rocket.y = BASE_POSITION.y;
+    rocket.targetX = BASE_POSITION.x;
+    rocket.targetY = BASE_POSITION.y;
+    rocket.refuelTimer = Math.max(0, rocket.refuelTimer - deltaSeconds);
+    rocket.fuel =
+      rocket.fuelMax *
+      (1 - rocket.refuelTimer / Math.max(rocket.refuelDuration, 1));
+
+    if (rocket.refuelTimer <= 0) {
+      rocket.fuel = rocket.fuelMax;
+      rocket.status = 'collecting';
+      rocket.refuelTimer = 0;
+    }
+
+    return {
+      ...state,
+      resources,
+      collectedTotals: nextCollectedTotals,
+      rocket,
+      asteroids,
+      fragments,
+      projectiles,
+      destroyedAsteroids: state.destroyedAsteroids + projectileUpdate.questKills,
+      damageTexts: damageTexts
+        .map((text) => ({ ...text, y: text.y - deltaSeconds * 7 }))
+        .filter((text) => text.y > 8),
+    };
+  }
+
   if (rocket.status === 'unloading') {
     rocket.returnTimer = Math.max(0, rocket.returnTimer - deltaSeconds);
 
@@ -388,6 +427,37 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
       rocket.y = BASE_POSITION.y;
       rocket.status = 'unloading';
       rocket.returnTimer = Math.max(1, rocket.returnTimer);
+    }
+
+    return {
+      ...state,
+      resources,
+      collectedTotals: nextCollectedTotals,
+      rocket,
+      asteroids,
+      fragments,
+      projectiles,
+      destroyedAsteroids: state.destroyedAsteroids + projectileUpdate.questKills,
+      damageTexts: damageTexts
+        .map((text) => ({ ...text, y: text.y - deltaSeconds * 7 }))
+        .filter((text) => text.y > 8),
+    };
+  }
+
+  rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * 0.22);
+  if (rocket.fuel <= 0) {
+    const returning = startCargoReturn({ ...state, rocket });
+    Object.assign(rocket, {
+      ...returning.rocket,
+      fuel: 0,
+    });
+
+    if (getCargoUsed({ ...state, rocket }) <= 0) {
+      rocket.status = 'returning';
+      rocket.targetX = BASE_POSITION.x;
+      rocket.targetY = BASE_POSITION.y;
+      rocket.returnTimer = getReturnDuration(state);
+      rocket.returnDuration = getReturnDuration(state);
     }
 
     return {
