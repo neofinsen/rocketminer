@@ -1,5 +1,12 @@
 import { INITIAL_RESEARCH } from './research';
-import type { Building, GameState, Quest, ResourceBag, RocketModule } from './types';
+import type {
+  Building,
+  CityPlacements,
+  GameState,
+  Quest,
+  ResourceBag,
+  RocketModule,
+} from './types';
 
 export const RESOURCE_LABELS: Record<keyof ResourceBag, string> = {
   credits: 'Credits',
@@ -101,6 +108,17 @@ export const INITIAL_BUILDINGS: Building[] = [
   },
 ];
 
+export const INITIAL_CITY_PLACEMENTS: CityPlacements = {
+  townhall: 'slot-05',
+  sawmill: 'slot-04',
+  quarry: 'slot-08',
+  forge: 'slot-07',
+  research: 'slot-10',
+  spaceport: 'slot-01',
+  power: 'slot-11',
+  warehouse: 'slot-12',
+};
+
 export const QUEST_CHAIN: Quest[] = [
   {
     title: 'Zerstoere deinen ersten grossen Asteroiden',
@@ -174,6 +192,7 @@ export const INITIAL_STATE: GameState = {
   research: INITIAL_RESEARCH,
   modules: INITIAL_MODULES,
   buildings: INITIAL_BUILDINGS,
+  cityPlacements: INITIAL_CITY_PLACEMENTS,
   rocket: {
     x: 33,
     y: 56,

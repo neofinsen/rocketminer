@@ -60,6 +60,8 @@ export interface Building {
   production: Partial<ResourceBag>;
 }
 
+export type CityPlacements = Partial<Record<BuildingKey, string>>;
+
 export interface RocketState {
   x: number;
   y: number;
@@ -135,6 +137,7 @@ export interface GameState {
   research: Record<TechKey, boolean>;
   modules: RocketModule[];
   buildings: Building[];
+  cityPlacements: CityPlacements;
   rocket: RocketState;
   asteroids: Asteroid[];
   fragments: Fragment[];

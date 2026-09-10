@@ -1,4 +1,4 @@
-import { INITIAL_STATE, QUEST_CHAIN } from './constants';
+import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'rocketminer-save-v3';
@@ -31,6 +31,10 @@ export function loadGameState(): GameState {
       fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
       modules: asArray(saved.modules, INITIAL_STATE.modules),
       buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
+      cityPlacements: {
+        ...INITIAL_CITY_PLACEMENTS,
+        ...saved.cityPlacements,
+      },
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
       unlockedSectors: asArray(saved.unlockedSectors, INITIAL_STATE.unlockedSectors),

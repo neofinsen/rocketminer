@@ -125,6 +125,38 @@ export function RocketMinerGame() {
     });
   };
 
+  const buildAtSlot = (key: BuildingKey, slotId: string) => {
+    setState((current) => {
+      const occupiedSlots = current.buildings
+        .filter((building) => building.level > 0)
+        .map((building) => current.cityPlacements[building.key]);
+      if (occupiedSlots.includes(slotId)) return current;
+
+      const building = current.buildings.find((item) => item.key === key);
+      if (!building || building.level > 0) return current;
+      const cost = getBuildingCost(building);
+      if (!canPay(current.resources, cost)) return current;
+
+      const upgraded = {
+        ...current,
+        resources: payCost(current.resources, cost),
+        cityPlacements: {
+          ...current.cityPlacements,
+          [key]: slotId,
+        },
+        buildings: current.buildings.map((item) =>
+          item.key === key ? { ...item, level: 1 } : item,
+        ),
+      };
+
+      return applyQuestEvent(upgraded, {
+        goal: 'building',
+        key,
+        level: 1,
+      });
+    });
+  };
+
   const researchTech = (key: TechKey) => {
     setState((current) => {
       const tech = getTech(key);
@@ -194,7 +226,11 @@ export function RocketMinerGame() {
             />
           ) : null}
           {state.view === 'city' ? (
-            <CityView state={state} onUpgradeBuilding={upgradeBuilding} />
+            <CityView
+              state={state}
+              onBuildAtSlot={buildAtSlot}
+              onUpgradeBuilding={upgradeBuilding}
+            />
           ) : null}
           {state.view === 'research' ? (
             <ResearchView state={state} onResearchTech={researchTech} />
