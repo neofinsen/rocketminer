@@ -33,7 +33,9 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 /dist/
+/desktop-dist/
 /pages-dist/
 /.wrangler/
 /outputs/
 /work/
+/src-tauri/target/

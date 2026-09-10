@@ -14,7 +14,7 @@ import {
 import { ResourceIcon } from './ResourceIcon';
 import { UpgradeTooltip } from './UpgradeTooltip';
 import buildingSheetImage from './assets/rocketminer-building-sheet.png';
-import terrainImage from './assets/rocketminer-city-terrain.png';
+import terrainImage from './assets/rocketminer-city-terrain-v2.png';
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -29,50 +29,50 @@ type BuildingVisual = {
 
 const cityLayout: Record<BuildingKey, BuildingVisual> = {
   townhall: {
-    x: 43.5,
-    y: 38,
+    x: 51,
+    y: 30,
     size: 'medium',
     variant: 'civic',
     sprite: 'townhall',
   },
   sawmill: {
-    x: 28.5,
-    y: 35.5,
+    x: 24,
+    y: 39,
     size: 'medium',
     variant: 'bio',
     sprite: 'sawmill',
   },
   quarry: {
-    x: 49.5,
-    y: 18,
+    x: 77,
+    y: 39,
     size: 'medium',
     variant: 'mine',
     sprite: 'quarry',
   },
   forge: {
-    x: 43,
-    y: 54,
+    x: 22,
+    y: 66,
     size: 'medium',
     variant: 'forge',
     sprite: 'forge',
   },
   research: {
-    x: 58,
-    y: 39,
+    x: 51,
+    y: 68,
     size: 'medium',
     variant: 'research',
     sprite: 'research',
   },
   spaceport: {
-    x: 12,
-    y: 12.5,
+    x: 12.5,
+    y: 13,
     size: 'large',
     variant: 'spaceport',
     sprite: 'spaceport',
   },
   power: {
-    x: 58.5,
-    y: 55,
+    x: 78,
+    y: 66,
     size: 'medium',
     variant: 'power',
     sprite: 'power',
@@ -85,6 +85,16 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
     sprite: 'warehouse',
   },
 };
+
+const visibleBuildingKeys = new Set<BuildingKey>([
+  'townhall',
+  'sawmill',
+  'quarry',
+  'forge',
+  'research',
+  'spaceport',
+  'power',
+]);
 
 export function CityView({
   state,
@@ -128,60 +138,62 @@ export function CityView({
         <span className="city-road south" />
         <span className="city-road spur" />
 
-        {state.buildings.map((building) => {
-          const visual = cityLayout[building.key];
-          const isBuilt = building.level > 0;
-          const cost = getBuildingCost(building);
-          const affordable = canPay(state.resources, cost);
-          const output = Object.entries(building.production);
+        {state.buildings
+          .filter((building) => visibleBuildingKeys.has(building.key))
+          .map((building) => {
+            const visual = cityLayout[building.key];
+            const isBuilt = building.level > 0;
+            const cost = getBuildingCost(building);
+            const affordable = canPay(state.resources, cost);
+            const output = Object.entries(building.production);
 
-          return (
-            <button
-              className={`city-building ${visual.variant} ${visual.size} ${
-                isBuilt ? 'built' : 'build-site'
-              }`}
-              disabled={!affordable}
-              key={building.key}
-              onClick={() => onUpgradeBuilding(building.key)}
-              style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
-              title={`${isBuilt ? 'Ausbaukosten' : 'Baukosten'}: ${formatCostTitle(cost)}`}
-              type="button"
-            >
-              {isBuilt ? (
-                <span className="building-pad">
-                  <span className={`building-sprite sprite-${visual.sprite}`} />
+            return (
+              <button
+                className={`city-building ${visual.variant} ${visual.size} ${
+                  isBuilt ? 'built' : 'build-site'
+                }`}
+                disabled={!affordable}
+                key={building.key}
+                onClick={() => onUpgradeBuilding(building.key)}
+                style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
+                title={`${isBuilt ? 'Ausbaukosten' : 'Baukosten'}: ${formatCostTitle(cost)}`}
+                type="button"
+              >
+                {isBuilt ? (
+                  <span className="building-pad">
+                    <span className={`building-sprite sprite-${visual.sprite}`} />
+                  </span>
+                ) : (
+                  <span className="empty-building-pad">
+                    <span>Baufeld</span>
+                  </span>
+                )}
+                <span className="building-label">
+                  <strong>{building.name}</strong>
+                  <small>{isBuilt ? `Stufe ${building.level}` : 'frei'}</small>
                 </span>
-              ) : (
-                <span className="empty-building-pad">
-                  <span>Baufeld</span>
-                </span>
-              )}
-              <span className="building-label">
-                <strong>{building.name}</strong>
-                <small>{isBuilt ? `Stufe ${building.level}` : 'frei'}</small>
-              </span>
-              {isBuilt ? (
-                <span className="building-output">
-                  {output.map(([resource, value]) => (
-                    <span key={resource} className="output-chip">
-                      <ResourceIcon resource={resource as ResourceKey} />
-                      +{formatNumber((value ?? 0) * building.level)}
-                    </span>
-                  ))}
-                </span>
-              ) : null}
-              <UpgradeTooltip
-                benefits={getBuildingUpgradeBenefits(building)}
-                cost={cost}
-                label={
-                  isBuilt
-                    ? `Ausbau auf Stufe ${building.level + 1}`
-                    : `${building.name} bauen`
-                }
-              />
-            </button>
-          );
-        })}
+                {isBuilt ? (
+                  <span className="building-output">
+                    {output.map(([resource, value]) => (
+                      <span key={resource} className="output-chip">
+                        <ResourceIcon resource={resource as ResourceKey} />
+                        +{formatNumber((value ?? 0) * building.level)}
+                      </span>
+                    ))}
+                  </span>
+                ) : null}
+                <UpgradeTooltip
+                  benefits={getBuildingUpgradeBenefits(building)}
+                  cost={cost}
+                  label={
+                    isBuilt
+                      ? `Ausbau auf Stufe ${building.level + 1}`
+                      : `${building.name} bauen`
+                  }
+                />
+              </button>
+            );
+          })}
       </div>
     </section>
   );
