@@ -1,4 +1,5 @@
 import { MousePointer2 } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
@@ -16,7 +17,11 @@ import type {
   GameState,
   Projectile,
 } from '@/lib/game/types';
-import { ResourceIcon } from './ResourceIcon';
+import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
+import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
+
+const getAssetUrl = (asset: unknown) =>
+  typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const starSeeds = Array.from({ length: 90 }, (_, index) => ({
   id: index,
@@ -64,12 +69,10 @@ function AsteroidSprite({
 function FragmentSprite({ fragment }: { fragment: Fragment }) {
   return (
     <span
-      className={`fragment ${fragment.resource}`}
+      className={`fragment fragment-${fragment.resource}`}
       style={{ left: `${fragment.x}%`, top: `${fragment.y}%` }}
       title={`${RESOURCE_LABELS[fragment.resource]} +${fragment.amount}`}
-    >
-      <ResourceIcon resource={fragment.resource} />
-    </span>
+    />
   );
 }
 
@@ -129,7 +132,16 @@ export function SpaceScene({
   const betaReady = canUnlockBeta(state);
 
   return (
-    <section className="space-scene" aria-label="Weltraumansicht">
+    <section
+      className="space-scene"
+      aria-label="Weltraumansicht"
+      style={
+        {
+          '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
+          '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
+        } as CSSProperties
+      }
+    >
       <div className="sector-status">
         <h2>{getSectorLabel(state.currentSector)}</h2>
         <span>Gefahrenstufe: {getSectorDanger(state.currentSector)}</span>

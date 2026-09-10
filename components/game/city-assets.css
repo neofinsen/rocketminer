@@ -19,7 +19,7 @@
 }
 
 .city-building {
-  --pad-size: 88px;
+  --pad-size: 106px;
   z-index: 3;
   width: var(--pad-size);
   height: var(--pad-size);
@@ -115,12 +115,12 @@
 }
 
 .city-building.large {
-  --pad-size: 112px;
+  --pad-size: 136px;
   width: var(--pad-size);
 }
 
 .city-building.small {
-  --pad-size: 80px;
+  --pad-size: 96px;
   width: var(--pad-size);
 }
 
@@ -189,6 +189,7 @@
   background-repeat: no-repeat;
   background-size: 500% 200%;
   filter: drop-shadow(0 16px 12px rgba(0, 0, 0, 0.42));
+  opacity: 0.96;
 }
 
 .sprite-townhall { background-position: 0% 0%; }
@@ -203,7 +204,7 @@
 .city-building:not(:disabled):hover .building-sprite {
   filter:
     drop-shadow(0 16px 12px rgba(0, 0, 0, 0.42))
-    drop-shadow(0 0 18px rgba(93, 207, 255, 0.45));
+    drop-shadow(0 0 14px rgba(255, 216, 128, 0.28));
 }
 
 .building-label {

@@ -1,0 +1,103 @@
+.asteroid {
+  z-index: 3;
+  width: 142px;
+  height: 142px;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: crosshair;
+}
+
+.asteroid-rock {
+  display: block;
+  width: 126px;
+  height: 112px;
+  margin: 18px auto 0;
+  border: 0;
+  background-image: var(--asteroid-sheet-image);
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  background-size: 500% 100%;
+  box-shadow:
+    0 0 0 1px rgba(255, 100, 80, 0.24),
+    0 14px 18px rgba(0, 0, 0, 0.32);
+  filter:
+    saturate(0.9)
+    contrast(0.96)
+    drop-shadow(0 0 10px rgba(255, 92, 65, 0.22));
+}
+
+.asteroid.titan .asteroid-rock {
+  background-position: 25% 50%;
+  filter:
+    saturate(0.78)
+    contrast(0.96)
+    drop-shadow(0 0 10px rgba(160, 190, 185, 0.18));
+}
+
+.asteroid.crystal .asteroid-rock {
+  background-position: 50% 50%;
+  filter:
+    saturate(0.95)
+    contrast(0.96)
+    drop-shadow(0 0 12px rgba(63, 211, 225, 0.26));
+}
+
+.asteroid.silicon .asteroid-rock {
+  background-position: 75% 50%;
+  filter:
+    saturate(0.82)
+    contrast(0.94)
+    drop-shadow(0 0 10px rgba(220, 214, 185, 0.2));
+}
+
+.asteroid.alien .asteroid-rock {
+  background-position: 100% 50%;
+  filter:
+    saturate(0.92)
+    contrast(0.96)
+    drop-shadow(0 0 13px rgba(181, 82, 225, 0.34));
+}
+
+.asteroid-cursor {
+  position: absolute;
+  left: 54px;
+  top: 59px;
+  color: white;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.7));
+}
+
+.fragment {
+  z-index: 2;
+  display: block;
+  width: 48px;
+  height: 48px;
+  background-image: var(--drop-sheet-image);
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  background-size: 500% 100%;
+  filter:
+    saturate(0.92)
+    contrast(0.96)
+    drop-shadow(0 0 8px rgba(95, 218, 255, 0.22));
+  transform: translate(-50%, -50%);
+  animation: shimmer 1.8s infinite ease-in-out;
+  transition: left 0.1s linear, top 0.1s linear;
+}
+
+.fragment-titan {
+  background-position: 25% 50%;
+}
+
+.fragment-silicon {
+  background-position: 50% 50%;
+}
+
+.fragment-crystal {
+  background-position: 75% 50%;
+}
+
+.fragment-alien {
+  background-position: 100% 50%;
+}

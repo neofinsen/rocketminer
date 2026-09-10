@@ -31,6 +31,7 @@ import { RightPanel } from './RightPanel';
 import { RocketView } from './RocketView';
 import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
+import './space-assets.css';
 
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);

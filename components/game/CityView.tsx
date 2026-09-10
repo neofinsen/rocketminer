@@ -16,7 +16,7 @@ import {
 } from '@/lib/game/upgradeInfo';
 import { ResourceIcon } from './ResourceIcon';
 import { UpgradeTooltip } from './UpgradeTooltip';
-import buildingSheetImage from './assets/rocketminer-building-sheet.png';
+import buildingSheetImage from './assets/rocketminer-building-sheet-desert.png';
 import terrainImage from './assets/rocketminer-city-terrain-desert.png';
 
 const getAssetUrl = (asset: unknown) =>
