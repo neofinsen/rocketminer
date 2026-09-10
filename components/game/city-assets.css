@@ -1,7 +1,10 @@
 .city-map {
   aspect-ratio: 16 / 10;
   flex: 0 0 auto;
-  min-height: auto;
+  width: min(100%, calc((100vh - 210px) * 1.6));
+  min-height: 420px;
+  max-height: calc(100vh - 210px);
+  margin: 0 auto;
   background:
     linear-gradient(rgba(43, 28, 16, 0.02), rgba(18, 12, 8, 0.16)),
     var(--city-terrain-image) center / 100% 100% no-repeat,
@@ -27,68 +30,79 @@
 
 .city-build-slot {
   position: absolute;
-  z-index: 2;
+  z-index: 8;
   display: grid;
-  width: 72px;
-  height: 48px;
+  width: 94px;
+  height: 46px;
+  grid-template-columns: 24px 1fr;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
   place-items: center;
-  border: 1px solid rgba(255, 226, 156, 0.62);
-  border-radius: 50%;
+  border: 2px solid rgba(255, 235, 170, 0.95);
+  border-radius: 7px;
   background:
-    radial-gradient(circle, rgba(255, 228, 163, 0.34), transparent 62%),
-    rgba(88, 56, 29, 0.18);
+    linear-gradient(180deg, rgba(44, 28, 15, 0.82), rgba(22, 15, 10, 0.9)),
+    rgba(88, 56, 29, 0.72);
   box-shadow:
-    inset 0 0 14px rgba(55, 31, 14, 0.22),
-    0 0 14px rgba(255, 219, 139, 0.12);
+    inset 0 0 14px rgba(255, 225, 150, 0.08),
+    0 0 0 2px rgba(22, 13, 7, 0.42),
+    0 8px 18px rgba(0, 0, 0, 0.32);
   cursor: pointer;
-  opacity: 0.9;
-  transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-24deg);
+  opacity: 1;
+  padding: 6px 8px;
+  transform: translate(-50%, -50%);
   transition:
+    background 140ms ease,
     border-color 140ms ease,
     box-shadow 140ms ease,
-    opacity 140ms ease;
+    transform 140ms ease;
 }
 
 .slot-dot {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(255, 241, 199, 0.88);
+  grid-column: 1;
+  grid-row: 1;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 248, 213, 0.95);
   border-radius: 50%;
   background: rgba(255, 214, 127, 0.86);
-  box-shadow: 0 0 14px rgba(255, 222, 145, 0.38);
-  transform: rotateZ(24deg) rotateX(-58deg);
+  box-shadow:
+    inset 0 -3px 6px rgba(117, 73, 24, 0.28),
+    0 0 13px rgba(255, 222, 145, 0.45);
+}
+
+.slot-plus {
+  position: absolute;
+  left: 18px;
+  top: 10px;
+  color: #3a250f;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .slot-label {
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  border: 1px solid rgba(255, 226, 156, 0.28);
-  border-radius: 5px;
-  background: rgba(28, 19, 12, 0.82);
-  color: #ffe8b0;
-  font-size: 11px;
+  grid-column: 2;
+  grid-row: 1;
+  color: #fff0c5;
+  font-size: 12px;
   font-weight: 900;
-  line-height: 1;
-  opacity: 0.82;
-  padding: 4px 6px;
   text-transform: uppercase;
-  transform: translate(-50%, 2px) rotateZ(24deg) rotateX(-58deg);
   white-space: nowrap;
 }
 
 .city-build-slot.free:hover,
 .city-build-slot.selected {
-  border-color: rgba(255, 231, 166, 0.86);
+  border-color: rgba(255, 248, 214, 1);
+  background:
+    linear-gradient(180deg, rgba(73, 45, 20, 0.9), rgba(29, 19, 12, 0.96)),
+    rgba(117, 74, 33, 0.78);
   box-shadow:
-    inset 0 0 14px rgba(70, 42, 18, 0.22),
-    0 0 18px rgba(255, 215, 123, 0.2);
-  opacity: 1;
-}
-
-.city-build-slot.free:hover .slot-label,
-.city-build-slot.selected .slot-label {
-  opacity: 1;
+    inset 0 0 16px rgba(255, 225, 150, 0.14),
+    0 0 0 2px rgba(22, 13, 7, 0.42),
+    0 0 24px rgba(255, 218, 135, 0.28);
+  transform: translate(-50%, -55%);
 }
 
 .city-build-slot.occupied {

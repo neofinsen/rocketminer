@@ -155,6 +155,7 @@ export function CityView({
               type="button"
             >
               <span className="slot-dot" />
+              <span className="slot-plus">+</span>
               <span className="slot-label">Bauen</span>
             </button>
           );
