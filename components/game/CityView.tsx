@@ -144,14 +144,19 @@ export function CityView({
           return (
             <button
               aria-label={`Baufeld ${slot.id}`}
-              className={`city-build-slot ${isOccupied ? 'occupied' : 'free'}`}
-              disabled={isOccupied || buildableBuildings.length === 0}
+              className={`city-build-slot ${isOccupied ? 'occupied' : 'free'} ${
+                selectedSlotId === slot.id ? 'selected' : ''
+              }`}
+              disabled={isOccupied}
               key={slot.id}
               onClick={() => setSelectedSlotId(slot.id)}
               style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
               title={isOccupied ? 'Belegt' : 'Baufeld auswaehlen'}
               type="button"
-            />
+            >
+              <span className="slot-dot" />
+              <span className="slot-label">Bauen</span>
+            </button>
           );
         })}
 
