@@ -101,12 +101,19 @@ const getPlayerMaxHp = (state: GameState) =>
   getModuleLevel(state, 'cargo') * 7 +
   getShieldStrength(state);
 
+const getAlienDrop = (wave: number) => {
+  if (wave < 4) return 0;
+  const chance = Math.min(0.22, 0.06 + wave * 0.007);
+  if (Math.random() > chance) return 0;
+  return 1 + (wave >= 14 && Math.random() < 0.18 ? 1 : 0);
+};
+
 const getWaveReward = (wave: number): Partial<ResourceBag> => ({
   credits: 80 + wave * 28,
   titan: 10 + wave * 4,
   crystal: 8 + wave * 3,
   silicon: wave >= 3 ? 5 + wave * 2 : 0,
-  alien: wave >= 7 ? 1 + Math.floor(wave / 3) : 0,
+  alien: getAlienDrop(wave),
 });
 
 const rewardText = (reward: Partial<ResourceBag>) =>

@@ -16,6 +16,7 @@ const topResources: ResourceKey[] = [
   'metal',
   'energy',
   'crystal',
+  'alien',
 ];
 
 export function TopBar({ state }: { state: GameState }) {
@@ -49,6 +50,8 @@ export function TopBar({ state }: { state: GameState }) {
               <small>
                 {resource === 'energy'
                   ? 'frei'
+                  : resource === 'alien'
+                    ? 'Abenteuer'
                   : `+${formatNumber(
                       production[resource as keyof typeof production] ?? 0,
                     )}/min`}
