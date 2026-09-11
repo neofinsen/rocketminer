@@ -1,0 +1,216 @@
+.game-shell {
+  background:
+    radial-gradient(circle at 54% 10%, rgba(78, 157, 197, 0.14), transparent 30%),
+    linear-gradient(135deg, #060d16 0%, #101721 54%, #20170f 100%);
+}
+
+.top-bar,
+.bottom-dock,
+.panel-block,
+.quest-card,
+.sector-status,
+.city-totals span,
+.ship-stats span,
+.tech-node,
+.research-goal,
+.cargo-status,
+.rocket-combat-card,
+.wave-field,
+.reward-card {
+  border-color: rgba(190, 132, 62, 0.38);
+  background:
+    linear-gradient(rgba(9, 15, 21, 0.88), rgba(10, 18, 25, 0.92)),
+    url('/rocketminer-ui-kit-concept-1.png') 46% 20% / 980px auto;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 147, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.45),
+    0 14px 28px rgba(0, 0, 0, 0.25);
+}
+
+.top-bar {
+  border-bottom: 1px solid rgba(190, 132, 62, 0.48);
+}
+
+.empire-mark {
+  border-right: 1px solid rgba(190, 132, 62, 0.24);
+}
+
+.crest {
+  border-radius: 7px;
+  border-color: rgba(255, 181, 49, 0.78);
+  background:
+    linear-gradient(145deg, rgba(255, 176, 39, 0.2), rgba(44, 34, 20, 0.92)),
+    rgba(12, 15, 18, 0.9);
+  box-shadow:
+    inset 0 0 14px rgba(255, 170, 28, 0.22),
+    0 0 12px rgba(255, 160, 40, 0.12);
+}
+
+.resource-strip {
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.resource-cell {
+  min-width: 0;
+  border: 1px solid rgba(190, 132, 62, 0.26);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(25, 32, 38, 0.94), rgba(8, 14, 20, 0.94)),
+    url('/rocketminer-ui-kit-concept-1.png') 66% 5% / 1120px auto;
+  padding: 0 12px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 147, 0.08),
+    0 8px 14px rgba(0, 0, 0, 0.18);
+}
+
+.resource-icon {
+  border: 1px solid rgba(14, 13, 12, 0.7);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 0 12px rgba(78, 209, 235, 0.16);
+}
+
+.header-actions button,
+.sector-map button {
+  border-radius: 8px;
+  border-color: rgba(190, 132, 62, 0.3);
+  background:
+    linear-gradient(145deg, rgba(38, 44, 49, 0.94), rgba(10, 14, 18, 0.94)),
+    url('/rocketminer-ui-kit-concept-1.png') 74% 30% / 920px auto;
+}
+
+.panel-block,
+.quest-card,
+.sector-status {
+  border-radius: 8px;
+}
+
+.panel-block h2,
+.quest-card h2,
+.sector-status h2,
+.city-header h2 {
+  color: #fff3d7;
+  text-shadow: 0 0 10px rgba(255, 167, 44, 0.18);
+}
+
+.module-row,
+.primary-action,
+.building-card button,
+.upgrade-card button,
+.tech-card button,
+.sector-switch,
+.adventure-actions button,
+.fire-button,
+.reward-card button,
+.reset-save,
+.dock-tab {
+  border-color: rgba(190, 132, 62, 0.42);
+  background:
+    linear-gradient(180deg, rgba(32, 44, 51, 0.95), rgba(10, 16, 22, 0.96)),
+    url('/rocketminer-ui-kit-concept-1.png') 82% 42% / 1000px auto;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 227, 170, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.64);
+}
+
+.module-row:not(:disabled):hover,
+.building-card button:not(:disabled):hover,
+.upgrade-card button:not(:disabled):hover,
+.tech-card button:not(:disabled):hover,
+.primary-action:hover,
+.sector-switch:not(:disabled):hover,
+.adventure-actions button:hover,
+.fire-button:not(:disabled):hover,
+.dock-tab:hover,
+.reset-save:hover {
+  border-color: rgba(255, 178, 54, 0.72);
+  background:
+    linear-gradient(180deg, rgba(46, 64, 72, 0.98), rgba(19, 27, 35, 0.98)),
+    url('/rocketminer-ui-kit-concept-1.png') 82% 42% / 1000px auto;
+}
+
+.game-progress [data-slot='progress-track'] {
+  height: 11px;
+  border: 1px solid rgba(190, 132, 62, 0.38);
+  background:
+    linear-gradient(#0c1115, #05080b),
+    url('/rocketminer-ui-kit-concept-1.png') 12% 76% / 940px auto;
+}
+
+.game-progress [data-slot='progress-indicator'] {
+  background: linear-gradient(90deg, #2fb5dc, #ffc13a 64%, #ff8a28);
+  box-shadow: 0 0 12px rgba(255, 168, 45, 0.42);
+}
+
+.bottom-dock {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 12px;
+  margin: 10px 16px 16px;
+  border: 1px solid rgba(190, 132, 62, 0.5);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.dock-shell {
+  min-width: 0;
+}
+
+.dock-tabs {
+  display: grid;
+  width: 100%;
+  height: 72px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0;
+}
+
+.dock-tab {
+  height: 100%;
+  border-radius: 7px;
+  color: #d9e6f2;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+.dock-tab[data-active] {
+  border-color: rgba(255, 180, 45, 0.88);
+  background:
+    linear-gradient(180deg, rgba(120, 74, 22, 0.95), rgba(45, 33, 21, 0.96)),
+    url('/rocketminer-ui-kit-concept-1.png') 78% 52% / 960px auto;
+  color: #fff3d7;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 174, 0.18),
+    0 0 18px rgba(255, 146, 32, 0.18);
+}
+
+.reset-save {
+  display: inline-flex;
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 7px;
+  color: #ffc4bf;
+  font-size: 14px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.upgrade-toolbar {
+  border-color: rgba(190, 132, 62, 0.44);
+  background:
+    linear-gradient(rgba(10, 17, 23, 0.96), rgba(13, 19, 24, 0.98)),
+    url('/rocketminer-ui-kit-concept-1.png') 50% 54% / 920px auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
