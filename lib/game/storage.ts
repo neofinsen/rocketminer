@@ -1,4 +1,5 @@
 import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
+import { clampResourcesToStorage } from './simulation';
 import type { GameState, RocketModule, SectorKey, ViewKey } from './types';
 
 const SAVE_KEY = 'rocketminer-save-v3';
@@ -53,7 +54,7 @@ export function loadGameState(): GameState {
       ? (savedRocketStatus as GameState['rocket']['status'])
       : INITIAL_STATE.rocket.status;
 
-    return {
+    const loaded: GameState = {
       ...INITIAL_STATE,
       ...saved,
       view: normalizeView(saved.view),
@@ -105,6 +106,11 @@ export function loadGameState(): GameState {
         cargo: { ...saved.rocket?.cargo },
       },
       collectedTotals: { ...saved.collectedTotals },
+    };
+
+    return {
+      ...loaded,
+      resources: clampResourcesToStorage(loaded, loaded.resources),
     };
   } catch {
     return INITIAL_STATE;

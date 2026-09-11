@@ -249,7 +249,7 @@ export function RocketMinerGame() {
     (reward: Partial<ResourceBag>) =>
       setState((current) => ({
         ...current,
-        resources: addResources(current.resources, reward),
+        resources: addResources(current, current.resources, reward),
       })),
     [],
   );

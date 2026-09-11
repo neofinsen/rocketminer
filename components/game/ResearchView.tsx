@@ -17,6 +17,8 @@ import {
   getResearchDiscount,
   getResearchedCount,
   getTechCost,
+  getTechStorageRequirement,
+  getWarehouseLevel,
   isTechAvailable,
   TECH_TREE,
   type TechNode,
@@ -45,6 +47,9 @@ const icons: Record<TechKey, typeof Atom> = {
 const getStatus = (state: GameState, tech: TechNode) => {
   if (state.research[tech.key]) return 'Erforscht';
   if (getResearchCenterLevel(state) <= 0) return 'Zentrum fehlt';
+  if (getWarehouseLevel(state) < getTechStorageRequirement(tech)) {
+    return `Lager ${getTechStorageRequirement(tech)}`;
+  }
   if (isTechAvailable(state, tech)) return 'Bereit';
   return 'Gesperrt';
 };

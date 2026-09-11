@@ -35,7 +35,7 @@ export function applyQuestEvent(state: GameState, event: QuestEvent): GameState 
   return {
     ...state,
     level: state.level + 1,
-    resources: addResources(state.resources, quest.reward),
+    resources: addResources(state, state.resources, quest.reward),
     questIndex,
     quest: nextQuest(questIndex),
   };

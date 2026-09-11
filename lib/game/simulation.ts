@@ -10,6 +10,16 @@ import type {
   SectorKey,
 } from './types';
 
+const STORAGE_RESOURCES: ResourceKey[] = [
+  'credits',
+  'wood',
+  'metal',
+  'crystal',
+  'titan',
+  'silicon',
+  'alien',
+];
+
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -114,20 +124,41 @@ export const getEnergyCapacity = (state: GameState) =>
   );
 
 export const getEnergyUsed = (state: GameState) =>
-  state.buildings.reduce((total, building) => total + building.level * 50, 0);
+  state.buildings.reduce(
+    (total, building) =>
+      building.key === 'power' ? total : total + building.level * 50,
+    0,
+  );
 
 export const getFreeEnergy = (state: GameState) =>
   Math.max(0, getEnergyCapacity(state) - getEnergyUsed(state));
 
+export const getWarehouseLevel = (state: GameState) =>
+  state.buildings.find((building) => building.key === 'warehouse')?.level ?? 0;
+
+export const getStorageCapacity = (state: GameState) =>
+  2500 + getWarehouseLevel(state) * 700;
+
+export const clampResourcesToStorage = (state: GameState, resources: ResourceBag) => {
+  const capacity = getStorageCapacity(state);
+  const next = { ...resources };
+  STORAGE_RESOURCES.forEach((resource) => {
+    next[resource] = Math.min(next[resource], capacity);
+  });
+  return next;
+};
+
 export const addResources = (
+  state: GameState,
   resources: ResourceBag,
   incoming: Partial<ResourceBag>,
 ) => {
   const next = { ...resources };
   Object.entries(incoming).forEach(([key, value]) => {
+    if (key === 'energy') return;
     next[key as ResourceKey] += value ?? 0;
   });
-  return next;
+  return clampResourcesToStorage(state, next);
 };
 
 export const canPay = (
@@ -349,7 +380,7 @@ const unloadCargo = (
   collectedTotals: Partial<ResourceBag>,
   rocket: GameState['rocket'],
 ) => {
-  const nextResources = addResources(resources, rocket.cargo);
+  const nextResources = addResources(state, resources, rocket.cargo);
   const nextTotals = { ...collectedTotals };
 
   Object.entries(rocket.cargo).forEach(([key, value]) => {
@@ -400,6 +431,7 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   Object.entries(production).forEach(([key, perMinute]) => {
     resources[key as ResourceKey] += (perMinute * deltaSeconds) / 60;
   });
+  resources = clampResourcesToStorage(state, resources);
 
   const rocket = { ...state.rocket, cargo: { ...state.rocket.cargo } };
   let fragments = [...state.fragments];

@@ -5,6 +5,7 @@ import {
   getEnergyCapacity,
   getFreeEnergy,
   getProductionPerMinute,
+  getStorageCapacity,
 } from '@/lib/game/simulation';
 import type { GameState, ResourceKey } from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
@@ -21,6 +22,7 @@ export function TopBar({ state }: { state: GameState }) {
   const production = getProductionPerMinute(state.buildings);
   const freeEnergy = getFreeEnergy(state);
   const energyCapacity = getEnergyCapacity(state);
+  const storageCapacity = getStorageCapacity(state);
 
   return (
     <header className="top-bar">
@@ -40,7 +42,9 @@ export function TopBar({ state }: { state: GameState }) {
               <strong>
                 {resource === 'energy'
                   ? `${formatNumber(freeEnergy)} / ${formatNumber(energyCapacity)}`
-                  : formatNumber(state.resources[resource])}
+                  : `${formatNumber(state.resources[resource])} / ${formatNumber(
+                      storageCapacity,
+                    )}`}
               </strong>
               <small>
                 {resource === 'energy'

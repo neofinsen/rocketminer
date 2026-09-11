@@ -45,6 +45,9 @@ export const getBuildingUpgradeBenefits = (building: Building) =>
           )}%`,
         ]
       : []),
+    ...(building.key === 'warehouse'
+      ? [`Lagerlimit fuer alle Materialien steigt`]
+      : []),
   ];
 
 export const getTechResearchBenefits = (tech: TechNode) => [tech.effect];

@@ -10,6 +10,7 @@ import {
   getBuildingCost,
   getEnergyCapacity,
   getFreeEnergy,
+  getStorageCapacity,
   newRocketCost,
   getProductionPerMinute,
 } from '@/lib/game/simulation';
@@ -105,6 +106,7 @@ export function CityView({
   const production = getProductionPerMinute(state.buildings);
   const freeEnergy = getFreeEnergy(state);
   const energyCapacity = getEnergyCapacity(state);
+  const storageCapacity = getStorageCapacity(state);
   const occupiedSlots = new Set(
     state.buildings
       .filter((building) => building.level > 0)
@@ -132,6 +134,7 @@ export function CityView({
             </span>
           ))}
           <span>Energie {formatNumber(freeEnergy)} / {formatNumber(energyCapacity)}</span>
+          <span>Lager {formatNumber(storageCapacity)}</span>
         </div>
       </div>
 
@@ -219,7 +222,8 @@ export function CityView({
                   {output.map(([resource, value]) => (
                     <span key={resource} className="output-chip">
                       <ResourceIcon resource={resource as ResourceKey} />
-                      +{formatNumber((value ?? 0) * building.level)}
+                      {resource === 'energy' ? 'Kap.' : '+'}
+                      {formatNumber((value ?? 0) * building.level)}
                     </span>
                   ))}
                 </span>

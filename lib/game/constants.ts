@@ -178,9 +178,9 @@ export const INITIAL_STATE: GameState = {
   level: 7,
   questIndex: 0,
   resources: {
-    credits: 12500,
-    wood: 8750,
-    metal: 6300,
+    credits: 2500,
+    wood: 2500,
+    metal: 2500,
     energy: 120,
     crystal: 1280,
     titan: 420,
