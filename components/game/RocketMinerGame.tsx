@@ -30,6 +30,7 @@ import type {
   ResourceBag,
   TechKey,
   ViewKey,
+  WeaponUpgradeChoice,
 } from '@/lib/game/types';
 import { BottomDock } from './BottomDock';
 import { CityView } from './CityView';
@@ -41,8 +42,6 @@ import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
 import './adventure.css';
 import './space-assets.css';
-
-type WeaponAchievement = NonNullable<GameState['weaponAchievement']>;
 
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
@@ -221,6 +220,7 @@ export function RocketMinerGame() {
         damageTexts: [],
         sectorProgress: 0,
         newRocketBuilt: false,
+        weaponUpgrades: INITIAL_STATE.weaponUpgrades,
         weaponAchievement: undefined,
         nextId: INITIAL_STATE.nextId,
       };
@@ -257,15 +257,34 @@ export function RocketMinerGame() {
     [],
   );
 
-  const chooseWeaponAchievement = useCallback((achievement: WeaponAchievement) => {
+  const chooseWeaponUpgrade = useCallback((choice: WeaponUpgradeChoice) => {
     setState((current) => {
       const weaponLevel =
         current.modules.find((module) => module.key === 'weapon')?.level ?? 1;
-      if (weaponLevel < 15 || current.weaponAchievement) return current;
+      const availableLevels = Array.from(
+        { length: Math.floor(weaponLevel / 5) },
+        (_, index) => (index + 1) * 5,
+      );
+      const milestone = availableLevels.find(
+        (level) => !current.weaponUpgrades.claimedLevels.includes(level),
+      );
+      if (!milestone) return current;
+      if (choice === 'rapidFire' && current.weaponUpgrades.rapidFire >= 5) {
+        return current;
+      }
+      if (choice === 'multiShot' && current.weaponUpgrades.multiShot >= 4) {
+        return current;
+      }
 
       return {
         ...current,
-        weaponAchievement: achievement,
+        weaponUpgrades: {
+          rapidFire:
+            current.weaponUpgrades.rapidFire + (choice === 'rapidFire' ? 1 : 0),
+          multiShot:
+            current.weaponUpgrades.multiShot + (choice === 'multiShot' ? 1 : 0),
+          claimedLevels: [...current.weaponUpgrades.claimedLevels, milestone],
+        },
       };
     });
   }, []);
@@ -299,7 +318,7 @@ export function RocketMinerGame() {
           {state.view === 'adventure' ? (
             <AdventureView
               state={state}
-              onChooseWeaponAchievement={chooseWeaponAchievement}
+              onChooseWeaponUpgrade={chooseWeaponUpgrade}
               onClaimReward={claimAdventureReward}
             />
           ) : null}

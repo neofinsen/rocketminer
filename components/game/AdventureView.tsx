@@ -14,13 +14,12 @@ import {
   getShieldStrength,
   getWeaponDamage,
 } from '@/lib/game/simulation';
-import type { GameState, ResourceBag } from '@/lib/game/types';
+import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
 import enemySheetImage from './assets/rocketminer-enemy-sheet-desert.png';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 
 type Mode = 'manual' | 'auto';
 type RunStatus = 'idle' | 'running' | 'victory' | 'defeat';
-type WeaponAchievement = NonNullable<GameState['weaponAchievement']>;
 
 type Enemy = {
   id: number;
@@ -77,6 +76,8 @@ const PLAYER_START = { x: 30, y: 54 };
 const TICK_SECONDS = 0.05;
 const ADVENTURE_SPEED_SCALE = 3.9;
 const ENEMY_HIT_RADIUS = 4.4;
+const MAX_RAPID_FIRE_UPGRADES = 5;
+const MAX_MULTI_SHOT_UPGRADES = 4;
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -89,10 +90,11 @@ const getEnemyStats = (wave: number) => ({
 
 const getFireCooldown = (
   weaponLevel: number,
-  achievement?: WeaponAchievement,
+  rapidFireLevel: number,
 ) => {
   const base = Math.max(0.34, 1.15 - weaponLevel * 0.035);
-  return achievement === 'rapidFire' ? base * 0.68 : base;
+  const boost = Math.min(0.5, rapidFireLevel * 0.1);
+  return base * (1 - boost);
 };
 
 const getPlayerMaxHp = (state: GameState) =>
@@ -193,15 +195,15 @@ const createPlayerShots = (
   target: Enemy,
   damage: number,
   startId: number,
-  achievement?: WeaponAchievement,
+  projectileCount: number,
 ): Shot[] => {
-  const twin = achievement === 'twinShot';
-  const offsets = twin ? [-2.2, 2.2] : [0];
-  return offsets.map((offset, index) => ({
+  const count = Math.max(1, Math.min(5, projectileCount));
+  const center = (count - 1) / 2;
+  return Array.from({ length: count }, (_, index) => ({
     id: startId + index,
     owner: 'player' as const,
     x: current.playerX,
-    y: current.playerY + offset,
+    y: current.playerY + (index - center) * 2.2,
     targetX: target.x,
     targetY: target.y,
     enemyId: target.id,
@@ -212,11 +214,11 @@ const createPlayerShots = (
 export function AdventureView({
   state,
   onClaimReward,
-  onChooseWeaponAchievement,
+  onChooseWeaponUpgrade,
 }: {
   state: GameState;
   onClaimReward: (reward: Partial<ResourceBag>) => void;
-  onChooseWeaponAchievement: (achievement: WeaponAchievement) => void;
+  onChooseWeaponUpgrade: (choice: WeaponUpgradeChoice) => void;
 }) {
   const [combat, setCombat] = useState<CombatState>(() => createIdleCombat(state));
   const keys = useRef(new Set<string>());
@@ -226,8 +228,21 @@ export function AdventureView({
   const weaponLevel = getModuleLevel(state, 'weapon');
   const laserLevel = getModuleLevel(state, 'laser');
   const shieldLevel = getModuleLevel(state, 'shield');
+  const rapidFireLevel = state.weaponUpgrades.rapidFire;
+  const multiShotLevel = state.weaponUpgrades.multiShot;
+  const projectileCount = 1 + multiShotLevel;
+  const rapidFirePercent = Math.min(50, rapidFireLevel * 10);
+  const hasWeaponUpgradeChoice =
+    rapidFireLevel < MAX_RAPID_FIRE_UPGRADES ||
+    multiShotLevel < MAX_MULTI_SHOT_UPGRADES;
+  const pendingWeaponMilestone = hasWeaponUpgradeChoice
+    ? Array.from(
+        { length: Math.floor(weaponLevel / 5) },
+        (_, index) => (index + 1) * 5,
+      ).find((level) => !state.weaponUpgrades.claimedLevels.includes(level))
+    : undefined;
   const playerSpeed = getRocketSpeed(state) * ADVENTURE_SPEED_SCALE;
-  const fireCooldown = getFireCooldown(weaponLevel, state.weaponAchievement);
+  const fireCooldown = getFireCooldown(weaponLevel, rapidFireLevel);
 
   const startRun = (mode: Mode) => setCombat(createCombat(state, mode));
 
@@ -356,14 +371,14 @@ export function AdventureView({
             target,
             playerDamage,
             nextId,
-            state.weaponAchievement,
+            projectileCount,
           );
           spawnedShots.push(...shots);
           nextId += shots.length;
           fireTimer = fireCooldown;
           message =
-            state.weaponAchievement === 'twinShot'
-              ? 'Doppelschuss erfasst Ziel'
+            projectileCount > 1
+              ? `${projectileCount} Geschosse erfassen Ziel`
               : 'Auto-Feuer erfasst Ziel';
         }
 
@@ -474,8 +489,8 @@ export function AdventureView({
     onClaimReward,
     playerDamage,
     playerSpeed,
+    projectileCount,
     shieldStrength,
-    state.weaponAchievement,
   ]);
 
   const playerPercent = (combat.playerHp / combat.playerMaxHp) * 100;
@@ -520,16 +535,12 @@ export function AdventureView({
             Triebwerk {engineLevel} · Waffenmodul {weaponLevel} · Schildmodul{' '}
             {shieldLevel} · Laser {laserLevel} · Schaden {formatNumber(playerDamage)}
           </small>
-          {weaponLevel >= 15 && !state.weaponAchievement ? (
-            <small>Waffen-Erfolg bereit: Schussrate oder Doppelschuss waehlen.</small>
-          ) : null}
-          {state.weaponAchievement ? (
-            <small>
-              Spezialisierung:{' '}
-              {state.weaponAchievement === 'rapidFire'
-                ? 'Schnellfeuer'
-                : 'Doppelschuss'}
-            </small>
+          <small>
+            Waffenbonus: Schussrate +{rapidFirePercent}% · Geschosse{' '}
+            {projectileCount}/5
+          </small>
+          {pendingWeaponMilestone ? (
+            <small>Upgrade bereit bei Waffenmodul {pendingWeaponMilestone}.</small>
           ) : null}
         </div>
 
@@ -597,13 +608,19 @@ export function AdventureView({
               Nochmal starten
             </button>
           ) : null}
-          {weaponLevel >= 15 && !state.weaponAchievement ? (
+          {pendingWeaponMilestone ? (
             <div className="achievement-picker">
-              <button onClick={() => onChooseWeaponAchievement('rapidFire')}>
-                Schnellfeuer
+              <button
+                disabled={rapidFireLevel >= MAX_RAPID_FIRE_UPGRADES}
+                onClick={() => onChooseWeaponUpgrade('rapidFire')}
+              >
+                Schnellfeuer +10%
               </button>
-              <button onClick={() => onChooseWeaponAchievement('twinShot')}>
-                Doppelschuss
+              <button
+                disabled={multiShotLevel >= MAX_MULTI_SHOT_UPGRADES}
+                onClick={() => onChooseWeaponUpgrade('multiShot')}
+              >
+                Mehrfachschuss +1
               </button>
             </div>
           ) : null}

@@ -131,6 +131,14 @@ export interface Quest {
   done: boolean;
 }
 
+export type WeaponUpgradeChoice = 'rapidFire' | 'multiShot';
+
+export interface WeaponUpgrades {
+  rapidFire: number;
+  multiShot: number;
+  claimedLevels: number[];
+}
+
 export interface GameState {
   view: ViewKey;
   level: number;
@@ -152,6 +160,7 @@ export interface GameState {
   quest: Quest;
   sectorProgress: number;
   newRocketBuilt: boolean;
+  weaponUpgrades: WeaponUpgrades;
   weaponAchievement?: 'rapidFire' | 'twinShot';
   nextId: number;
 }

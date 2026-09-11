@@ -251,6 +251,11 @@ export const INITIAL_STATE: GameState = {
   quest: QUEST_CHAIN[0],
   sectorProgress: 42,
   newRocketBuilt: false,
+  weaponUpgrades: {
+    rapidFire: 0,
+    multiShot: 0,
+    claimedLevels: [],
+  },
   weaponAchievement: undefined,
   nextId: 7,
 };

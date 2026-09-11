@@ -1,6 +1,12 @@
 import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
 import { clampResourcesToStorage } from './simulation';
-import type { GameState, RocketModule, SectorKey, ViewKey } from './types';
+import type {
+  GameState,
+  RocketModule,
+  SectorKey,
+  ViewKey,
+  WeaponUpgrades,
+} from './types';
 
 const SAVE_KEY = 'rocketminer-save-v3';
 
@@ -50,6 +56,28 @@ const normalizeCityPlacements = (placements: unknown) => {
   );
 };
 
+const normalizeWeaponUpgrades = (
+  upgrades: unknown,
+  legacyAchievement: unknown,
+): WeaponUpgrades => {
+  const saved = upgrades && typeof upgrades === 'object'
+    ? (upgrades as Partial<WeaponUpgrades>)
+    : {};
+  const legacyRapid = legacyAchievement === 'rapidFire' ? 1 : 0;
+  const legacyMulti = legacyAchievement === 'twinShot' ? 1 : 0;
+  const rapidFire = Math.max(legacyRapid, saved.rapidFire ?? 0);
+  const multiShot = Math.max(legacyMulti, saved.multiShot ?? 0);
+  const claimedLevels = asArray(saved.claimedLevels, []).filter(
+    (level): level is number => typeof level === 'number' && level >= 5,
+  );
+
+  return {
+    rapidFire: Math.min(5, rapidFire),
+    multiShot: Math.min(4, multiShot),
+    claimedLevels,
+  };
+};
+
 export function loadGameState(): GameState {
   if (typeof window === 'undefined') return INITIAL_STATE;
 
@@ -93,6 +121,10 @@ export function loadGameState(): GameState {
       },
       destroyedAsteroids: saved.destroyedAsteroids ?? 0,
       newRocketBuilt: saved.newRocketBuilt ?? INITIAL_STATE.newRocketBuilt,
+      weaponUpgrades: normalizeWeaponUpgrades(
+        saved.weaponUpgrades,
+        saved.weaponAchievement,
+      ),
       weaponAchievement:
         saved.weaponAchievement === 'rapidFire' ||
         saved.weaponAchievement === 'twinShot'
