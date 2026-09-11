@@ -111,7 +111,7 @@
 
 .top-bar {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 280px;
+  grid-template-columns: 220px minmax(0, 1fr) 230px;
   align-items: stretch;
   border-bottom: 1px solid var(--border);
   background: rgba(8, 16, 25, 0.92);
@@ -132,7 +132,7 @@
 .empire-mark strong,
 .resource-cell strong {
   display: block;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.1;
 }
 
@@ -141,7 +141,7 @@
 .sector-status small,
 .side-panel small {
   color: #84e979;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .crest {
@@ -157,23 +157,26 @@
 
 .resource-strip {
   display: grid;
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  grid-template-columns: repeat(6, minmax(94px, 1fr));
+  min-width: 0;
 }
 
 .resource-cell {
-  gap: 12px;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 0 10px;
   border-left: 1px solid var(--border);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .resource-icon {
   display: inline-grid;
-  min-width: 30px;
-  height: 30px;
+  min-width: 24px;
+  height: 24px;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 6px;
   color: #07111d;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 900;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
@@ -189,8 +192,8 @@
 
 .header-actions {
   justify-content: flex-end;
-  gap: 10px;
-  padding: 0 18px;
+  gap: 7px;
+  padding: 0 10px;
 }
 
 .save-pill {
