@@ -21,7 +21,7 @@ import {
   TECH_TREE,
   type TechNode,
 } from '@/lib/game/research';
-import { canPay, formatNumber } from '@/lib/game/simulation';
+import { canPayCost, formatNumber } from '@/lib/game/simulation';
 import type { GameState, ResourceKey, TechKey } from '@/lib/game/types';
 import { getTechResearchBenefits } from '@/lib/game/upgradeInfo';
 import { ResourceIcon } from './ResourceIcon';
@@ -120,7 +120,7 @@ export function ResearchView({
           const Icon = icons[tech.key];
           const statusClass = getStatusClass(state, tech);
           const cost = getTechCost(state, tech);
-          const affordable = canPay(state.resources, cost);
+          const affordable = canPayCost(state, cost);
           const available = statusClass === 'available';
           const disabled = !available || !affordable;
 

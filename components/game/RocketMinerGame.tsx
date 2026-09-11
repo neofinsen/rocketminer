@@ -10,9 +10,10 @@ import {
   isTechAvailable,
 } from '@/lib/game/research';
 import {
-  canPay,
   addResources,
   canBuildNewRocket,
+  canPay,
+  canPayCost,
   getBuildingCost,
   getModuleCost,
   newRocketCost,
@@ -116,7 +117,7 @@ export function RocketMinerGame() {
       const building = current.buildings.find((item) => item.key === key);
       if (!building) return current;
       const cost = getBuildingCost(building);
-      if (!canPay(current.resources, cost)) return current;
+      if (!canPayCost(current, cost)) return current;
 
       const upgraded = {
         ...current,
@@ -144,7 +145,7 @@ export function RocketMinerGame() {
       const building = current.buildings.find((item) => item.key === key);
       if (!building || building.level > 0) return current;
       const cost = getBuildingCost(building);
-      if (!canPay(current.resources, cost)) return current;
+      if (!canPayCost(current, cost)) return current;
 
       const upgraded = {
         ...current,
@@ -171,7 +172,7 @@ export function RocketMinerGame() {
       const tech = getTech(key);
       if (!tech) return current;
       const cost = getTechCost(current, tech);
-      if (!isTechAvailable(current, tech) || !canPay(current.resources, cost)) {
+      if (!isTechAvailable(current, tech) || !canPayCost(current, cost)) {
         return current;
       }
 
@@ -188,7 +189,7 @@ export function RocketMinerGame() {
 
   const buildNewRocket = () => {
     setState((current) => {
-      if (!canBuildNewRocket(current) || !canPay(current.resources, newRocketCost)) {
+      if (!canBuildNewRocket(current) || !canPayCost(current, newRocketCost)) {
         return current;
       }
 

@@ -41,6 +41,7 @@ export function loadGameState(): GameState {
 
     const saved = JSON.parse(raw) as Partial<GameState>;
     const questIndex = saved.questIndex ?? 0;
+    const questTemplate = QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0];
 
     const savedRocketStatus = saved.rocket?.status;
     const rocketStatus = [
@@ -70,10 +71,20 @@ export function loadGameState(): GameState {
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,
-      quest: saved.quest ?? QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0],
-      resources: { ...INITIAL_STATE.resources, ...saved.resources },
+      resources: {
+        ...INITIAL_STATE.resources,
+        ...saved.resources,
+        energy: INITIAL_STATE.resources.energy,
+      },
       destroyedAsteroids: saved.destroyedAsteroids ?? 0,
       newRocketBuilt: saved.newRocketBuilt ?? INITIAL_STATE.newRocketBuilt,
+      quest: saved.quest
+        ? {
+            ...questTemplate,
+            current: saved.quest.current ?? questTemplate.current,
+            done: saved.quest.done ?? questTemplate.done,
+          }
+        : questTemplate,
       rocket: {
         ...INITIAL_STATE.rocket,
         ...saved.rocket,

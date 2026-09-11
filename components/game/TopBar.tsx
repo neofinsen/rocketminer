@@ -1,6 +1,11 @@
 import { Mail, Menu, Settings, Trophy } from 'lucide-react';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
-import { formatNumber, getProductionPerMinute } from '@/lib/game/simulation';
+import {
+  formatNumber,
+  getEnergyCapacity,
+  getFreeEnergy,
+  getProductionPerMinute,
+} from '@/lib/game/simulation';
 import type { GameState, ResourceKey } from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
 
@@ -14,6 +19,8 @@ const topResources: ResourceKey[] = [
 
 export function TopBar({ state }: { state: GameState }) {
   const production = getProductionPerMinute(state.buildings);
+  const freeEnergy = getFreeEnergy(state);
+  const energyCapacity = getEnergyCapacity(state);
 
   return (
     <header className="top-bar">
@@ -30,10 +37,17 @@ export function TopBar({ state }: { state: GameState }) {
           <div className="resource-cell" key={resource}>
             <ResourceIcon resource={resource} />
             <div>
-              <strong>{formatNumber(state.resources[resource])}</strong>
+              <strong>
+                {resource === 'energy'
+                  ? `${formatNumber(freeEnergy)} / ${formatNumber(energyCapacity)}`
+                  : formatNumber(state.resources[resource])}
+              </strong>
               <small>
-                +{formatNumber(production[resource as keyof typeof production] ?? 0)}
-                /min
+                {resource === 'energy'
+                  ? 'frei'
+                  : `+${formatNumber(
+                      production[resource as keyof typeof production] ?? 0,
+                    )}/min`}
               </small>
             </div>
             <span className="sr-only">{RESOURCE_LABELS[resource]}</span>

@@ -5,9 +5,11 @@ import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import {
   canBuildNewRocket,
-  canPay,
+  canPayCost,
   formatNumber,
   getBuildingCost,
+  getEnergyCapacity,
+  getFreeEnergy,
   newRocketCost,
   getProductionPerMinute,
 } from '@/lib/game/simulation';
@@ -101,6 +103,8 @@ export function CityView({
 }) {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const production = getProductionPerMinute(state.buildings);
+  const freeEnergy = getFreeEnergy(state);
+  const energyCapacity = getEnergyCapacity(state);
   const occupiedSlots = new Set(
     state.buildings
       .filter((building) => building.level > 0)
@@ -127,6 +131,7 @@ export function CityView({
               {formatNumber(value)}/min
             </span>
           ))}
+          <span>Energie {formatNumber(freeEnergy)} / {formatNumber(energyCapacity)}</span>
         </div>
       </div>
 
@@ -179,7 +184,7 @@ export function CityView({
             if (!slot) return null;
 
             const cost = getBuildingCost(building);
-            const affordable = canPay(state.resources, cost);
+            const affordable = canPayCost(state, cost);
             const output = Object.entries(building.production);
             const buildsNewRocket = building.key === 'spaceport' && rocketBuildable;
 
@@ -244,7 +249,7 @@ export function CityView({
             </div>
             {buildableBuildings.map((building) => {
               const cost = getBuildingCost(building);
-              const affordable = canPay(state.resources, cost);
+              const affordable = canPayCost(state, cost);
 
               return (
                 <button

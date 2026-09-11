@@ -65,6 +65,11 @@ export const getCollectorRange = (state: GameState) =>
 export const getRocketSpeed = (state: GameState) =>
   5.2 + getModuleLevel(state, 'engine') * 1.35;
 
+export const getFuelDrain = (state: GameState) => {
+  const energyLevel = getModuleLevel(state, 'energyCore');
+  return clamp(0.22 / (1 + Math.max(0, energyLevel - 1) * 0.22), 0.09, 0.22);
+};
+
 export const getReturnDuration = (state: GameState) => {
   const sectorBonus = state.currentSector === 'beta' ? 24 : 0;
   const levelBonus = Math.floor(state.level / 4) * 6;
@@ -88,16 +93,31 @@ export const getSectorLabel = (sector: SectorKey) =>
 export const getSectorDanger = (sector: SectorKey) => (sector === 'beta' ? 4 : 2);
 
 export const getProductionPerMinute = (buildings: Building[]) => {
-  const production = { credits: 0, wood: 0, metal: 0, energy: 0, crystal: 0 };
+  const production = { credits: 0, wood: 0, metal: 0, crystal: 0 };
 
   buildings.forEach((building) => {
     Object.entries(building.production).forEach(([key, value]) => {
+      if (key === 'energy') return;
       production[key as keyof typeof production] += (value ?? 0) * building.level;
     });
   });
 
   return production;
 };
+
+export const getEnergyCapacity = (state: GameState) =>
+  state.resources.energy +
+  state.buildings.reduce(
+    (total, building) =>
+      total + (building.production.energy ?? 0) * building.level,
+    0,
+  );
+
+export const getEnergyUsed = (state: GameState) =>
+  state.buildings.reduce((total, building) => total + building.level * 50, 0);
+
+export const getFreeEnergy = (state: GameState) =>
+  Math.max(0, getEnergyCapacity(state) - getEnergyUsed(state));
 
 export const addResources = (
   resources: ResourceBag,
@@ -118,12 +138,20 @@ export const canPay = (
     ([key, value]) => resources[key as ResourceKey] >= (value ?? 0),
   );
 
+export const canPayCost = (state: GameState, cost: Partial<ResourceBag>) =>
+  Object.entries(cost).every(([key, value]) =>
+    key === 'energy'
+      ? getFreeEnergy(state) >= (value ?? 0)
+      : state.resources[key as ResourceKey] >= (value ?? 0),
+  );
+
 export const payCost = (
   resources: ResourceBag,
   cost: Partial<ResourceBag>,
 ) => {
   const next = { ...resources };
   Object.entries(cost).forEach(([key, value]) => {
+    if (key === 'energy') return;
     next[key as ResourceKey] -= value ?? 0;
   });
   return next;
@@ -146,12 +174,15 @@ export const getModuleCost = (key: ModuleKey, level: number) => {
   return { ...shared, titan: 22 * scale };
 };
 
-export const getBuildingCost = (building: Building) => ({
-  credits: 210 * (building.level + 1),
-  wood: 70 * (building.level + 1),
-  metal: 62 * (building.level + 1),
-  energy: 38 * (building.level + 1),
-});
+export const getBuildingCost = (building: Building) => {
+  const cost = {
+    credits: 210 * (building.level + 1),
+    wood: 70 * (building.level + 1),
+    metal: 62 * (building.level + 1),
+  };
+
+  return building.key === 'power' ? cost : { ...cost, energy: 50 };
+};
 
 export const canUnlockBeta = (state: GameState) =>
   false;
@@ -176,7 +207,7 @@ export const canBuildNewRocket = (state: GameState) => {
   return (
     Boolean(state.research.galaxyGate) &&
     (spaceport?.level ?? 0) >= 3 &&
-    canPay(state.resources, newRocketCost)
+    canPayCost(state, newRocketCost)
   );
 };
 
@@ -465,7 +496,7 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
     };
   }
 
-  rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * 0.22);
+  rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * getFuelDrain(state));
   if (rocket.fuel <= 0) {
     const returning = startCargoReturn({ ...state, rocket });
     Object.assign(rocket, {
