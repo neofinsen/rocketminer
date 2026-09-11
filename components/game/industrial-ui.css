@@ -5,6 +5,39 @@
 }
 
 .top-bar,
+.bottom-dock {
+  position: relative;
+}
+
+.top-bar::after,
+.bottom-dock::before {
+  position: absolute;
+  right: 18px;
+  left: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 167, 37, 0.92) 18%,
+    rgba(64, 211, 235, 0.62) 50%,
+    rgba(255, 129, 38, 0.88) 82%,
+    transparent
+  );
+  box-shadow: 0 0 18px rgba(255, 137, 34, 0.32);
+  content: '';
+  pointer-events: none;
+}
+
+.top-bar::after {
+  bottom: -2px;
+}
+
+.bottom-dock::before {
+  top: -2px;
+}
+
+.top-bar,
 .bottom-dock,
 .panel-block,
 .quest-card,
@@ -28,7 +61,7 @@
 }
 
 .top-bar {
-  border-bottom: 1px solid rgba(190, 132, 62, 0.48);
+  border-bottom: 2px solid rgba(190, 132, 62, 0.7);
 }
 
 .empire-mark {
@@ -52,16 +85,38 @@
 }
 
 .resource-cell {
+  position: relative;
   min-width: 0;
-  border: 1px solid rgba(190, 132, 62, 0.26);
+  border: 1px solid rgba(190, 132, 62, 0.55);
   border-radius: 6px;
   background:
-    linear-gradient(180deg, rgba(25, 32, 38, 0.94), rgba(8, 14, 20, 0.94)),
+    linear-gradient(180deg, rgba(38, 42, 43, 0.96), rgba(9, 12, 15, 0.98)),
     url('/rocketminer-ui-kit-concept-1.png') 66% 5% / 1120px auto;
   padding: 0 12px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 220, 147, 0.08),
+    inset 0 1px 0 rgba(255, 220, 147, 0.16),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.55),
     0 8px 14px rgba(0, 0, 0, 0.18);
+}
+
+.resource-cell::before,
+.resource-cell::after {
+  position: absolute;
+  top: 5px;
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 168, 38, 0.8);
+  box-shadow: 0 0 9px rgba(255, 151, 31, 0.48);
+  content: '';
+}
+
+.resource-cell::before {
+  left: 8px;
+}
+
+.resource-cell::after {
+  right: 8px;
 }
 
 .resource-icon {
@@ -84,7 +139,27 @@
 .panel-block,
 .quest-card,
 .sector-status {
+  position: relative;
   border-radius: 8px;
+  border-width: 2px;
+  border-color: rgba(176, 113, 48, 0.6);
+  background:
+    linear-gradient(180deg, rgba(30, 34, 35, 0.95), rgba(7, 13, 19, 0.96)),
+    url('/rocketminer-ui-kit-concept-1.png') 45% 22% / 960px auto;
+}
+
+.panel-block::before,
+.quest-card::before,
+.sector-status::before {
+  position: absolute;
+  top: -2px;
+  left: 16px;
+  width: 74px;
+  height: 4px;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(90deg, #ffb02e, #ff7c24);
+  box-shadow: 0 0 14px rgba(255, 133, 32, 0.42);
+  content: '';
 }
 
 .panel-block h2,
@@ -106,13 +181,15 @@
 .reward-card button,
 .reset-save,
 .dock-tab {
-  border-color: rgba(190, 132, 62, 0.42);
+  border-width: 2px;
+  border-color: rgba(190, 132, 62, 0.62);
   background:
-    linear-gradient(180deg, rgba(32, 44, 51, 0.95), rgba(10, 16, 22, 0.96)),
+    linear-gradient(180deg, rgba(54, 58, 57, 0.96), rgba(10, 15, 19, 0.98)),
     url('/rocketminer-ui-kit-concept-1.png') 82% 42% / 1000px auto;
   box-shadow:
-    inset 0 1px 0 rgba(255, 227, 170, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.64);
+    inset 0 2px 0 rgba(255, 227, 170, 0.16),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.72),
+    0 6px 12px rgba(0, 0, 0, 0.18);
 }
 
 .module-row:not(:disabled):hover,
@@ -149,7 +226,7 @@
   grid-template-columns: 1fr 92px;
   gap: 12px;
   margin: 10px 16px 16px;
-  border: 1px solid rgba(190, 132, 62, 0.5);
+  border: 2px solid rgba(190, 132, 62, 0.72);
   border-radius: 8px;
   padding: 12px;
 }
@@ -168,6 +245,7 @@
 }
 
 .dock-tab {
+  position: relative;
   height: 100%;
   border-radius: 7px;
   color: #d9e6f2;
@@ -175,15 +253,31 @@
   text-transform: uppercase;
 }
 
+.dock-tab::after {
+  position: absolute;
+  right: 18px;
+  bottom: 8px;
+  left: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(79, 197, 219, 0.42);
+  content: '';
+}
+
 .dock-tab[data-active] {
   border-color: rgba(255, 180, 45, 0.88);
   background:
-    linear-gradient(180deg, rgba(120, 74, 22, 0.95), rgba(45, 33, 21, 0.96)),
+    linear-gradient(180deg, rgba(159, 92, 22, 0.98), rgba(55, 35, 18, 0.98)),
     url('/rocketminer-ui-kit-concept-1.png') 78% 52% / 960px auto;
   color: #fff3d7;
   box-shadow:
     inset 0 1px 0 rgba(255, 232, 174, 0.18),
     0 0 18px rgba(255, 146, 32, 0.18);
+}
+
+.dock-tab[data-active]::after {
+  background: linear-gradient(90deg, #ffcf4d, #ff832c);
+  box-shadow: 0 0 14px rgba(255, 138, 35, 0.55);
 }
 
 .reset-save {
