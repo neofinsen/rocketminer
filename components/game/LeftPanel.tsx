@@ -49,7 +49,7 @@ const spaceModules: ModuleKey[] = [
   'energyCore',
 ];
 
-const adventureModules: ModuleKey[] = ['weapon', 'shield'];
+const adventureModules: ModuleKey[] = ['engine', 'weapon', 'shield'];
 
 export function LeftPanel({
   state,

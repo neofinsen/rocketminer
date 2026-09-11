@@ -10,6 +10,7 @@ import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   formatNumber,
   getModuleLevel,
+  getRocketSpeed,
   getShieldStrength,
   getWeaponDamage,
 } from '@/lib/game/simulation';
@@ -74,7 +75,8 @@ type CombatState = {
 const MAX_WAVE = 20;
 const PLAYER_START = { x: 30, y: 54 };
 const TICK_SECONDS = 0.05;
-const PLAYER_SPEED = 27;
+const ADVENTURE_SPEED_SCALE = 3.9;
+const ENEMY_HIT_RADIUS = 4.4;
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -213,9 +215,11 @@ export function AdventureView({
   const keys = useRef(new Set<string>());
   const playerDamage = useMemo(() => getWeaponDamage(state), [state]);
   const shieldStrength = getShieldStrength(state);
+  const engineLevel = getModuleLevel(state, 'engine');
   const weaponLevel = getModuleLevel(state, 'weapon');
   const laserLevel = getModuleLevel(state, 'laser');
   const shieldLevel = getModuleLevel(state, 'shield');
+  const playerSpeed = getRocketSpeed(state) * ADVENTURE_SPEED_SCALE;
   const fireCooldown = getFireCooldown(weaponLevel, state.weaponAchievement);
 
   const startRun = (mode: Mode) => setCombat(createCombat(state, mode));
@@ -356,8 +360,8 @@ export function AdventureView({
               : 'Auto-Feuer erfasst Ziel';
         }
 
-        const playerVx = (inputX / inputLength) * PLAYER_SPEED;
-        const playerVy = (inputY / inputLength) * PLAYER_SPEED;
+        const playerVx = (inputX / inputLength) * playerSpeed;
+        const playerVy = (inputY / inputLength) * playerSpeed;
         const playerX = Math.max(
           8,
           Math.min(92, current.playerX + playerVx * TICK_SECONDS),
@@ -390,6 +394,15 @@ export function AdventureView({
           }
 
           if (shot.owner === 'enemy') {
+            const impactDistance = Math.hypot(
+              playerX - shot.targetX,
+              playerY - shot.targetY,
+            );
+            if (impactDistance > ENEMY_HIT_RADIUS) {
+              message = 'Gegnerschuss ausgewichen';
+              return;
+            }
+
             const blocked = Math.min(shieldStrength, shot.damage - 1);
             const damage = Math.max(1, shot.damage - blocked);
             playerHp = Math.max(0, playerHp - damage);
@@ -453,6 +466,7 @@ export function AdventureView({
     fireCooldown,
     onClaimReward,
     playerDamage,
+    playerSpeed,
     shieldStrength,
     state.weaponAchievement,
   ]);
@@ -496,8 +510,8 @@ export function AdventureView({
             Huelle {formatNumber(combat.playerHp)} / {formatNumber(combat.playerMaxHp)}
           </span>
           <small>
-            Waffenmodul {weaponLevel} · Schildmodul {shieldLevel} · Laser{' '}
-            {laserLevel} · Schaden {formatNumber(playerDamage)}
+            Triebwerk {engineLevel} · Waffenmodul {weaponLevel} · Schildmodul{' '}
+            {shieldLevel} · Laser {laserLevel} · Schaden {formatNumber(playerDamage)}
           </small>
           {weaponLevel >= 15 && !state.weaponAchievement ? (
             <small>Waffen-Erfolg bereit: Schussrate oder Doppelschuss waehlen.</small>
