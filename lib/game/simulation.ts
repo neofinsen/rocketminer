@@ -153,18 +153,31 @@ export const getBuildingCost = (building: Building) => ({
 });
 
 export const canUnlockBeta = (state: GameState) =>
-  !state.unlockedSectors.includes('beta') &&
-  state.sectorProgress >= 100 &&
-  getModuleLevel(state, 'engine') >= 2 &&
-  getModuleLevel(state, 'laser') >= 2 &&
-  state.resources.titan >= 220 &&
-  state.resources.crystal >= 180 &&
-  state.resources.energy >= 350;
+  false;
 
 export const unlockBetaCost: Partial<ResourceBag> = {
   titan: 220,
   crystal: 180,
   energy: 350,
+};
+
+export const newRocketCost: Partial<ResourceBag> = {
+  credits: 12000,
+  metal: 2200,
+  energy: 900,
+  titan: 520,
+  silicon: 360,
+  alien: 90,
+};
+
+export const canBuildNewRocket = (state: GameState) => {
+  const spaceport = state.buildings.find((building) => building.key === 'spaceport');
+  return (
+    !state.newRocketBuilt &&
+    Boolean(state.research.galaxyGate) &&
+    (spaceport?.level ?? 0) >= 3 &&
+    canPay(state.resources, newRocketCost)
+  );
 };
 
 export const startCargoReturn = (state: GameState): GameState => {

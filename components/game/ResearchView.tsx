@@ -59,19 +59,19 @@ export function ResearchView({
   onResearchTech: (key: TechKey) => void;
 }) {
   const researched = getResearchedCount(state);
-  const stationReady = Boolean(state.research.orbitalAssembly);
-  const galaxyReady = Boolean(state.research.galaxyGate);
+  const assemblyReady = Boolean(state.research.orbitalAssembly);
+  const rocketReady = Boolean(state.research.galaxyGate);
 
   return (
     <section className="research-view" aria-label="Forschung">
       <div className="city-header research-header">
         <div>
           <h2>Forschungsbaum</h2>
-          <p>Langfristiges Ziel: Raumstation bauen und neue Galaxien erreichen.</p>
+          <p>Lineares Ziel: neue Rakete Teil fuer Teil erforschen.</p>
         </div>
         <div className="research-goal">
           <strong>{researched} / {TECH_TREE.length}</strong>
-          <span>{galaxyReady ? 'Galaxiesprung aktiv' : stationReady ? 'Raumstation bereit' : 'Stationsprojekt laeuft'}</span>
+          <span>{rocketReady ? 'Bauauftrag frei' : assemblyReady ? 'Endmontage bereit' : 'Raketenprojekt laeuft'}</span>
         </div>
       </div>
 

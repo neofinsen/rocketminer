@@ -4,9 +4,11 @@ import { RESOURCE_LABELS } from '@/lib/game/constants';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import {
+  canBuildNewRocket,
   canPay,
   formatNumber,
   getBuildingCost,
+  newRocketCost,
   getProductionPerMinute,
 } from '@/lib/game/simulation';
 import type { BuildingKey, GameState, ResourceKey } from '@/lib/game/types';
@@ -89,10 +91,12 @@ const buildSlots = [
 export function CityView({
   state,
   onBuildAtSlot,
+  onBuildNewRocket,
   onUpgradeBuilding,
 }: {
   state: GameState;
   onBuildAtSlot: (key: BuildingKey, slotId: string) => void;
+  onBuildNewRocket: () => void;
   onUpgradeBuilding: (key: BuildingKey) => void;
 }) {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -104,6 +108,10 @@ export function CityView({
   );
   const selectedSlot = buildSlots.find((slot) => slot.id === selectedSlotId);
   const buildableBuildings = state.buildings.filter((building) => building.level === 0);
+  const spaceport = state.buildings.find((building) => building.key === 'spaceport');
+  const rocketReady = Boolean(state.research.galaxyGate);
+  const spaceportReady = (spaceport?.level ?? 0) >= 3;
+  const rocketBuildable = canBuildNewRocket(state);
 
   return (
     <section className="city-view city-map-view" aria-label="Stadtansicht">
@@ -252,6 +260,28 @@ export function CityView({
             {buildableBuildings.length === 0 ? (
               <p>Alle Gebaeude sind gebaut.</p>
             ) : null}
+          </div>
+        ) : null}
+
+        {spaceport && spaceport.level > 0 ? (
+          <div className="rocket-build-project">
+            <strong>Neue Rakete</strong>
+            <span>
+              {state.newRocketBuilt
+                ? 'Gebaut'
+                : rocketReady && spaceportReady
+                  ? 'Bauauftrag bereit'
+                  : `Raumfahrtzentrum Stufe 3 und Forschung noetig`}
+            </span>
+            <small>Kosten: {formatCostTitle(newRocketCost)}</small>
+            <button
+              disabled={!rocketBuildable}
+              onClick={onBuildNewRocket}
+              title={`Baukosten: ${formatCostTitle(newRocketCost)}`}
+              type="button"
+            >
+              Rakete bauen
+            </button>
           </div>
         ) : null}
       </div>

@@ -151,5 +151,6 @@ export interface GameState {
   damageTexts: DamageText[];
   quest: Quest;
   sectorProgress: number;
+  newRocketBuilt: boolean;
   nextId: number;
 }

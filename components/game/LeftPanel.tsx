@@ -41,6 +41,16 @@ const moduleIcons: Record<ModuleKey, React.ReactNode> = {
   shield: <Shield size={20} />,
 };
 
+const spaceModules: ModuleKey[] = [
+  'engine',
+  'collector',
+  'cargo',
+  'laser',
+  'energyCore',
+];
+
+const adventureModules: ModuleKey[] = ['weapon', 'shield'];
+
 export function LeftPanel({
   state,
   onUpgradeModule,
@@ -59,6 +69,21 @@ export function LeftPanel({
         : state.rocket.status === 'refueling'
           ? 'Tankt auf'
           : 'Sammelt';
+  const visibleModuleKeys =
+    state.view === 'space'
+      ? spaceModules
+      : state.view === 'adventure'
+        ? adventureModules
+        : [];
+  const visibleModules = state.modules.filter((module) =>
+    visibleModuleKeys.includes(module.key),
+  );
+  const moduleTitle =
+    state.view === 'adventure'
+      ? 'Abenteuer Module'
+      : state.view === 'space'
+        ? 'Weltraum Module'
+        : 'Module';
 
   return (
     <aside className="side-panel left-panel">
@@ -93,9 +118,12 @@ export function LeftPanel({
       </section>
 
       <section className="panel-block">
-        <h2>Rakete Module</h2>
+        <h2>{moduleTitle}</h2>
         <div className="module-list">
-          {state.modules.map((module) => {
+          {visibleModules.length === 0 ? (
+            <p>Module sind im Weltraum oder Abenteuer verfuegbar.</p>
+          ) : null}
+          {visibleModules.map((module) => {
             const cost = getModuleCost(module.key, module.level);
             const affordable = canPay(state.resources, cost);
 

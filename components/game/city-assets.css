@@ -317,3 +317,50 @@
   cursor: not-allowed;
   opacity: 0.46;
 }
+
+.rocket-build-project {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 8;
+  display: grid;
+  width: 300px;
+  gap: 8px;
+  border: 2px solid rgba(190, 132, 62, 0.58);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(11, 18, 24, 0.94), rgba(9, 14, 20, 0.96)),
+    url('/rocketminer-ui-kit-concept-1.png') 54% 38% / 900px auto;
+  padding: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 147, 0.12),
+    0 16px 28px rgba(0, 0, 0, 0.28);
+}
+
+.rocket-build-project strong {
+  color: #fff3d7;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.rocket-build-project span,
+.rocket-build-project small {
+  color: #cddae5;
+  font-size: 13px;
+}
+
+.rocket-build-project button {
+  min-height: 38px;
+  border: 1px solid rgba(255, 180, 45, 0.62);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(150, 88, 22, 0.9), rgba(58, 38, 19, 0.94));
+  color: #fff5df;
+  font-size: 13px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.rocket-build-project button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}

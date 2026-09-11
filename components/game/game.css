@@ -664,6 +664,12 @@
   --tech-light: #75caff;
 }
 
+.tech-node.rakete {
+  --tech-dark: #4d3c24;
+  --tech-glow: rgba(255, 174, 55, 0.26);
+  --tech-light: #e18b3e;
+}
+
 .tech-card h3,
 .upgrade-card h3 {
   margin: 12px 0 0;

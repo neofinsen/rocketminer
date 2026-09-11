@@ -6,15 +6,15 @@ import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
 import { getTech, isTechAvailable } from '@/lib/game/research';
 import {
   canPay,
-  canUnlockBeta,
   addResources,
+  canBuildNewRocket,
   getBuildingCost,
   getModuleCost,
+  newRocketCost,
   payCost,
   queueProjectile,
   startCargoReturn,
   tickGame,
-  unlockBetaCost,
 } from '@/lib/game/simulation';
 import { loadGameState, resetGameState, saveGameState } from '@/lib/game/storage';
 import type {
@@ -179,6 +179,20 @@ export function RocketMinerGame() {
     });
   };
 
+  const buildNewRocket = () => {
+    setState((current) => {
+      if (!canBuildNewRocket(current) || !canPay(current.resources, newRocketCost)) {
+        return current;
+      }
+
+      return {
+        ...current,
+        resources: payCost(current.resources, newRocketCost),
+        newRocketBuilt: true,
+      };
+    });
+  };
+
   const returnCargo = () =>
     setState((current) =>
       current.rocket.status === 'unloading'
@@ -199,24 +213,6 @@ export function RocketMinerGame() {
             }
         : startCargoReturn(current),
     );
-
-  const unlockBeta = () => {
-    setState((current) => {
-      if (!canUnlockBeta(current) || !canPay(current.resources, unlockBetaCost)) {
-        return current;
-      }
-
-      const unlocked = {
-        ...current,
-        currentSector: 'beta' as const,
-        unlockedSectors: [...current.unlockedSectors, 'beta' as const],
-        resources: payCost(current.resources, unlockBetaCost),
-        sectorProgress: 0,
-      };
-
-      return applyQuestEvent(unlocked, { goal: 'sector', key: 'beta' });
-    });
-  };
 
   const claimAdventureReward = useCallback(
     (reward: Partial<ResourceBag>) =>
@@ -240,16 +236,13 @@ export function RocketMinerGame() {
         <LeftPanel state={state} onUpgradeModule={upgradeModule} />
         <div className="center-stage">
           {state.view === 'space' ? (
-            <SpaceScene
-              state={state}
-              onHitAsteroid={hitAsteroid}
-              onUnlockBeta={unlockBeta}
-            />
+            <SpaceScene state={state} onHitAsteroid={hitAsteroid} />
           ) : null}
           {state.view === 'city' ? (
             <CityView
               state={state}
               onBuildAtSlot={buildAtSlot}
+              onBuildNewRocket={buildNewRocket}
               onUpgradeBuilding={upgradeBuilding}
             />
           ) : null}

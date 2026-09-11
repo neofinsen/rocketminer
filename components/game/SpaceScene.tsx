@@ -2,12 +2,10 @@ import type { CSSProperties } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
-  canUnlockBeta,
   BASE_POSITION,
   formatNumber,
   getSectorDanger,
   getSectorLabel,
-  unlockBetaCost,
 } from '@/lib/game/simulation';
 import type {
   Asteroid,
@@ -20,7 +18,6 @@ import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
 import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 import sectorAlphaImage from './assets/sector-alpha-bg-space.png';
-import sectorBetaImage from './assets/sector-beta-bg-space.png';
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -124,14 +121,10 @@ function DamageSprite({ text }: { text: DamageText }) {
 export function SpaceScene({
   state,
   onHitAsteroid,
-  onUnlockBeta,
 }: {
   state: GameState;
   onHitAsteroid: (id: number) => void;
-  onUnlockBeta: () => void;
 }) {
-  const betaReady = canUnlockBeta(state);
-
   return (
     <section
       className={`space-scene sector-${state.currentSector}`}
@@ -141,9 +134,7 @@ export function SpaceScene({
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
           '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
-          '--sector-bg-image': `url(${getAssetUrl(
-            state.currentSector === 'beta' ? sectorBetaImage : sectorAlphaImage,
-          )})`,
+          '--sector-bg-image': `url(${getAssetUrl(sectorAlphaImage)})`,
         } as CSSProperties
       }
     >
@@ -152,20 +143,6 @@ export function SpaceScene({
         <span>Gefahrenstufe: {getSectorDanger(state.currentSector)}</span>
         <Progress className="game-progress" value={state.sectorProgress} />
         <small>{Math.floor(state.sectorProgress)}% erkundet</small>
-        {state.unlockedSectors.includes('beta') ? (
-          <button className="sector-switch">Beta aktiv</button>
-        ) : (
-          <button
-            className="sector-switch"
-            disabled={!betaReady}
-            onClick={onUnlockBeta}
-            title={`${formatNumber(unlockBetaCost.titan ?? 0)} Titan, ${formatNumber(
-              unlockBetaCost.crystal ?? 0,
-            )} Kristall`}
-          >
-            Sektor Beta freischalten
-          </button>
-        )}
       </div>
 
       <div className="stars" aria-hidden="true">
