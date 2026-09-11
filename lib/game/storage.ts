@@ -79,6 +79,11 @@ export function loadGameState(): GameState {
       },
       destroyedAsteroids: saved.destroyedAsteroids ?? 0,
       newRocketBuilt: saved.newRocketBuilt ?? INITIAL_STATE.newRocketBuilt,
+      weaponAchievement:
+        saved.weaponAchievement === 'rapidFire' ||
+        saved.weaponAchievement === 'twinShot'
+          ? saved.weaponAchievement
+          : INITIAL_STATE.weaponAchievement,
       quest: saved.quest
         ? {
             ...questTemplate,

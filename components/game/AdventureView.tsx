@@ -1,11 +1,10 @@
 import {
-  Crosshair,
   FastForward,
   Hand,
   RotateCcw,
   Shield,
 } from 'lucide-react';
-import { type CSSProperties, useEffect, useMemo, useState } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
@@ -20,6 +19,7 @@ import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 
 type Mode = 'manual' | 'auto';
 type RunStatus = 'idle' | 'running' | 'victory' | 'defeat';
+type WeaponAchievement = NonNullable<GameState['weaponAchievement']>;
 
 type Enemy = {
   id: number;
@@ -60,28 +60,37 @@ type CombatState = {
   explosions: Explosion[];
   playerX: number;
   playerY: number;
+  playerVx: number;
   playerVy: number;
   playerHp: number;
   playerMaxHp: number;
-  cooldown: number;
+  fireTimer: number;
   message: string;
   log: string[];
   nextId: number;
 };
 
 const MAX_WAVE = 20;
-const PLAYER_START = { x: 14, y: 54 };
+const PLAYER_START = { x: 30, y: 54 };
 const TICK_SECONDS = 0.05;
-const PLAYER_FIRE_COOLDOWN = 0.42;
+const PLAYER_SPEED = 27;
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const getEnemyStats = (wave: number) => ({
-  hp: Math.round(48 + Math.pow(wave, 1.45) * 28),
-  damage: Math.round(9 + wave * 5.8),
-  cadence: Math.max(0.85, 2.15 - wave * 0.04),
+  hp: Math.round(42 + Math.pow(wave, 1.34) * 24),
+  damage: Math.round(8 + wave * 4.8),
+  cadence: Math.max(0.9, 2.3 - wave * 0.045),
 });
+
+const getFireCooldown = (
+  weaponLevel: number,
+  achievement?: WeaponAchievement,
+) => {
+  const base = Math.max(0.34, 1.15 - weaponLevel * 0.035);
+  return achievement === 'rapidFire' ? base * 0.68 : base;
+};
 
 const getPlayerMaxHp = (state: GameState) =>
   84 +
@@ -108,17 +117,17 @@ const rewardText = (reward: Partial<ResourceBag>) =>
 
 const createEnemies = (wave: number, startId: number) => {
   const stats = getEnemyStats(wave);
-  const count = Math.min(3, 1 + Math.floor((wave - 1) / 2));
+  const count = Math.min(12, 3 + Math.floor(wave * 0.75));
 
   return Array.from({ length: count }, (_, index) => ({
     id: startId + index,
     variant: (wave + index) % 3,
-    x: 66 + index * 10,
-    y: 30 + index * 17,
-    vx: -8.8 - wave * 0.32 - index * 0.9,
-    vy: index % 2 === 0 ? 6.6 + wave * 0.14 : -7.2 - wave * 0.14,
-    hp: stats.hp + index * 18,
-    maxHp: stats.hp + index * 18,
+    x: 18 + ((startId + index * 19) % 72),
+    y: 18 + ((startId * 7 + index * 23) % 62),
+    vx: index % 2 === 0 ? 5.2 + wave * 0.22 : -5.8 - wave * 0.2,
+    vy: index % 3 === 0 ? 4.4 + wave * 0.16 : -4.2 - wave * 0.14,
+    hp: stats.hp + index * 10,
+    maxHp: stats.hp + index * 10,
     shotTimer: stats.cadence + index * 0.48,
   }));
 };
@@ -132,11 +141,12 @@ const createCombat = (state: GameState, mode: Mode): CombatState => ({
   explosions: [],
   playerX: PLAYER_START.x,
   playerY: PLAYER_START.y,
+  playerVx: 0,
   playerVy: 4.8,
   playerHp: getPlayerMaxHp(state),
   playerMaxHp: getPlayerMaxHp(state),
-  cooldown: 0,
-  message: 'Welle 1 gestartet',
+  fireTimer: 0.35,
+  message: 'Welle 1 gestartet - steuere mit WASD oder Pfeiltasten',
   log: [],
   nextId: 10,
 });
@@ -150,30 +160,83 @@ const createIdleCombat = (state: GameState): CombatState => ({
   explosions: [],
   playerX: PLAYER_START.x,
   playerY: PLAYER_START.y,
+  playerVx: 0,
   playerVy: 4.8,
   playerHp: getPlayerMaxHp(state),
   playerMaxHp: getPlayerMaxHp(state),
-  cooldown: 0,
+  fireTimer: 0,
   message: 'Bereit fuer den ersten Einsatz',
   log: [],
   nextId: 1,
 });
 
+const getAimTarget = (enemies: Enemy[], x: number, y: number) =>
+  [...enemies].sort(
+    (a, b) =>
+      Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y),
+  )[0];
+
+const createPlayerShots = (
+  current: CombatState,
+  target: Enemy,
+  damage: number,
+  startId: number,
+  achievement?: WeaponAchievement,
+): Shot[] => {
+  const twin = achievement === 'twinShot';
+  const offsets = twin ? [-2.2, 2.2] : [0];
+  return offsets.map((offset, index) => ({
+    id: startId + index,
+    owner: 'player' as const,
+    x: current.playerX,
+    y: current.playerY + offset,
+    targetX: target.x,
+    targetY: target.y,
+    enemyId: target.id,
+    damage,
+  }));
+};
+
 export function AdventureView({
   state,
   onClaimReward,
+  onChooseWeaponAchievement,
 }: {
   state: GameState;
   onClaimReward: (reward: Partial<ResourceBag>) => void;
+  onChooseWeaponAchievement: (achievement: WeaponAchievement) => void;
 }) {
   const [combat, setCombat] = useState<CombatState>(() => createIdleCombat(state));
+  const keys = useRef(new Set<string>());
   const playerDamage = useMemo(() => getWeaponDamage(state), [state]);
   const shieldStrength = getShieldStrength(state);
   const weaponLevel = getModuleLevel(state, 'weapon');
   const laserLevel = getModuleLevel(state, 'laser');
   const shieldLevel = getModuleLevel(state, 'shield');
+  const fireCooldown = getFireCooldown(weaponLevel, state.weaponAchievement);
 
   const startRun = (mode: Mode) => setCombat(createCombat(state, mode));
+
+  useEffect(() => {
+    const normalize = (key: string) => key.toLowerCase();
+    const down = (event: KeyboardEvent) => {
+      const key = normalize(event.key);
+      if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        event.preventDefault();
+        keys.current.add(key);
+      }
+    };
+    const up = (event: KeyboardEvent) => {
+      keys.current.delete(normalize(event.key));
+    };
+
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+    };
+  }, []);
 
   const finishWave = (current: CombatState): CombatState => {
     const reward = getWaveReward(current.wave);
@@ -196,40 +259,11 @@ export function AdventureView({
       wave: nextWave,
       enemies,
       shots: [],
-      cooldown: 0.45,
+      fireTimer: 0.55,
       message: `Welle ${nextWave} rueckt an`,
       log: [`Welle ${current.wave}: ${rewardText(reward)}`, ...current.log].slice(0, 5),
       nextId: current.nextId + enemies.length,
     };
-  };
-
-  const fireAtEnemy = (enemyId?: number) => {
-    setCombat((current) => {
-      if (current.status !== 'running' || current.cooldown > 0) return current;
-      const sorted = [...current.enemies].sort((a, b) => a.hp - b.hp);
-      const target = current.enemies.find((enemy) => enemy.id === enemyId) ?? sorted[0];
-      if (!target) return current;
-
-      return {
-        ...current,
-        shots: [
-          ...current.shots,
-          {
-            id: current.nextId,
-            owner: 'player',
-            x: current.playerX,
-            y: current.playerY,
-            targetX: target.x,
-            targetY: target.y,
-            enemyId: target.id,
-            damage: playerDamage,
-          },
-        ],
-        cooldown: PLAYER_FIRE_COOLDOWN,
-        message: 'Schuss abgefeuert',
-        nextId: current.nextId + 1,
-      };
-    });
   };
 
   useEffect(() => {
@@ -248,20 +282,36 @@ export function AdventureView({
           }))
           .filter((explosion) => explosion.timer > 0);
         const stats = getEnemyStats(current.wave);
+        const inputX =
+          (keys.current.has('d') || keys.current.has('arrowright') ? 1 : 0) -
+          (keys.current.has('a') || keys.current.has('arrowleft') ? 1 : 0);
+        const inputY =
+          (keys.current.has('s') || keys.current.has('arrowdown') ? 1 : 0) -
+          (keys.current.has('w') || keys.current.has('arrowup') ? 1 : 0);
+        const inputLength = Math.hypot(inputX, inputY) || 1;
 
         const enemies = current.enemies.map((enemy) => {
-          let x = enemy.x + enemy.vx * TICK_SECONDS;
-          let y = enemy.y + enemy.vy * TICK_SECONDS;
+          const chaseX = current.playerX - enemy.x;
+          const chaseY = current.playerY - enemy.y;
+          const chaseDistance = Math.hypot(chaseX, chaseY) || 1;
+          let x =
+            enemy.x +
+            (enemy.vx * 0.38 + (chaseX / chaseDistance) * (5.2 + current.wave * 0.5)) *
+              TICK_SECONDS;
+          let y =
+            enemy.y +
+            (enemy.vy * 0.38 + (chaseY / chaseDistance) * (5.2 + current.wave * 0.5)) *
+              TICK_SECONDS;
           let vx = enemy.vx;
           let vy = enemy.vy;
 
-          if (x < 48 || x > 88) vx *= -1;
-          if (y < 18 || y > 78) vy *= -1;
+          if (x < 7 || x > 93) vx *= -1;
+          if (y < 14 || y > 84) vy *= -1;
 
           return {
             ...enemy,
-            x: Math.max(48, Math.min(88, x)),
-            y: Math.max(18, Math.min(78, y)),
+            x: Math.max(7, Math.min(93, x)),
+            y: Math.max(14, Math.min(84, y)),
             vx,
             vy,
             shotTimer: enemy.shotTimer - TICK_SECONDS,
@@ -284,31 +334,35 @@ export function AdventureView({
           return { ...enemy, shotTimer: stats.cadence };
         });
 
-        let cooldown = Math.max(0, current.cooldown - TICK_SECONDS);
-        if (current.mode === 'auto' && cooldown <= 0 && armedEnemies.length) {
-          const target = [...armedEnemies].sort((a, b) => a.hp - b.hp)[0];
-          spawnedShots.push({
-            id: nextId,
-            owner: 'player',
-            x: current.playerX,
-            y: current.playerY,
-            targetX: target.x,
-            targetY: target.y,
-            enemyId: target.id,
-            damage: playerDamage,
-          });
-          nextId += 1;
-          cooldown = PLAYER_FIRE_COOLDOWN;
-          message = 'Auto-Feuer abgefeuert';
+        let fireTimer = Math.max(0, current.fireTimer - TICK_SECONDS);
+        if (fireTimer <= 0 && armedEnemies.length) {
+          const target = getAimTarget(armedEnemies, current.playerX, current.playerY);
+          const shots = createPlayerShots(
+            current,
+            target,
+            playerDamage,
+            nextId,
+            state.weaponAchievement,
+          );
+          spawnedShots.push(...shots);
+          nextId += shots.length;
+          fireTimer = fireCooldown;
+          message =
+            state.weaponAchievement === 'twinShot'
+              ? 'Doppelschuss erfasst Ziel'
+              : 'Auto-Feuer erfasst Ziel';
         }
 
-        let playerVy = current.playerVy;
-        let playerY = current.playerY + playerVy * TICK_SECONDS;
-
-        if (playerY < 34 || playerY > 74) playerVy *= -1;
-        playerY = Math.max(34, Math.min(74, playerY));
-
-        const playerX = PLAYER_START.x + Math.sin(Date.now() / 780) * 2.6;
+        const playerVx = (inputX / inputLength) * PLAYER_SPEED;
+        const playerVy = (inputY / inputLength) * PLAYER_SPEED;
+        const playerX = Math.max(
+          8,
+          Math.min(92, current.playerX + playerVx * TICK_SECONDS),
+        );
+        const playerY = Math.max(
+          18,
+          Math.min(82, current.playerY + playerVy * TICK_SECONDS),
+        );
         let playerHp = current.playerHp;
         let remainingEnemies = armedEnemies;
         const movingShots: Shot[] = [];
@@ -354,6 +408,7 @@ export function AdventureView({
             playerHp: 0,
             playerX,
             playerY,
+            playerVx,
             playerVy,
             enemies: remainingEnemies,
             shots: movingShots,
@@ -370,9 +425,10 @@ export function AdventureView({
           explosions,
           playerX,
           playerY,
+          playerVx,
           playerVy,
           playerHp,
-          cooldown,
+          fireTimer,
           message,
           nextId,
         };
@@ -383,7 +439,14 @@ export function AdventureView({
     }, TICK_SECONDS * 1000);
 
     return () => window.clearInterval(timer);
-  }, [combat.status, onClaimReward, playerDamage, shieldStrength]);
+  }, [
+    combat.status,
+    fireCooldown,
+    onClaimReward,
+    playerDamage,
+    shieldStrength,
+    state.weaponAchievement,
+  ]);
 
   const playerPercent = (combat.playerHp / combat.playerMaxHp) * 100;
 
@@ -401,7 +464,7 @@ export function AdventureView({
       <div className="adventure-header">
         <div>
           <h2>Abenteuer</h2>
-          <p>Raketenmaterialien gibt es hier. Baustoffe bleiben bei den Meteoriten.</p>
+          <p>Steuere mit WASD oder Pfeiltasten. Die Rakete feuert automatisch.</p>
         </div>
         <div className="adventure-actions">
           <button onClick={() => startRun('manual')}>
@@ -427,6 +490,17 @@ export function AdventureView({
             Waffenmodul {weaponLevel} · Schildmodul {shieldLevel} · Laser{' '}
             {laserLevel} · Schaden {formatNumber(playerDamage)}
           </small>
+          {weaponLevel >= 15 && !state.weaponAchievement ? (
+            <small>Waffen-Erfolg bereit: Schussrate oder Doppelschuss waehlen.</small>
+          ) : null}
+          {state.weaponAchievement ? (
+            <small>
+              Spezialisierung:{' '}
+              {state.weaponAchievement === 'rapidFire'
+                ? 'Schnellfeuer'
+                : 'Doppelschuss'}
+            </small>
+          ) : null}
         </div>
 
         <div className="wave-field">
@@ -438,10 +512,10 @@ export function AdventureView({
             style={{ left: `${combat.playerX}%`, top: `${combat.playerY}%` }}
           />
           {combat.enemies.map((enemy) => (
-            <button
+            <span
+              aria-label={`Gegner ${formatNumber(enemy.hp)} von ${formatNumber(enemy.maxHp)}`}
               className={`enemy-fighter variant-${enemy.variant}`}
               key={enemy.id}
-              onClick={() => fireAtEnemy(enemy.id)}
               style={{ left: `${enemy.x}%`, top: `${enemy.y}%` }}
               title={`Gegner ${formatNumber(enemy.hp)} / ${formatNumber(enemy.maxHp)}`}
             >
@@ -450,7 +524,7 @@ export function AdventureView({
                 className="game-progress enemy-mini-progress"
                 value={(enemy.hp / enemy.maxHp) * 100}
               />
-            </button>
+            </span>
           ))}
           {combat.shots.map((shot) => (
             <span
@@ -467,14 +541,7 @@ export function AdventureView({
             />
           ))}
           <p>{combat.message}</p>
-          <button
-            className="fire-button"
-            disabled={combat.status !== 'running' || combat.cooldown > 0}
-            onClick={() => fireAtEnemy()}
-          >
-            <Crosshair size={18} />
-            Feuern
-          </button>
+          <span className="fire-button">Auto-Feuer</span>
         </div>
 
         <div className="reward-card">
@@ -493,6 +560,16 @@ export function AdventureView({
               <RotateCcw size={17} />
               Nochmal starten
             </button>
+          ) : null}
+          {weaponLevel >= 15 && !state.weaponAchievement ? (
+            <div className="achievement-picker">
+              <button onClick={() => onChooseWeaponAchievement('rapidFire')}>
+                Schnellfeuer
+              </button>
+              <button onClick={() => onChooseWeaponAchievement('twinShot')}>
+                Doppelschuss
+              </button>
+            </div>
           ) : null}
         </div>
       </div>

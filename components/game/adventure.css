@@ -157,7 +157,6 @@
   transform: translate(-50%, -50%);
   border: 0;
   background: transparent;
-  cursor: crosshair;
   transition:
     filter 0.12s ease,
     left 0.05s linear,
@@ -246,6 +245,8 @@
   bottom: 22px;
   width: 160px;
   background: rgba(122, 44, 40, 0.82);
+  cursor: default;
+  pointer-events: none;
 }
 
 .fire-button:disabled {
@@ -276,6 +277,16 @@
 
 .reward-card button {
   width: 100%;
+}
+
+.achievement-picker {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.achievement-picker button {
+  min-height: 36px;
 }
 
 .wave-track {

@@ -251,5 +251,6 @@ export const INITIAL_STATE: GameState = {
   quest: QUEST_CHAIN[0],
   sectorProgress: 42,
   newRocketBuilt: false,
+  weaponAchievement: undefined,
   nextId: 7,
 };

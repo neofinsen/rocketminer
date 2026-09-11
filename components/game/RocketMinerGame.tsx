@@ -42,6 +42,8 @@ import { TopBar } from './TopBar';
 import './adventure.css';
 import './space-assets.css';
 
+type WeaponAchievement = NonNullable<GameState['weaponAchievement']>;
+
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
   const lastFrame = useRef<number | null>(null);
@@ -219,6 +221,7 @@ export function RocketMinerGame() {
         damageTexts: [],
         sectorProgress: 0,
         newRocketBuilt: false,
+        weaponAchievement: undefined,
         nextId: INITIAL_STATE.nextId,
       };
     });
@@ -254,6 +257,19 @@ export function RocketMinerGame() {
     [],
   );
 
+  const chooseWeaponAchievement = useCallback((achievement: WeaponAchievement) => {
+    setState((current) => {
+      const weaponLevel =
+        current.modules.find((module) => module.key === 'weapon')?.level ?? 1;
+      if (weaponLevel < 15 || current.weaponAchievement) return current;
+
+      return {
+        ...current,
+        weaponAchievement: achievement,
+      };
+    });
+  }, []);
+
   const resetSave = () => {
     resetGameState();
     lastFrame.current = null;
@@ -281,7 +297,11 @@ export function RocketMinerGame() {
             <ResearchView state={state} onResearchTech={researchTech} />
           ) : null}
           {state.view === 'adventure' ? (
-            <AdventureView state={state} onClaimReward={claimAdventureReward} />
+            <AdventureView
+              state={state}
+              onChooseWeaponAchievement={chooseWeaponAchievement}
+              onClaimReward={claimAdventureReward}
+            />
           ) : null}
         </div>
         <RightPanel state={state} onReturnCargo={returnCargo} />

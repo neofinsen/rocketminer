@@ -152,5 +152,6 @@ export interface GameState {
   quest: Quest;
   sectorProgress: number;
   newRocketBuilt: boolean;
+  weaponAchievement?: 'rapidFire' | 'twinShot';
   nextId: number;
 }
