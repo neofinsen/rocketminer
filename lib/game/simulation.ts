@@ -190,14 +190,15 @@ export const payCost = (
 
 export const getModuleCost = (key: ModuleKey, level: number) => {
   const scale = level + 1;
+  const alienCost = (amount: number) => (level >= 10 ? { alien: amount * scale } : {});
   const shared = {
     credits: 280 * scale,
     titan: 18 * scale,
     crystal: 12 * scale,
   };
 
-  if (key === 'weapon') return { ...shared, silicon: 16 * scale, alien: 4 * scale };
-  if (key === 'shield') return { ...shared, silicon: 18 * scale, alien: 3 * scale };
+  if (key === 'weapon') return { ...shared, silicon: 16 * scale, ...alienCost(4) };
+  if (key === 'shield') return { ...shared, silicon: 18 * scale, ...alienCost(3) };
   if (key === 'laser') return { ...shared, titan: 28 * scale };
   if (key === 'cargo') return { ...shared, silicon: 14 * scale };
   if (key === 'collector') return { ...shared, crystal: 22 * scale };
