@@ -303,10 +303,10 @@
 }
 
 .tech-links path.active {
-  stroke: rgba(255, 54, 42, 0.95);
-  stroke-width: 0.66;
+  stroke: rgba(100, 218, 255, 0.72);
+  stroke-width: 0.58;
   stroke-dasharray: none;
-  filter: drop-shadow(0 0 4px rgba(255, 37, 30, 0.4));
+  filter: drop-shadow(0 0 4px rgba(81, 184, 226, 0.28));
 }
 
 .upgrade-toolbar {

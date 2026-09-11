@@ -72,6 +72,7 @@ type CombatState = {
 const MAX_WAVE = 20;
 const PLAYER_START = { x: 14, y: 54 };
 const TICK_SECONDS = 0.05;
+const PLAYER_FIRE_COOLDOWN = 0.42;
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -224,7 +225,7 @@ export function AdventureView({
             damage: playerDamage,
           },
         ],
-        cooldown: current.mode === 'auto' ? 0.72 : 0.38,
+        cooldown: PLAYER_FIRE_COOLDOWN,
         message: 'Schuss abgefeuert',
         nextId: current.nextId + 1,
       };
@@ -283,7 +284,7 @@ export function AdventureView({
           return { ...enemy, shotTimer: stats.cadence };
         });
 
-        const cooldown = Math.max(0, current.cooldown - TICK_SECONDS);
+        let cooldown = Math.max(0, current.cooldown - TICK_SECONDS);
         if (current.mode === 'auto' && cooldown <= 0 && armedEnemies.length) {
           const target = [...armedEnemies].sort((a, b) => a.hp - b.hp)[0];
           spawnedShots.push({
@@ -297,6 +298,7 @@ export function AdventureView({
             damage: playerDamage,
           });
           nextId += 1;
+          cooldown = PLAYER_FIRE_COOLDOWN;
           message = 'Auto-Feuer abgefeuert';
         }
 
