@@ -150,6 +150,7 @@ export const getBuildingCost = (building: Building) => ({
   credits: 210 * (building.level + 1),
   wood: 70 * (building.level + 1),
   metal: 62 * (building.level + 1),
+  energy: 38 * (building.level + 1),
 });
 
 export const canUnlockBeta = (state: GameState) =>
