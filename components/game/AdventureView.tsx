@@ -60,6 +60,7 @@ type CombatState = {
   explosions: Explosion[];
   playerX: number;
   playerY: number;
+  playerAngle: number;
   playerVx: number;
   playerVy: number;
   playerHp: number;
@@ -141,6 +142,7 @@ const createCombat = (state: GameState, mode: Mode): CombatState => ({
   explosions: [],
   playerX: PLAYER_START.x,
   playerY: PLAYER_START.y,
+  playerAngle: 90,
   playerVx: 0,
   playerVy: 4.8,
   playerHp: getPlayerMaxHp(state),
@@ -160,6 +162,7 @@ const createIdleCombat = (state: GameState): CombatState => ({
   explosions: [],
   playerX: PLAYER_START.x,
   playerY: PLAYER_START.y,
+  playerAngle: 90,
   playerVx: 0,
   playerVy: 4.8,
   playerHp: getPlayerMaxHp(state),
@@ -363,6 +366,10 @@ export function AdventureView({
           18,
           Math.min(82, current.playerY + playerVy * TICK_SECONDS),
         );
+        const playerAngle =
+          inputX || inputY
+            ? Math.atan2(inputY, inputX) * (180 / Math.PI) + 90
+            : current.playerAngle;
         let playerHp = current.playerHp;
         let remainingEnemies = armedEnemies;
         const movingShots: Shot[] = [];
@@ -408,6 +415,7 @@ export function AdventureView({
             playerHp: 0,
             playerX,
             playerY,
+            playerAngle,
             playerVx,
             playerVy,
             enemies: remainingEnemies,
@@ -425,6 +433,7 @@ export function AdventureView({
           explosions,
           playerX,
           playerY,
+          playerAngle,
           playerVx,
           playerVy,
           playerHp,
@@ -509,7 +518,13 @@ export function AdventureView({
           </span>
           <span
             className="player-ship-marker"
-            style={{ left: `${combat.playerX}%`, top: `${combat.playerY}%` }}
+            style={
+              {
+                '--player-angle': `${combat.playerAngle}deg`,
+                left: `${combat.playerX}%`,
+                top: `${combat.playerY}%`,
+              } as CSSProperties
+            }
           />
           {combat.enemies.map((enemy) => (
             <span

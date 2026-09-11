@@ -111,14 +111,14 @@ export const INITIAL_BUILDINGS: Building[] = [
 ];
 
 export const INITIAL_CITY_PLACEMENTS: CityPlacements = {
-  townhall: 'slot-05',
-  sawmill: 'slot-04',
-  quarry: 'slot-08',
-  forge: 'slot-07',
-  research: 'slot-10',
+  townhall: 'slot-06',
+  sawmill: 'slot-05',
+  quarry: 'slot-07',
+  forge: 'slot-02',
+  research: 'slot-08',
   spaceport: 'slot-01',
-  power: 'slot-11',
-  warehouse: 'slot-12',
+  power: 'slot-04',
+  warehouse: 'slot-03',
 };
 
 export const QUEST_CHAIN: Quest[] = [

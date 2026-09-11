@@ -19,7 +19,7 @@
 }
 
 .city-building {
-  --pad-size: 106px;
+  --pad-size: 159px;
   z-index: 3;
   width: var(--pad-size);
   height: var(--pad-size);
@@ -115,12 +115,12 @@
 }
 
 .city-building.large {
-  --pad-size: 136px;
+  --pad-size: 204px;
   width: var(--pad-size);
 }
 
 .city-building.small {
-  --pad-size: 96px;
+  --pad-size: 144px;
   width: var(--pad-size);
 }
 

@@ -78,17 +78,13 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
 
 const buildSlots = [
   { id: 'slot-01', x: 12.5, y: 12 },
-  { id: 'slot-02', x: 46, y: 31 },
-  { id: 'slot-03', x: 58.5, y: 35.5 },
-  { id: 'slot-04', x: 33, y: 40 },
-  { id: 'slot-05', x: 51, y: 49 },
-  { id: 'slot-06', x: 69, y: 47 },
-  { id: 'slot-07', x: 39, y: 63 },
-  { id: 'slot-08', x: 57, y: 60 },
-  { id: 'slot-09', x: 78, y: 65 },
-  { id: 'slot-10', x: 50.5, y: 75 },
-  { id: 'slot-11', x: 66, y: 74 },
-  { id: 'slot-12', x: 28, y: 78 },
+  { id: 'slot-02', x: 40, y: 35 },
+  { id: 'slot-03', x: 55, y: 36 },
+  { id: 'slot-04', x: 70, y: 39 },
+  { id: 'slot-05', x: 34, y: 56 },
+  { id: 'slot-06', x: 50, y: 55 },
+  { id: 'slot-07', x: 65, y: 58 },
+  { id: 'slot-08', x: 48, y: 73 },
 ] as const;
 
 export function CityView({

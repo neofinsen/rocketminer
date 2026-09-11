@@ -33,6 +33,23 @@ const normalizeUnlockedSectors = (sectors: unknown): SectorKey[] => {
   return valid.includes('alpha') ? valid : ['alpha', ...valid];
 };
 
+const normalizeCityPlacements = (placements: unknown) => {
+  const merged = {
+    ...INITIAL_CITY_PLACEMENTS,
+    ...(placements && typeof placements === 'object' ? placements : {}),
+  };
+  const validSlots = new Set(Object.values(INITIAL_CITY_PLACEMENTS));
+
+  return Object.fromEntries(
+    Object.entries(merged).map(([key, slot]) => [
+      key,
+      validSlots.has(slot as string)
+        ? slot
+        : INITIAL_CITY_PLACEMENTS[key as keyof typeof INITIAL_CITY_PLACEMENTS],
+    ]),
+  );
+};
+
 export function loadGameState(): GameState {
   if (typeof window === 'undefined') return INITIAL_STATE;
 
@@ -63,10 +80,7 @@ export function loadGameState(): GameState {
       fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
       modules: mergeModules(saved.modules),
       buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
-      cityPlacements: {
-        ...INITIAL_CITY_PLACEMENTS,
-        ...saved.cityPlacements,
-      },
+      cityPlacements: normalizeCityPlacements(saved.cityPlacements),
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
       currentSector: normalizeSector(saved.currentSector),
