@@ -20,7 +20,8 @@ export type ModuleKey =
   | 'cargo'
   | 'laser'
   | 'energyCore'
-  | 'weapon';
+  | 'weapon'
+  | 'shield';
 
 export type BuildingKey =
   | 'townhall'

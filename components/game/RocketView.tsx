@@ -1,4 +1,12 @@
-import { BatteryCharging, Box, Crosshair, Gauge, Orbit, Swords } from 'lucide-react';
+import {
+  BatteryCharging,
+  Box,
+  Crosshair,
+  Gauge,
+  Orbit,
+  Shield,
+  Swords,
+} from 'lucide-react';
 import {
   canPay,
   formatNumber,
@@ -19,6 +27,7 @@ const moduleCopy: Record<ModuleKey, string> = {
   laser: 'Mehr Schaden pro Klick gegen grosse Asteroiden.',
   energyCore: 'Stabilere Versorgung fuer kuenftige Spezialmodule.',
   weapon: 'Mehr Kampfschaden in Abenteuern und hoehere Chancen in spaeteren Wellen.',
+  shield: 'Mehr Schutz gegen gegnerische Treffer in Abenteuern.',
 };
 
 const moduleIcons: Record<ModuleKey, React.ComponentType<{ size?: number }>> = {
@@ -28,6 +37,7 @@ const moduleIcons: Record<ModuleKey, React.ComponentType<{ size?: number }>> = {
   laser: Crosshair,
   energyCore: BatteryCharging,
   weapon: Swords,
+  shield: Shield,
 };
 
 export function RocketView({

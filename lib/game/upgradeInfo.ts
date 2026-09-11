@@ -10,6 +10,7 @@ const moduleStats: Record<ModuleKey, (level: number) => string> = {
   laser: (level) => `Laser ${formatNumber(260 + level * 95)} Schaden`,
   energyCore: (level) => `Energiemodul Stufe ${level}`,
   weapon: (level) => `Waffenmodul ${formatNumber(34 + level * 24)} Kampfschaden`,
+  shield: (level) => `Schild ${formatNumber(level * 14)} Schutz`,
 };
 
 const getRocketSpeedAt = (level: number) => 5.2 + level * 1.35;

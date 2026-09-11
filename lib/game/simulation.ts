@@ -50,6 +50,9 @@ export const getLaserDamage = (state: GameState) =>
 export const getWeaponDamage = (state: GameState) =>
   34 + getModuleLevel(state, 'weapon') * 24 + getModuleLevel(state, 'laser') * 6;
 
+export const getShieldStrength = (state: GameState) =>
+  getModuleLevel(state, 'shield') * 14;
+
 export const getCargoCapacity = (state: GameState) =>
   1100 + getModuleLevel(state, 'cargo') * 520;
 
@@ -135,6 +138,7 @@ export const getModuleCost = (key: ModuleKey, level: number) => {
   };
 
   if (key === 'weapon') return { ...shared, silicon: 16 * scale, alien: 4 * scale };
+  if (key === 'shield') return { ...shared, silicon: 18 * scale, alien: 3 * scale };
   if (key === 'laser') return { ...shared, titan: 28 * scale };
   if (key === 'cargo') return { ...shared, silicon: 14 * scale };
   if (key === 'collector') return { ...shared, crystal: 22 * scale };

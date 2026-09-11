@@ -48,6 +48,7 @@ export const INITIAL_MODULES: RocketModule[] = [
   { key: 'laser', name: 'Bergbau-Laser', level: 1, icon: 'laser' },
   { key: 'energyCore', name: 'Energiemodul', level: 1, icon: 'energy' },
   { key: 'weapon', name: 'Waffenmodul', level: 1, icon: 'weapon' },
+  { key: 'shield', name: 'Schildmodul', level: 1, icon: 'shield' },
 ];
 
 export const INITIAL_BUILDINGS: Building[] = [
