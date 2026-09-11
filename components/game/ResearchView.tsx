@@ -13,7 +13,10 @@ import {
   Satellite,
 } from 'lucide-react';
 import {
+  getResearchCenterLevel,
+  getResearchDiscount,
   getResearchedCount,
+  getTechCost,
   isTechAvailable,
   TECH_TREE,
   type TechNode,
@@ -41,6 +44,7 @@ const icons: Record<TechKey, typeof Atom> = {
 
 const getStatus = (state: GameState, tech: TechNode) => {
   if (state.research[tech.key]) return 'Erforscht';
+  if (getResearchCenterLevel(state) <= 0) return 'Zentrum fehlt';
   if (isTechAvailable(state, tech)) return 'Bereit';
   return 'Gesperrt';
 };
@@ -70,6 +74,8 @@ export function ResearchView({
   const researched = getResearchedCount(state);
   const assemblyReady = Boolean(state.research.orbitalAssembly);
   const rocketReady = Boolean(state.research.galaxyGate);
+  const researchLevel = getResearchCenterLevel(state);
+  const discountPercent = Math.round(getResearchDiscount(state) * 100);
 
   return (
     <section className="research-view" aria-label="Forschung">
@@ -80,7 +86,15 @@ export function ResearchView({
         </div>
         <div className="research-goal">
           <strong>{researched} / {TECH_TREE.length}</strong>
-          <span>{rocketReady ? 'Bauauftrag frei' : assemblyReady ? 'Endmontage bereit' : 'Raketenprojekt laeuft'}</span>
+          <span>
+            {researchLevel <= 0
+              ? 'Forschungszentrum bauen'
+              : rocketReady
+                ? 'Bauauftrag frei'
+                : assemblyReady
+                  ? 'Endmontage bereit'
+                  : `Forschungszentrum ${researchLevel} · -${discountPercent}%`}
+          </span>
         </div>
       </div>
 
@@ -105,7 +119,8 @@ export function ResearchView({
         {TECH_TREE.map((tech) => {
           const Icon = icons[tech.key];
           const statusClass = getStatusClass(state, tech);
-          const affordable = canPay(state.resources, tech.cost);
+          const cost = getTechCost(state, tech);
+          const affordable = canPay(state.resources, cost);
           const available = statusClass === 'available';
           const disabled = !available || !affordable;
 
@@ -128,7 +143,7 @@ export function ResearchView({
               </span>
               <span className="tech-status">{getStatus(state, tech)}</span>
               <span className="tech-cost">
-                {Object.entries(tech.cost).map(([resource, value]) => (
+                {Object.entries(cost).map(([resource, value]) => (
                   <span key={resource}>
                     <ResourceIcon resource={resource as ResourceKey} />
                     {formatNumber(value ?? 0)}
@@ -138,7 +153,7 @@ export function ResearchView({
               {statusClass !== 'complete' ? (
                 <UpgradeTooltip
                   benefits={getTechResearchBenefits(tech)}
-                  cost={tech.cost}
+                  cost={cost}
                   label="Forschen"
                 />
               ) : null}

@@ -1,5 +1,5 @@
 import { RESOURCE_LABELS } from './constants';
-import { type TechNode } from './research';
+import { getResearchDiscountForLevel, type TechNode } from './research';
 import { formatNumber } from './simulation';
 import type { Building, ModuleKey, ResourceBag, RocketModule } from './types';
 
@@ -25,11 +25,20 @@ export const getModuleUpgradeBenefits = (module: RocketModule) => [
 ];
 
 export const getBuildingUpgradeBenefits = (building: Building) =>
-  Object.entries(building.production).map(
-    ([resource, value]) =>
-      building.level === 0
-        ? `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min`
-        : `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min mehr`,
-  );
+  [
+    ...Object.entries(building.production).map(
+      ([resource, value]) =>
+        building.level === 0
+          ? `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min`
+          : `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min mehr`,
+    ),
+    ...(building.key === 'research'
+      ? [
+          `Forschungskosten -${Math.round(
+            getResearchDiscountForLevel(building.level + 1) * 100,
+          )}%`,
+        ]
+      : []),
+  ];
 
 export const getTechResearchBenefits = (tech: TechNode) => [tech.effect];

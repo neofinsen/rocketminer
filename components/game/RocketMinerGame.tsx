@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { INITIAL_STATE } from '@/lib/game/constants';
 import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
-import { getTech, INITIAL_RESEARCH, isTechAvailable } from '@/lib/game/research';
+import {
+  getTech,
+  getTechCost,
+  INITIAL_RESEARCH,
+  isTechAvailable,
+} from '@/lib/game/research';
 import {
   canPay,
   addResources,
@@ -164,13 +169,15 @@ export function RocketMinerGame() {
   const researchTech = (key: TechKey) => {
     setState((current) => {
       const tech = getTech(key);
-      if (!tech || !isTechAvailable(current, tech) || !canPay(current.resources, tech.cost)) {
+      if (!tech) return current;
+      const cost = getTechCost(current, tech);
+      if (!isTechAvailable(current, tech) || !canPay(current.resources, cost)) {
         return current;
       }
 
       return {
         ...current,
-        resources: payCost(current.resources, tech.cost),
+        resources: payCost(current.resources, cost),
         research: {
           ...current.research,
           [key]: true,

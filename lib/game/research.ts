@@ -162,11 +162,34 @@ export const TECH_TREE: TechNode[] = [
   },
 ];
 
+export const RESEARCH_DISCOUNT_PER_LEVEL = 0.05;
+export const MAX_RESEARCH_DISCOUNT = 0.5;
+
+export const getResearchCenterLevel = (state: GameState) =>
+  state.buildings.find((building) => building.key === 'research')?.level ?? 0;
+
+export const getResearchDiscountForLevel = (level: number) =>
+  Math.min(level * RESEARCH_DISCOUNT_PER_LEVEL, MAX_RESEARCH_DISCOUNT);
+
+export const getResearchDiscount = (state: GameState) =>
+  getResearchDiscountForLevel(getResearchCenterLevel(state));
+
+export const getTechCost = (state: GameState, tech: TechNode) => {
+  const discount = getResearchDiscount(state);
+  return Object.fromEntries(
+    Object.entries(tech.cost).map(([resource, value]) => [
+      resource,
+      Math.max(1, Math.ceil((value ?? 0) * (1 - discount))),
+    ]),
+  ) as Partial<ResourceBag>;
+};
+
 export const getTech = (key: TechKey) =>
   TECH_TREE.find((tech) => tech.key === key);
 
 export const isTechAvailable = (state: GameState, tech: TechNode) =>
   !state.research[tech.key] &&
+  getResearchCenterLevel(state) > 0 &&
   tech.prerequisites.every((key) => state.research[key]);
 
 export const getResearchedCount = (state: GameState) =>
