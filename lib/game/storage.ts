@@ -1,5 +1,5 @@
 import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
-import type { GameState, RocketModule, ViewKey } from './types';
+import type { GameState, RocketModule, SectorKey, ViewKey } from './types';
 
 const SAVE_KEY = 'rocketminer-save-v3';
 
@@ -19,6 +19,17 @@ const normalizeView = (view: unknown): ViewKey => {
   if (view === 'rocket') return 'adventure';
   if (view === 'adventure') return view;
   return INITIAL_STATE.view;
+};
+
+const normalizeSector = (sector: unknown): SectorKey =>
+  sector === 'beta' ? 'beta' : 'alpha';
+
+const normalizeUnlockedSectors = (sectors: unknown): SectorKey[] => {
+  const valid = asArray<SectorKey>(sectors, ['alpha']).filter(
+    (sector) => sector === 'alpha' || sector === 'beta',
+  );
+
+  return valid.includes('alpha') ? valid : ['alpha', ...valid];
 };
 
 export function loadGameState(): GameState {
@@ -56,8 +67,8 @@ export function loadGameState(): GameState {
       },
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
-      currentSector: 'alpha',
-      unlockedSectors: ['alpha'],
+      currentSector: normalizeSector(saved.currentSector),
+      unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,
       quest: saved.quest ?? QUEST_CHAIN[questIndex] ?? QUEST_CHAIN[0],
       resources: { ...INITIAL_STATE.resources, ...saved.resources },

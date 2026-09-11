@@ -293,6 +293,22 @@
   text-transform: uppercase;
 }
 
+.tech-links path {
+  fill: none;
+  stroke: rgba(119, 154, 184, 0.45);
+  stroke-width: 0.46;
+  stroke-dasharray: 1.4 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tech-links path.active {
+  stroke: rgba(255, 54, 42, 0.95);
+  stroke-width: 0.66;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px rgba(255, 37, 30, 0.4));
+}
+
 .upgrade-toolbar {
   border-color: rgba(190, 132, 62, 0.44);
   background:

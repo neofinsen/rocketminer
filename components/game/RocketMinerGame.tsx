@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { INITIAL_STATE } from '@/lib/game/constants';
 import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
-import { getTech, isTechAvailable } from '@/lib/game/research';
+import { getTech, INITIAL_RESEARCH, isTechAvailable } from '@/lib/game/research';
 import {
   canPay,
   addResources,
@@ -185,10 +185,33 @@ export function RocketMinerGame() {
         return current;
       }
 
+      const nextSector = current.currentSector === 'alpha' ? 'beta' : 'alpha';
+
       return {
         ...current,
         resources: payCost(current.resources, newRocketCost),
-        newRocketBuilt: true,
+        currentSector: nextSector,
+        unlockedSectors: Array.from(
+          new Set([...current.unlockedSectors, nextSector]),
+        ),
+        view: 'space',
+        level: current.level + 1,
+        questIndex: 0,
+        quest: INITIAL_STATE.quest,
+        collectedTotals: {},
+        destroyedAsteroids: 0,
+        research: { ...INITIAL_RESEARCH },
+        rocket: {
+          ...INITIAL_STATE.rocket,
+          cargo: {},
+        },
+        asteroids: INITIAL_STATE.asteroids.map((asteroid) => ({ ...asteroid })),
+        fragments: INITIAL_STATE.fragments.map((fragment) => ({ ...fragment })),
+        projectiles: [],
+        damageTexts: [],
+        sectorProgress: 0,
+        newRocketBuilt: false,
+        nextId: INITIAL_STATE.nextId,
       };
     });
   };

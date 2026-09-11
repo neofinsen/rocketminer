@@ -181,17 +181,26 @@ export function CityView({
             const cost = getBuildingCost(building);
             const affordable = canPay(state.resources, cost);
             const output = Object.entries(building.production);
+            const buildsNewRocket = building.key === 'spaceport' && rocketBuildable;
 
             return (
               <button
                 className={`city-building ${visual.variant} ${visual.size} ${
                   'built'
                 }`}
-                disabled={!affordable}
+                disabled={!affordable && !buildsNewRocket}
                 key={building.key}
-                onClick={() => onUpgradeBuilding(building.key)}
+                onClick={() =>
+                  buildsNewRocket
+                    ? onBuildNewRocket()
+                    : onUpgradeBuilding(building.key)
+                }
                 style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
-                title={`Ausbaukosten: ${formatCostTitle(cost)}`}
+                title={
+                  buildsNewRocket
+                    ? `Neue Rakete bauen: ${formatCostTitle(newRocketCost)}`
+                    : `Ausbaukosten: ${formatCostTitle(cost)}`
+                }
                 type="button"
               >
                 <span className="building-pad">
@@ -267,9 +276,7 @@ export function CityView({
           <div className="rocket-build-project">
             <strong>Neue Rakete</strong>
             <span>
-              {state.newRocketBuilt
-                ? 'Gebaut'
-                : rocketReady && spaceportReady
+              {rocketReady && spaceportReady
                   ? 'Bauauftrag bereit'
                   : `Raumfahrtzentrum Stufe 3 und Forschung noetig`}
             </span>

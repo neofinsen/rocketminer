@@ -18,6 +18,7 @@ import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
 import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 import sectorAlphaImage from './assets/sector-alpha-bg-space.png';
+import sectorBetaImage from './assets/sector-beta-bg-space.png';
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -125,6 +126,9 @@ export function SpaceScene({
   state: GameState;
   onHitAsteroid: (id: number) => void;
 }) {
+  const sectorImage =
+    state.currentSector === 'beta' ? sectorBetaImage : sectorAlphaImage;
+
   return (
     <section
       className={`space-scene sector-${state.currentSector}`}
@@ -134,7 +138,7 @@ export function SpaceScene({
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
           '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
-          '--sector-bg-image': `url(${getAssetUrl(sectorAlphaImage)})`,
+          '--sector-bg-image': `url(${getAssetUrl(sectorImage)})`,
         } as CSSProperties
       }
     >

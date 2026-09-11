@@ -173,7 +173,6 @@ export const newRocketCost: Partial<ResourceBag> = {
 export const canBuildNewRocket = (state: GameState) => {
   const spaceport = state.buildings.find((building) => building.key === 'spaceport');
   return (
-    !state.newRocketBuilt &&
     Boolean(state.research.galaxyGate) &&
     (spaceport?.level ?? 0) >= 3 &&
     canPay(state.resources, newRocketCost)

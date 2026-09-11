@@ -51,6 +51,15 @@ const getStatusClass = (state: GameState, tech: TechNode) => {
   return 'locked';
 };
 
+const getConnectorPath = (source: TechNode, target: TechNode) => {
+  if (source.y === target.y) {
+    return `M ${source.x} ${source.y} L ${target.x} ${target.y}`;
+  }
+
+  const midY = source.y + (target.y - source.y) / 2;
+  return `M ${source.x} ${source.y} L ${source.x} ${midY} L ${target.x} ${midY} L ${target.x} ${target.y}`;
+};
+
 export function ResearchView({
   state,
   onResearchTech,
@@ -83,13 +92,10 @@ export function ResearchView({
               if (!source) return null;
               const active = state.research[source.key] || state.research[tech.key];
               return (
-                <line
+                <path
                   className={active ? 'active' : undefined}
+                  d={getConnectorPath(source, tech)}
                   key={`${source.key}-${tech.key}`}
-                  x1={source.x}
-                  y1={source.y}
-                  x2={tech.x}
-                  y2={tech.y}
                 />
               );
             }),
