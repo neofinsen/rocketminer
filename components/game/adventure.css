@@ -152,8 +152,8 @@
 
 .enemy-fighter {
   z-index: 5;
-  width: 134px;
-  height: 92px;
+  width: 150px;
+  height: 106px;
   transform: translate(-50%, -50%);
   border: 0;
   background: transparent;
@@ -169,25 +169,27 @@
 
 .enemy-sprite {
   display: block;
-  width: 134px;
-  height: 74px;
-  background-image: var(--enemy-sheet-image);
-  background-position: 0% 50%;
+  width: 150px;
+  height: 88px;
+  background-image: url('./assets/rocketminer-enemy-0.png');
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: 300% 100%;
+  background-size: contain;
   filter:
-    saturate(0.94)
-    contrast(0.98)
-    drop-shadow(0 14px 16px rgba(0, 0, 0, 0.42));
+    brightness(1.18)
+    saturate(1.08)
+    contrast(1.08)
+    drop-shadow(0 12px 14px rgba(0, 0, 0, 0.54))
+    drop-shadow(0 0 9px rgba(100, 230, 225, 0.14));
   pointer-events: none;
 }
 
 .enemy-fighter.variant-1 .enemy-sprite {
-  background-position: 50% 50%;
+  background-image: url('./assets/rocketminer-enemy-1.png');
 }
 
 .enemy-fighter.variant-2 .enemy-sprite {
-  background-position: 100% 50%;
+  background-image: url('./assets/rocketminer-enemy-2.png');
 }
 
 .enemy-mini-progress {

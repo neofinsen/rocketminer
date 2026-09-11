@@ -15,7 +15,6 @@ import {
   getWeaponDamage,
 } from '@/lib/game/simulation';
 import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
-import enemySheetImage from './assets/rocketminer-enemy-sheet-desert.png';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 
 type Mode = 'manual' | 'auto';
@@ -501,7 +500,6 @@ export function AdventureView({
       aria-label="Abenteuer"
       style={
         {
-          '--enemy-sheet-image': `url(${getAssetUrl(enemySheetImage)})`,
           '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
         } as CSSProperties
       }
