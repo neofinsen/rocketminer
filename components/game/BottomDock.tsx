@@ -1,4 +1,4 @@
-import { FlaskConical, LandPlot, Rocket, RotateCcw, Satellite } from 'lucide-react';
+import { Compass, FlaskConical, LandPlot, RotateCcw, Satellite } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ViewKey } from '@/lib/game/types';
 
@@ -10,7 +10,7 @@ const items: Array<{
   { key: 'space', label: 'Weltraum', icon: Satellite },
   { key: 'city', label: 'Stadt', icon: LandPlot },
   { key: 'research', label: 'Forschung', icon: FlaskConical },
-  { key: 'rocket', label: 'Rakete', icon: Rocket },
+  { key: 'adventure', label: 'Abenteuer', icon: Compass },
 ];
 
 export function BottomDock({

@@ -77,7 +77,7 @@
   border: 0;
   background: transparent;
   color: white;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .asteroid-rock {
@@ -90,13 +90,11 @@
   background-position: 0% 50%;
   background-repeat: no-repeat;
   background-size: 500% 100%;
-  box-shadow:
-    0 0 0 1px rgba(255, 100, 80, 0.24),
-    0 14px 18px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 14px 18px rgba(0, 0, 0, 0.32);
   filter:
     saturate(0.9)
     contrast(0.96)
-    drop-shadow(0 0 10px rgba(255, 92, 65, 0.22));
+    drop-shadow(0 12px 14px rgba(0, 0, 0, 0.34));
 }
 
 .asteroid.titan .asteroid-rock {
@@ -131,14 +129,6 @@
     drop-shadow(0 0 13px rgba(181, 82, 225, 0.34));
 }
 
-.asteroid-cursor {
-  position: absolute;
-  left: 54px;
-  top: 59px;
-  color: white;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.7));
-}
-
 .fragment {
   z-index: 2;
   display: block;
@@ -161,7 +151,16 @@
   background-position: 25% 50%;
 }
 
+.fragment-metal {
+  background-position: 25% 50%;
+}
+
 .fragment-silicon {
+  background-position: 50% 50%;
+}
+
+.fragment-wood,
+.fragment-credits {
   background-position: 50% 50%;
 }
 

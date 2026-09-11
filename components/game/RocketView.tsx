@@ -1,4 +1,4 @@
-import { BatteryCharging, Box, Crosshair, Gauge, Orbit } from 'lucide-react';
+import { BatteryCharging, Box, Crosshair, Gauge, Orbit, Swords } from 'lucide-react';
 import {
   canPay,
   formatNumber,
@@ -18,6 +18,7 @@ const moduleCopy: Record<ModuleKey, string> = {
   cargo: 'Mehr Platz fuer seltene Ressourcen im Frachtraum.',
   laser: 'Mehr Schaden pro Klick gegen grosse Asteroiden.',
   energyCore: 'Stabilere Versorgung fuer kuenftige Spezialmodule.',
+  weapon: 'Mehr Kampfschaden in Abenteuern und hoehere Chancen in spaeteren Wellen.',
 };
 
 const moduleIcons: Record<ModuleKey, React.ComponentType<{ size?: number }>> = {
@@ -26,6 +27,7 @@ const moduleIcons: Record<ModuleKey, React.ComponentType<{ size?: number }>> = {
   cargo: Box,
   laser: Crosshair,
   energyCore: BatteryCharging,
+  weapon: Swords,
 };
 
 export function RocketView({

@@ -47,6 +47,7 @@ export const INITIAL_MODULES: RocketModule[] = [
   { key: 'cargo', name: 'Frachtraum', level: 1, icon: 'cargo' },
   { key: 'laser', name: 'Bergbau-Laser', level: 1, icon: 'laser' },
   { key: 'energyCore', name: 'Energiemodul', level: 1, icon: 'energy' },
+  { key: 'weapon', name: 'Waffenmodul', level: 1, icon: 'weapon' },
 ];
 
 export const INITIAL_BUILDINGS: Building[] = [
@@ -227,7 +228,7 @@ export const INITIAL_STATE: GameState = {
       y: 57,
       hp: 2400,
       maxHp: 2400,
-      resource: 'titan',
+      resource: 'metal',
     },
     {
       id: 3,
@@ -236,13 +237,13 @@ export const INITIAL_STATE: GameState = {
       y: 74,
       hp: 1500,
       maxHp: 1500,
-      resource: 'crystal',
+      resource: 'wood',
     },
   ],
   fragments: [
-    { id: 4, x: 44, y: 51, resource: 'crystal', amount: 28 },
-    { id: 5, x: 48, y: 49, resource: 'titan', amount: 35 },
-    { id: 6, x: 58, y: 58, resource: 'silicon', amount: 26 },
+    { id: 4, x: 44, y: 51, resource: 'wood', amount: 28 },
+    { id: 5, x: 48, y: 49, resource: 'metal', amount: 35 },
+    { id: 6, x: 58, y: 58, resource: 'credits', amount: 26 },
   ],
   projectiles: [],
   damageTexts: [],

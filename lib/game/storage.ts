@@ -1,10 +1,25 @@
 import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
-import type { GameState } from './types';
+import type { GameState, RocketModule, ViewKey } from './types';
 
 const SAVE_KEY = 'rocketminer-save-v3';
 
 const asArray = <T,>(value: unknown, fallback: T[]) =>
   Array.isArray(value) ? (value as T[]) : fallback;
+
+const mergeModules = (savedModules: unknown): RocketModule[] => {
+  const saved = asArray(savedModules, []);
+  return INITIAL_STATE.modules.map((module) => ({
+    ...module,
+    ...saved.find((item) => item.key === module.key),
+  }));
+};
+
+const normalizeView = (view: unknown): ViewKey => {
+  if (view === 'space' || view === 'city' || view === 'research') return view;
+  if (view === 'rocket') return 'adventure';
+  if (view === 'adventure') return view;
+  return INITIAL_STATE.view;
+};
 
 export function loadGameState(): GameState {
   if (typeof window === 'undefined') return INITIAL_STATE;
@@ -29,10 +44,11 @@ export function loadGameState(): GameState {
     return {
       ...INITIAL_STATE,
       ...saved,
+      view: normalizeView(saved.view),
       damageTexts: [],
       asteroids: asArray(saved.asteroids, INITIAL_STATE.asteroids),
       fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
-      modules: asArray(saved.modules, INITIAL_STATE.modules),
+      modules: mergeModules(saved.modules),
       buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
       cityPlacements: {
         ...INITIAL_CITY_PLACEMENTS,

@@ -25,10 +25,10 @@ const asteroidTypes: Asteroid['type'][] = [
 
 const asteroidResource: Record<Asteroid['type'], ResourceKey> = {
   iron: 'metal',
-  titan: 'titan',
-  crystal: 'crystal',
-  silicon: 'silicon',
-  alien: 'alien',
+  titan: 'metal',
+  crystal: 'wood',
+  silicon: 'wood',
+  alien: 'credits',
 };
 
 export const formatNumber = (value: number) =>
@@ -46,6 +46,9 @@ export const getModuleLevel = (state: GameState, key: ModuleKey) =>
 
 export const getLaserDamage = (state: GameState) =>
   260 + getModuleLevel(state, 'laser') * 95;
+
+export const getWeaponDamage = (state: GameState) =>
+  34 + getModuleLevel(state, 'weapon') * 24 + getModuleLevel(state, 'laser') * 6;
 
 export const getCargoCapacity = (state: GameState) =>
   1100 + getModuleLevel(state, 'cargo') * 520;
@@ -126,16 +129,17 @@ export const payCost = (
 export const getModuleCost = (key: ModuleKey, level: number) => {
   const scale = level + 1;
   const shared = {
-    credits: 330 * scale,
-    metal: 88 * scale,
-    energy: 28 * scale,
+    credits: 280 * scale,
+    titan: 18 * scale,
+    crystal: 12 * scale,
   };
 
-  if (key === 'laser') return { ...shared, titan: 24 * scale };
-  if (key === 'cargo') return { ...shared, wood: 90 * scale };
-  if (key === 'collector') return { ...shared, crystal: 14 * scale };
-  if (key === 'energyCore') return { ...shared, silicon: 12 * scale };
-  return { ...shared, titan: 16 * scale };
+  if (key === 'weapon') return { ...shared, silicon: 16 * scale, alien: 4 * scale };
+  if (key === 'laser') return { ...shared, titan: 28 * scale };
+  if (key === 'cargo') return { ...shared, silicon: 14 * scale };
+  if (key === 'collector') return { ...shared, crystal: 22 * scale };
+  if (key === 'energyCore') return { ...shared, silicon: 18 * scale };
+  return { ...shared, titan: 22 * scale };
 };
 
 export const getBuildingCost = (building: Building) => ({

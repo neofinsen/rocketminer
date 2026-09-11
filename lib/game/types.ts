@@ -8,7 +8,7 @@ export type ResourceKey =
   | 'silicon'
   | 'alien';
 
-export type ViewKey = 'space' | 'city' | 'research' | 'rocket';
+export type ViewKey = 'space' | 'city' | 'research' | 'adventure';
 
 export type SectorKey = 'alpha' | 'beta';
 
@@ -19,7 +19,8 @@ export type ModuleKey =
   | 'collector'
   | 'cargo'
   | 'laser'
-  | 'energyCore';
+  | 'energyCore'
+  | 'weapon';
 
 export type BuildingKey =
   | 'townhall'

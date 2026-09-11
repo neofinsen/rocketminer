@@ -393,7 +393,8 @@
 .space-scene,
 .city-view,
 .research-view,
-.rocket-view {
+.rocket-view,
+.adventure-view {
   position: relative;
   height: 100%;
   min-height: 0;
@@ -405,9 +406,11 @@
 
 .space-scene {
   background:
-    radial-gradient(circle at 44% 43%, rgba(31, 103, 144, 0.16), transparent 32%),
-    radial-gradient(circle at 70% 72%, rgba(112, 88, 167, 0.11), transparent 26%),
+    linear-gradient(rgba(5, 13, 24, 0.24), rgba(5, 13, 24, 0.44)),
+    var(--sector-bg-image),
     #081421;
+  background-position: center;
+  background-size: cover;
 }
 
 .sector-status {

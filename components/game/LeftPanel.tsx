@@ -5,6 +5,7 @@ import {
   Crosshair,
   Gauge,
   Orbit,
+  Swords,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import type { CSSProperties } from 'react';
@@ -35,6 +36,7 @@ const moduleIcons: Record<ModuleKey, React.ReactNode> = {
   cargo: <Box size={20} />,
   laser: <Crosshair size={20} />,
   energyCore: <BatteryCharging size={20} />,
+  weapon: <Swords size={20} />,
 };
 
 export function LeftPanel({

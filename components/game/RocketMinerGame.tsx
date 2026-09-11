@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { INITIAL_STATE } from '@/lib/game/constants';
 import { applyQuestEvent, syncQuestProgress } from '@/lib/game/quests';
 import { getTech, isTechAvailable } from '@/lib/game/research';
 import {
   canPay,
   canUnlockBeta,
+  addResources,
   getBuildingCost,
   getModuleCost,
   payCost,
@@ -20,6 +21,7 @@ import type {
   BuildingKey,
   GameState,
   ModuleKey,
+  ResourceBag,
   TechKey,
   ViewKey,
 } from '@/lib/game/types';
@@ -28,9 +30,10 @@ import { CityView } from './CityView';
 import { LeftPanel } from './LeftPanel';
 import { ResearchView } from './ResearchView';
 import { RightPanel } from './RightPanel';
-import { RocketView } from './RocketView';
+import { AdventureView } from './AdventureView';
 import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
+import './adventure.css';
 import './space-assets.css';
 
 export function RocketMinerGame() {
@@ -207,6 +210,15 @@ export function RocketMinerGame() {
     });
   };
 
+  const claimAdventureReward = useCallback(
+    (reward: Partial<ResourceBag>) =>
+      setState((current) => ({
+        ...current,
+        resources: addResources(current.resources, reward),
+      })),
+    [],
+  );
+
   const resetSave = () => {
     resetGameState();
     lastFrame.current = null;
@@ -236,8 +248,8 @@ export function RocketMinerGame() {
           {state.view === 'research' ? (
             <ResearchView state={state} onResearchTech={researchTech} />
           ) : null}
-          {state.view === 'rocket' ? (
-            <RocketView state={state} onUpgradeModule={upgradeModule} />
+          {state.view === 'adventure' ? (
+            <AdventureView state={state} onClaimReward={claimAdventureReward} />
           ) : null}
         </div>
         <RightPanel state={state} onReturnCargo={returnCargo} />

@@ -1,4 +1,3 @@
-import { MousePointer2 } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
@@ -20,6 +19,8 @@ import type {
 import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
 import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
+import sectorAlphaImage from './assets/sector-alpha-bg-space.png';
+import sectorBetaImage from './assets/sector-beta-bg-space.png';
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
@@ -62,7 +63,6 @@ function AsteroidSprite({
         <Progress className="game-progress asteroid-progress" value={hpPercent} />
       </span>
       <span className="asteroid-rock" />
-      <MousePointer2 className="asteroid-cursor" size={34} />
     </button>
   );
 }
@@ -134,13 +134,16 @@ export function SpaceScene({
 
   return (
     <section
-      className="space-scene"
+      className={`space-scene sector-${state.currentSector}`}
       aria-label="Weltraumansicht"
       style={
         {
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
           '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
+          '--sector-bg-image': `url(${getAssetUrl(
+            state.currentSector === 'beta' ? sectorBetaImage : sectorAlphaImage,
+          )})`,
         } as CSSProperties
       }
     >

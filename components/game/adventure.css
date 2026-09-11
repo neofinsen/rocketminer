@@ -1,0 +1,215 @@
+.adventure-view {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  padding: 24px;
+  background:
+    linear-gradient(rgba(6, 15, 27, 0.74), rgba(6, 15, 27, 0.88)),
+    url('./assets/sector-beta-bg-space.png') center / cover,
+    #081421;
+}
+
+.adventure-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.adventure-header h2 {
+  margin: 0;
+  color: #f5f8fb;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.adventure-header p,
+.wave-field p,
+.reward-card p,
+.rocket-combat-card small {
+  margin: 6px 0 0;
+  color: #aebccc;
+  font-size: 14px;
+}
+
+.adventure-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.adventure-actions button,
+.fire-button,
+.reward-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border: 1px solid rgba(93, 190, 244, 0.42);
+  border-radius: 6px;
+  background: rgba(20, 74, 106, 0.76);
+  color: #f7fbff;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.adventure-actions button {
+  min-width: 118px;
+}
+
+.adventure-arena {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  align-items: stretch;
+  gap: 18px;
+  min-height: 0;
+}
+
+.rocket-combat-card,
+.wave-field,
+.reward-card {
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 18, 30, 0.8);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
+}
+
+.rocket-combat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 18px;
+}
+
+.combat-tag {
+  width: fit-content;
+  border: 1px solid rgba(241, 184, 82, 0.42);
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #ffd37c;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.rocket-combat-card h3,
+.reward-card h3 {
+  margin: 12px 0 10px;
+  color: white;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.rocket-combat-card span:not(.combat-tag),
+.wave-field strong {
+  margin-top: 8px;
+  color: #e9f3ff;
+  font-size: 14px;
+}
+
+.wave-field {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto auto;
+  place-items: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.wave-count {
+  border: 1px solid rgba(164, 203, 231, 0.18);
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: #dce9f7;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.enemy-ship {
+  position: relative;
+  width: 132px;
+  height: 94px;
+  margin: 22px 0;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.38));
+}
+
+.enemy-ship span {
+  position: absolute;
+  inset: 18px 10px;
+  clip-path: polygon(50% 0, 100% 72%, 68% 100%, 50% 77%, 32% 100%, 0 72%);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 32%),
+    linear-gradient(160deg, #746f75, #29272b 58%, #12151a);
+}
+
+.enemy-ship i {
+  position: absolute;
+  left: 48px;
+  top: 38px;
+  width: 36px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(215, 89, 76, 0.74);
+  box-shadow: 0 0 22px rgba(232, 79, 59, 0.7);
+}
+
+.enemy-ship.defeat,
+.enemy-ship.victory {
+  opacity: 0.45;
+}
+
+.enemy-progress {
+  max-width: 320px;
+}
+
+.fire-button {
+  width: 160px;
+  margin-top: 18px;
+  background: rgba(122, 44, 40, 0.82);
+}
+
+.fire-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.reward-card {
+  padding: 18px;
+}
+
+.reward-card svg {
+  color: #8ee6ff;
+}
+
+.reward-log {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.reward-log span {
+  border-bottom: 1px solid rgba(164, 203, 231, 0.1);
+  padding-bottom: 8px;
+  color: #d9e7f4;
+  font-size: 13px;
+}
+
+.reward-card button {
+  width: 100%;
+}
+
+.wave-track {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 5px;
+}
+
+.wave-track span {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(144, 170, 192, 0.24);
+}
+
+.wave-track .cleared {
+  background: #54d7a4;
+}
