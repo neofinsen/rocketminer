@@ -120,14 +120,14 @@ export function RightPanel({
         </div>
         <button
           className="primary-action"
-          disabled={used <= 0 || isReturning || isRefueling}
+          disabled={(used <= 0 && !isRefueling) || isReturning}
           onClick={onReturnCargo}
         >
           <Home size={18} />
           {isUnloading
             ? 'Entladen beschleunigen'
             : isRefueling
-              ? 'Tankt auf'
+              ? 'Auftanken beschleunigen'
             : isReturning
               ? 'Rueckflug aktiv'
               : 'Zurueck zur Basis'}

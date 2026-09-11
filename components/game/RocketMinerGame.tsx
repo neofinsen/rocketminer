@@ -189,6 +189,14 @@ export function RocketMinerGame() {
               returnTimer: Math.max(0, current.rocket.returnTimer - 15),
             },
           }
+        : current.rocket.status === 'refueling'
+          ? {
+              ...current,
+              rocket: {
+                ...current.rocket,
+                refuelTimer: Math.max(0, current.rocket.refuelTimer - 15),
+              },
+            }
         : startCargoReturn(current),
     );
 
