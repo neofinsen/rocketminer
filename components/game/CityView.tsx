@@ -229,12 +229,12 @@ export function CityView({
           })}
 
         {selectedSlot ? (
-          <div
-            className="building-picker"
-            style={{ left: `${selectedSlot.x}%`, top: `${selectedSlot.y}%` }}
-          >
+          <div className="building-picker">
             <div className="building-picker-head">
-              <strong>Gebaeude bauen</strong>
+              <span>
+                <strong>Gebaeude bauen</strong>
+                <small>Baufeld {selectedSlot.id.replace('slot-', '')}</small>
+              </span>
               <button
                 aria-label="Auswahl schliessen"
                 onClick={() => setSelectedSlotId(null)}
@@ -243,30 +243,34 @@ export function CityView({
                 x
               </button>
             </div>
-            {buildableBuildings.map((building) => {
-              const cost = getBuildingCost(building);
-              const affordable = canPayCost(state, cost);
+            <div className="building-picker-list">
+              {buildableBuildings.map((building) => {
+                const cost = getBuildingCost(building);
+                const affordable = canPayCost(state, cost);
+                const visual = cityLayout[building.key];
 
-              return (
-                <button
-                  className="building-picker-option"
-                  disabled={!affordable}
-                  key={building.key}
-                  onClick={() => {
-                    onBuildAtSlot(building.key, selectedSlot.id);
-                    setSelectedSlotId(null);
-                  }}
-                  title={`Baukosten: ${formatCostTitle(cost)}`}
-                  type="button"
-                >
-                  <span>
-                    <strong>{building.name}</strong>
-                    <small>{formatCostTitle(cost)}</small>
-                  </span>
-                  <span>Bauen</span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    className="building-picker-option"
+                    disabled={!affordable}
+                    key={building.key}
+                    onClick={() => {
+                      onBuildAtSlot(building.key, selectedSlot.id);
+                      setSelectedSlotId(null);
+                    }}
+                    title={`Baukosten: ${formatCostTitle(cost)}`}
+                    type="button"
+                  >
+                    <span className={`picker-building-icon sprite-${visual.sprite}`} />
+                    <span>
+                      <strong>{building.name}</strong>
+                      <small>{formatCostTitle(cost)}</small>
+                    </span>
+                    <span>Bauen</span>
+                  </button>
+                );
+              })}
+            </div>
             {buildableBuildings.length === 0 ? (
               <p>Alle Gebaeude sind gebaut.</p>
             ) : null}
