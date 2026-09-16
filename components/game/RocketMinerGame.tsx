@@ -43,6 +43,8 @@ import { TopBar } from './TopBar';
 import './adventure.css';
 import './space-assets.css';
 
+const GAME_TICK_SECONDS = 0.05;
+
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
   const lastFrame = useRef<number | null>(null);
@@ -62,12 +64,20 @@ export function RocketMinerGame() {
 
   useEffect(() => {
     let frame = 0;
+    let accumulatedSeconds = 0;
 
     const loop = (time: number) => {
       const last = lastFrame.current ?? time;
-      const deltaSeconds = Math.min((time - last) / 1000, 0.08);
+      const deltaSeconds = Math.min((time - last) / 1000, 0.2);
       lastFrame.current = time;
-      setState((current) => syncQuestProgress(tickGame(current, deltaSeconds)));
+
+      accumulatedSeconds += deltaSeconds;
+      if (accumulatedSeconds >= GAME_TICK_SECONDS) {
+        const tickSeconds = Math.min(accumulatedSeconds, GAME_TICK_SECONDS * 3);
+        accumulatedSeconds = 0;
+        setState((current) => syncQuestProgress(tickGame(current, tickSeconds)));
+      }
+
       frame = requestAnimationFrame(loop);
     };
 
