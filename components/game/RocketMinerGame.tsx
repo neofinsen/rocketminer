@@ -269,20 +269,23 @@ export function RocketMinerGame() {
   );
 
   const startAdventure = useCallback(() => {
-    let started = false;
-    setState((current) => {
-      const cost = getAdventureDeuteriumCost(current);
-      if (current.resources.deuterium < cost) return current;
-      started = true;
+    const current = latestState.current;
+    const cost = getAdventureDeuteriumCost(current);
+    if (current.resources.deuterium < cost) return false;
+
+    setState((stateNow) => {
+      const nextCost = getAdventureDeuteriumCost(stateNow);
+      if (stateNow.resources.deuterium < nextCost) return stateNow;
+
       return {
-        ...current,
+        ...stateNow,
         resources: {
-          ...current.resources,
-          deuterium: current.resources.deuterium - cost,
+          ...stateNow.resources,
+          deuterium: stateNow.resources.deuterium - nextCost,
         },
       };
     });
-    return started;
+    return true;
   }, []);
 
   const chooseWeaponUpgrade = useCallback((choice: WeaponUpgradeChoice) => {

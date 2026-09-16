@@ -1,6 +1,5 @@
 import {
   FastForward,
-  Hand,
   RotateCcw,
   Shield,
 } from 'lucide-react';
@@ -18,7 +17,7 @@ import {
 import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 
-type Mode = 'manual' | 'auto';
+type Mode = 'auto';
 type RunStatus = 'idle' | 'running' | 'victory' | 'defeat';
 
 type Enemy = {
@@ -165,7 +164,7 @@ const createCombat = (state: GameState, mode: Mode): CombatState => ({
 });
 
 const createIdleCombat = (state: GameState): CombatState => ({
-  mode: 'manual',
+  mode: 'auto',
   status: 'idle',
   wave: 1,
   enemies: [],
@@ -247,7 +246,7 @@ export function AdventureView({
   const fireCooldown = getFireCooldown(weaponLevel, rapidFireLevel);
   const adventureCost = getAdventureDeuteriumCost(state);
 
-  const startRun = (mode: Mode) => {
+  const startRun = (mode: Mode = 'auto') => {
     if (!onStartAdventure()) {
       setCombat((current) => ({
         ...current,
@@ -523,10 +522,6 @@ export function AdventureView({
           <p>Steuere mit WASD oder Pfeiltasten. Die Rakete feuert automatisch.</p>
         </div>
         <div className="adventure-actions">
-          <button onClick={() => startRun('manual')}>
-            <Hand size={17} />
-            Start Manuell · {formatNumber(adventureCost)} D
-          </button>
           <button onClick={() => startRun('auto')}>
             <FastForward size={17} />
             Start Auto · {formatNumber(adventureCost)} D
