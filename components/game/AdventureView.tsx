@@ -223,6 +223,7 @@ export function AdventureView({
 }) {
   const [combat, setCombat] = useState<CombatState>(() => createIdleCombat(state));
   const keys = useRef(new Set<string>());
+  const pendingRewards = useRef<Partial<ResourceBag>[]>([]);
   const playerDamage = useMemo(() => getWeaponDamage(state), [state]);
   const shieldStrength = getShieldStrength(state);
   const engineLevel = getModuleLevel(state, 'engine');
@@ -245,8 +246,19 @@ export function AdventureView({
   const playerSpeed = getRocketSpeed(state) * ADVENTURE_SPEED_SCALE;
   const fireCooldown = getFireCooldown(weaponLevel, rapidFireLevel);
   const adventureCost = getAdventureDeuteriumCost(state);
+  const canStartAdventure = state.resources.deuterium >= adventureCost;
 
   const startRun = (mode: Mode = 'auto') => {
+    if (!canStartAdventure) {
+      setCombat((current) => ({
+        ...current,
+        message: `Nicht genug Deuterium: ${formatNumber(adventureCost)} benoetigt, ${formatNumber(
+          state.resources.deuterium,
+        )} verfuegbar`,
+      }));
+      return;
+    }
+
     if (!onStartAdventure()) {
       setCombat((current) => ({
         ...current,
@@ -280,7 +292,7 @@ export function AdventureView({
 
   const finishWave = (current: CombatState): CombatState => {
     const reward = getWaveReward(current.wave);
-    onClaimReward(reward);
+    pendingRewards.current.push(reward);
 
     if (current.wave >= MAX_WAVE) {
       return {
@@ -305,6 +317,22 @@ export function AdventureView({
       nextId: current.nextId + enemies.length,
     };
   };
+
+  useEffect(() => {
+    if (!pendingRewards.current.length) return;
+
+    const rewards = pendingRewards.current;
+    pendingRewards.current = [];
+    const totalReward = rewards.reduce<Partial<ResourceBag>>((total, reward) => {
+      Object.entries(reward).forEach(([key, value]) => {
+        const resource = key as keyof ResourceBag;
+        total[resource] = (total[resource] ?? 0) + (value ?? 0);
+      });
+      return total;
+    }, {});
+
+    onClaimReward(totalReward);
+  }, [combat.log, combat.status, combat.wave, onClaimReward]);
 
   useEffect(() => {
     if (combat.status !== 'running') return undefined;
@@ -526,6 +554,10 @@ export function AdventureView({
             <FastForward size={17} />
             Start Auto · {formatNumber(adventureCost)} D
           </button>
+          <small>
+            Deuterium {formatNumber(state.resources.deuterium)} /{' '}
+            {formatNumber(adventureCost)}
+          </small>
         </div>
       </div>
 
