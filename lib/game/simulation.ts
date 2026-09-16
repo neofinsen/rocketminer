@@ -24,6 +24,8 @@ const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
 export const BASE_POSITION = { x: 9, y: 78 };
+const UNLOAD_DURATION_SECONDS = 30;
+const REFUEL_DURATION_SECONDS = 30;
 
 const asteroidTypes: Asteroid['type'][] = [
   'iron',
@@ -395,11 +397,10 @@ const unloadCargo = (
     rocket: {
       ...rocket,
       cargo: {},
-      status:
-        rocket.fuel < rocket.fuelMax ? ('refueling' as const) : ('collecting' as const),
+      status: rocket.fuel <= 0 ? ('refueling' as const) : ('collecting' as const),
       returnTimer: 0,
-      refuelTimer:
-        rocket.fuel < rocket.fuelMax ? rocket.refuelDuration : rocket.refuelTimer,
+      refuelDuration: REFUEL_DURATION_SECONDS,
+      refuelTimer: rocket.fuel <= 0 ? REFUEL_DURATION_SECONDS : 0,
       grabbedFragmentId: undefined,
       grabTimer: 0,
     },
@@ -511,7 +512,8 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
       rocket.x = BASE_POSITION.x;
       rocket.y = BASE_POSITION.y;
       rocket.status = 'unloading';
-      rocket.returnTimer = Math.max(1, rocket.returnTimer);
+      rocket.returnDuration = UNLOAD_DURATION_SECONDS;
+      rocket.returnTimer = UNLOAD_DURATION_SECONDS;
     }
 
     return {

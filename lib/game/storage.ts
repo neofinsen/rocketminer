@@ -144,12 +144,19 @@ export function loadGameState(): GameState {
         status: rocketStatus,
         fuel: saved.rocket?.fuel ?? INITIAL_STATE.rocket.fuel,
         fuelMax: saved.rocket?.fuelMax ?? INITIAL_STATE.rocket.fuelMax,
-        refuelTimer: saved.rocket?.refuelTimer ?? 0,
-        refuelDuration:
-          saved.rocket?.refuelDuration ?? INITIAL_STATE.rocket.refuelDuration,
-        returnTimer: saved.rocket?.returnTimer ?? 0,
+        refuelTimer:
+          rocketStatus === 'refueling'
+            ? Math.min(saved.rocket?.refuelTimer ?? 30, 30)
+            : (saved.rocket?.refuelTimer ?? 0),
+        refuelDuration: 30,
+        returnTimer:
+          rocketStatus === 'unloading'
+            ? Math.min(saved.rocket?.returnTimer ?? 30, 30)
+            : (saved.rocket?.returnTimer ?? 0),
         returnDuration:
-          saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration,
+          rocketStatus === 'unloading'
+            ? 30
+            : (saved.rocket?.returnDuration ?? INITIAL_STATE.rocket.returnDuration),
         grabbedFragmentId: saved.rocket?.grabbedFragmentId,
         grabTimer: saved.rocket?.grabTimer ?? 0,
         grabDuration:
