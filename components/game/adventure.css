@@ -4,8 +4,8 @@
   gap: 18px;
   padding: 24px;
   background:
-    linear-gradient(rgba(6, 15, 27, 0.74), rgba(6, 15, 27, 0.88)),
-    url('./assets/sector-beta-bg-space.png') center / cover,
+    linear-gradient(rgba(6, 15, 27, 0.5), rgba(6, 15, 27, 0.78)),
+    url('./assets/rocketminer-adventure-bg-desert-orbit.png') center / cover,
     #081421;
 }
 
