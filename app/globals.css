@@ -157,7 +157,7 @@
 
 .resource-strip {
   display: grid;
-  grid-template-columns: repeat(6, minmax(94px, 1fr));
+  grid-template-columns: repeat(5, minmax(94px, 1fr));
   min-width: 0;
 }
 
@@ -182,10 +182,9 @@
 }
 
 .resource-icon.gold { background: linear-gradient(#ffe177, #cf941d); }
-.resource-icon.wood { background: linear-gradient(#b9844d, #5c3820); color: white; }
 .resource-icon.metal { background: linear-gradient(#f1f4f6, #858d98); }
 .resource-icon.energy { background: linear-gradient(#8ae8ff, #2479d9); }
-.resource-icon.crystal { background: linear-gradient(#f0b3ff, #7937d7); color: white; }
+.resource-icon.deuterium { background: linear-gradient(#95f4ff, #1f76a8); color: white; }
 .resource-icon.titan { background: linear-gradient(#c5d1cf, #60726f); color: white; }
 .resource-icon.silicon { background: linear-gradient(#e9f4ff, #95b1c8); }
 .resource-icon.alien { background: linear-gradient(#ff9af2, #7d2dbe); color: white; }

@@ -1,9 +1,8 @@
 export type ResourceKey =
   | 'credits'
-  | 'wood'
   | 'metal'
   | 'energy'
-  | 'crystal'
+  | 'deuterium'
   | 'titan'
   | 'silicon'
   | 'alien';
@@ -25,7 +24,6 @@ export type ModuleKey =
 
 export type BuildingKey =
   | 'townhall'
-  | 'sawmill'
   | 'quarry'
   | 'forge'
   | 'research'
@@ -85,7 +83,7 @@ export interface RocketState {
 
 export interface Asteroid {
   id: number;
-  type: 'iron' | 'titan' | 'crystal' | 'silicon' | 'alien';
+  type: 'iron' | 'titan' | 'deuterium' | 'silicon' | 'alien';
   x: number;
   y: number;
   hp: number;

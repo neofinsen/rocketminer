@@ -105,7 +105,7 @@
     drop-shadow(0 0 10px rgba(160, 190, 185, 0.18));
 }
 
-.asteroid.crystal .asteroid-rock {
+.asteroid.deuterium .asteroid-rock {
   background-position: 50% 50%;
   filter:
     saturate(0.95)
@@ -159,12 +159,11 @@
   background-position: 50% 50%;
 }
 
-.fragment-wood,
 .fragment-credits {
   background-position: 50% 50%;
 }
 
-.fragment-crystal {
+.fragment-deuterium {
   background-position: 75% 50%;
 }
 

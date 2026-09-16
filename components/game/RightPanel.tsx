@@ -13,7 +13,7 @@ import { ResourceIcon } from './ResourceIcon';
 const cargoResources: ResourceKey[] = [
   'metal',
   'titan',
-  'crystal',
+  'deuterium',
   'silicon',
   'alien',
 ];
@@ -79,9 +79,9 @@ export function RightPanel({
             <strong>+14 /s</strong>
           </div>
           <div>
-            <ResourceIcon resource="crystal" />
-            <span>Kristall</span>
-            <strong>+8 /s</strong>
+            <ResourceIcon resource="deuterium" />
+            <span>Deuterium</span>
+            <strong>selten</strong>
           </div>
         </div>
       </section>

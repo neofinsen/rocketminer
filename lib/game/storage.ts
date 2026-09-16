@@ -1,7 +1,11 @@
 import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants';
 import { clampResourcesToStorage } from './simulation';
 import type {
+  Asteroid,
+  Building,
+  Fragment,
   GameState,
+  ResourceBag,
   RocketModule,
   SectorKey,
   ViewKey,
@@ -18,6 +22,14 @@ const mergeModules = (savedModules: unknown): RocketModule[] => {
   return INITIAL_STATE.modules.map((module) => ({
     ...module,
     ...saved.find((item) => item.key === module.key),
+  }));
+};
+
+const mergeBuildings = (savedBuildings: unknown): Building[] => {
+  const saved = asArray(savedBuildings, []);
+  return INITIAL_STATE.buildings.map((building) => ({
+    ...building,
+    ...saved.find((item) => item.key === building.key),
   }));
 };
 
@@ -45,15 +57,64 @@ const normalizeCityPlacements = (placements: unknown) => {
     ...(placements && typeof placements === 'object' ? placements : {}),
   };
   const validSlots = new Set(Object.values(INITIAL_CITY_PLACEMENTS));
+  const validBuildings = new Set(Object.keys(INITIAL_CITY_PLACEMENTS));
 
   return Object.fromEntries(
-    Object.entries(merged).map(([key, slot]) => [
-      key,
-      validSlots.has(slot as string)
-        ? slot
-        : INITIAL_CITY_PLACEMENTS[key as keyof typeof INITIAL_CITY_PLACEMENTS],
-    ]),
+    Object.entries(merged)
+      .filter(([key]) => validBuildings.has(key))
+      .map(([key, slot]) => [
+        key,
+        validSlots.has(slot as string)
+          ? slot
+          : INITIAL_CITY_PLACEMENTS[key as keyof typeof INITIAL_CITY_PLACEMENTS],
+      ]),
   );
+};
+
+const normalizeResourceBag = (resources: unknown): ResourceBag => {
+  const saved = resources && typeof resources === 'object'
+    ? (resources as Partial<ResourceBag> & { crystal?: number; wood?: number })
+    : {};
+  const { crystal, wood, ...currentResources } = saved;
+
+  return {
+    ...INITIAL_STATE.resources,
+    ...currentResources,
+    deuterium: saved.deuterium ?? crystal ?? INITIAL_STATE.resources.deuterium,
+    energy: INITIAL_STATE.resources.energy,
+  };
+};
+
+const normalizeResourceKey = (resource: unknown) => {
+  if (resource === 'crystal') return 'deuterium';
+  if (resource === 'wood') return 'metal';
+  return resource;
+};
+
+const normalizeAsteroids = (asteroids: unknown): Asteroid[] =>
+  asArray(asteroids, INITIAL_STATE.asteroids).map((asteroid) => ({
+    ...asteroid,
+    type: asteroid.type === 'crystal' ? 'deuterium' : asteroid.type,
+    resource: normalizeResourceKey(asteroid.resource) as Asteroid['resource'],
+  }));
+
+const normalizeFragments = (fragments: unknown): Fragment[] =>
+  asArray(fragments, INITIAL_STATE.fragments).map((fragment) => ({
+    ...fragment,
+    resource: normalizeResourceKey(fragment.resource) as Fragment['resource'],
+  }));
+
+const normalizeCargo = (cargo: unknown): Partial<ResourceBag> => {
+  const saved = cargo && typeof cargo === 'object'
+    ? (cargo as Partial<ResourceBag> & { crystal?: number; wood?: number })
+    : {};
+  const { crystal, wood, ...currentCargo } = saved;
+
+  return {
+    ...currentCargo,
+    deuterium: (saved.deuterium ?? 0) + (crystal ?? 0),
+    metal: (saved.metal ?? 0) + (wood ?? 0),
+  };
 };
 
 const normalizeWeaponUpgrades = (
@@ -104,21 +165,17 @@ export function loadGameState(): GameState {
       ...saved,
       view: normalizeView(saved.view),
       damageTexts: [],
-      asteroids: asArray(saved.asteroids, INITIAL_STATE.asteroids),
-      fragments: asArray(saved.fragments, INITIAL_STATE.fragments),
+      asteroids: normalizeAsteroids(saved.asteroids),
+      fragments: normalizeFragments(saved.fragments),
       modules: mergeModules(saved.modules),
-      buildings: asArray(saved.buildings, INITIAL_STATE.buildings),
+      buildings: mergeBuildings(saved.buildings),
       cityPlacements: normalizeCityPlacements(saved.cityPlacements),
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,
-      resources: {
-        ...INITIAL_STATE.resources,
-        ...saved.resources,
-        energy: INITIAL_STATE.resources.energy,
-      },
+      resources: normalizeResourceBag(saved.resources),
       destroyedAsteroids: saved.destroyedAsteroids ?? 0,
       newRocketBuilt: saved.newRocketBuilt ?? INITIAL_STATE.newRocketBuilt,
       weaponUpgrades: normalizeWeaponUpgrades(
@@ -161,7 +218,7 @@ export function loadGameState(): GameState {
         grabTimer: saved.rocket?.grabTimer ?? 0,
         grabDuration:
           saved.rocket?.grabDuration ?? INITIAL_STATE.rocket.grabDuration,
-        cargo: { ...saved.rocket?.cargo },
+        cargo: normalizeCargo(saved.rocket?.cargo),
       },
       collectedTotals: { ...saved.collectedTotals },
     };

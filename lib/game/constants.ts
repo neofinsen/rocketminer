@@ -10,10 +10,9 @@ import type {
 
 export const RESOURCE_LABELS: Record<keyof ResourceBag, string> = {
   credits: 'Credits',
-  wood: 'Holz',
   metal: 'Metall',
   energy: 'Energie',
-  crystal: 'Kristall',
+  deuterium: 'Deuterium',
   titan: 'Titan',
   silicon: 'Silizium',
   alien: 'Alien-Partikel',
@@ -21,10 +20,9 @@ export const RESOURCE_LABELS: Record<keyof ResourceBag, string> = {
 
 export const RESOURCE_ICONS: Record<keyof ResourceBag, string> = {
   credits: 'C',
-  wood: 'H',
   metal: 'M',
   energy: 'E',
-  crystal: 'K',
+  deuterium: 'D',
   titan: 'T',
   silicon: 'S',
   alien: 'A',
@@ -32,10 +30,9 @@ export const RESOURCE_ICONS: Record<keyof ResourceBag, string> = {
 
 export const ZERO_RESOURCES: ResourceBag = {
   credits: 0,
-  wood: 0,
   metal: 0,
   energy: 0,
-  crystal: 0,
+  deuterium: 0,
   titan: 0,
   silicon: 0,
   alien: 0,
@@ -60,13 +57,6 @@ export const INITIAL_BUILDINGS: Building[] = [
     production: { credits: 18 },
   },
   {
-    key: 'sawmill',
-    name: 'Saegewerk',
-    level: 0,
-    icon: 'wood',
-    production: { wood: 12 },
-  },
-  {
     key: 'quarry',
     name: 'Steinbruch',
     level: 0,
@@ -85,7 +75,7 @@ export const INITIAL_BUILDINGS: Building[] = [
     name: 'Forschungszentrum',
     level: 0,
     icon: 'dome',
-    production: { crystal: 0.4 },
+    production: { deuterium: 0.08 },
   },
   {
     key: 'spaceport',
@@ -112,7 +102,6 @@ export const INITIAL_BUILDINGS: Building[] = [
 
 export const INITIAL_CITY_PLACEMENTS: CityPlacements = {
   townhall: 'slot-06',
-  sawmill: 'slot-05',
   quarry: 'slot-07',
   forge: 'slot-02',
   research: 'slot-08',
@@ -148,7 +137,7 @@ export const QUEST_CHAIN: Quest[] = [
     targetKey: 'metal',
     current: 0,
     target: 200,
-    reward: { crystal: 90, credits: 1400 },
+    reward: { deuterium: 24, credits: 1400 },
     done: false,
   },
   {
@@ -158,7 +147,7 @@ export const QUEST_CHAIN: Quest[] = [
     targetKey: 'research',
     current: 1,
     target: 2,
-    reward: { silicon: 120, crystal: 140 },
+    reward: { silicon: 120, deuterium: 36 },
     done: false,
   },
   {
@@ -179,10 +168,9 @@ export const INITIAL_STATE: GameState = {
   questIndex: 0,
   resources: {
     credits: 2500,
-    wood: 2500,
     metal: 2500,
     energy: 120,
-    crystal: 1280,
+    deuterium: 180,
     titan: 420,
     silicon: 180,
     alien: 45,
@@ -233,16 +221,16 @@ export const INITIAL_STATE: GameState = {
     },
     {
       id: 3,
-      type: 'crystal',
+      type: 'deuterium',
       x: 52,
       y: 74,
       hp: 1500,
       maxHp: 1500,
-      resource: 'wood',
+      resource: 'deuterium',
     },
   ],
   fragments: [
-    { id: 4, x: 44, y: 51, resource: 'wood', amount: 28 },
+    { id: 4, x: 44, y: 51, resource: 'deuterium', amount: 10 },
     { id: 5, x: 48, y: 49, resource: 'metal', amount: 35 },
     { id: 6, x: 58, y: 58, resource: 'credits', amount: 26 },
   ],

@@ -2,10 +2,9 @@ import type { ResourceKey } from '@/lib/game/types';
 
 const colors: Record<ResourceKey, string> = {
   credits: 'gold',
-  wood: 'wood',
   metal: 'metal',
   energy: 'energy',
-  crystal: 'crystal',
+  deuterium: 'deuterium',
   titan: 'titan',
   silicon: 'silicon',
   alien: 'alien',
@@ -13,10 +12,9 @@ const colors: Record<ResourceKey, string> = {
 
 const labels: Record<ResourceKey, string> = {
   credits: 'C',
-  wood: 'H',
   metal: 'M',
   energy: 'E',
-  crystal: 'K',
+  deuterium: 'D',
   titan: 'T',
   silicon: 'S',
   alien: 'A',

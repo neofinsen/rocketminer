@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   formatNumber,
+  getAdventureDeuteriumCost,
   getModuleLevel,
   getRocketSpeed,
   getShieldStrength,
@@ -112,7 +113,7 @@ const getAlienDrop = (wave: number) => {
 const getWaveReward = (wave: number): Partial<ResourceBag> => ({
   credits: 80 + wave * 28,
   titan: 10 + wave * 4,
-  crystal: 8 + wave * 3,
+  deuterium: wave >= 4 ? 2 + Math.floor(wave / 4) : 0,
   silicon: wave >= 3 ? 5 + wave * 2 : 0,
   alien: getAlienDrop(wave),
 });
@@ -214,10 +215,12 @@ export function AdventureView({
   state,
   onClaimReward,
   onChooseWeaponUpgrade,
+  onStartAdventure,
 }: {
   state: GameState;
   onClaimReward: (reward: Partial<ResourceBag>) => void;
   onChooseWeaponUpgrade: (choice: WeaponUpgradeChoice) => void;
+  onStartAdventure: () => boolean;
 }) {
   const [combat, setCombat] = useState<CombatState>(() => createIdleCombat(state));
   const keys = useRef(new Set<string>());
@@ -242,8 +245,18 @@ export function AdventureView({
     : undefined;
   const playerSpeed = getRocketSpeed(state) * ADVENTURE_SPEED_SCALE;
   const fireCooldown = getFireCooldown(weaponLevel, rapidFireLevel);
+  const adventureCost = getAdventureDeuteriumCost(state);
 
-  const startRun = (mode: Mode) => setCombat(createCombat(state, mode));
+  const startRun = (mode: Mode) => {
+    if (!onStartAdventure()) {
+      setCombat((current) => ({
+        ...current,
+        message: `Nicht genug Deuterium: ${formatNumber(adventureCost)} benoetigt`,
+      }));
+      return;
+    }
+    setCombat(createCombat(state, mode));
+  };
 
   useEffect(() => {
     const normalize = (key: string) => key.toLowerCase();
@@ -512,11 +525,11 @@ export function AdventureView({
         <div className="adventure-actions">
           <button onClick={() => startRun('manual')}>
             <Hand size={17} />
-            Start Manuell
+            Start Manuell · {formatNumber(adventureCost)} D
           </button>
           <button onClick={() => startRun('auto')}>
             <FastForward size={17} />
-            Start Auto
+            Start Auto · {formatNumber(adventureCost)} D
           </button>
         </div>
       </div>
@@ -592,7 +605,7 @@ export function AdventureView({
         <div className="reward-card">
           <Shield size={24} />
           <h3>Beute</h3>
-          <p>Wellen liefern Titan, Kristall, Silizium und Alien-Partikel.</p>
+          <p>Wellen liefern Titan, Deuterium, Silizium und Alien-Partikel.</p>
           <div className="reward-log">
             {combat.log.length ? (
               combat.log.map((entry) => <span key={entry}>{entry}</span>)

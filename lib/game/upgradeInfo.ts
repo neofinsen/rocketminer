@@ -1,6 +1,6 @@
 import { RESOURCE_LABELS } from './constants';
 import { getResearchDiscountForLevel, type TechNode } from './research';
-import { formatNumber } from './simulation';
+import { formatNumber, formatRate } from './simulation';
 import type { Building, ModuleKey, ResourceBag, RocketModule } from './types';
 
 const moduleStats: Record<ModuleKey, (level: number) => string> = {
@@ -35,8 +35,8 @@ export const getBuildingUpgradeBenefits = (building: Building) =>
         resource === 'energy'
           ? `Energie-Kapazitaet +${formatNumber(value ?? 0)}`
           : building.level === 0
-            ? `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min`
-            : `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatNumber(value ?? 0)}/min mehr`,
+            ? `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatRate(value ?? 0)}/min`
+            : `${RESOURCE_LABELS[resource as keyof ResourceBag]} +${formatRate(value ?? 0)}/min mehr`,
     ),
     ...(building.key === 'research'
       ? [

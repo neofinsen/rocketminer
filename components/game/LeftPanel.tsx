@@ -20,6 +20,7 @@ import {
   getFuelPercent,
   getLaserDamage,
   getModuleCost,
+  getRefuelDeuteriumCost,
   getRocketSpeed,
   getSectorLabel,
 } from '@/lib/game/simulation';
@@ -112,7 +113,8 @@ export function LeftPanel({
         </div>
         {state.rocket.status === 'refueling' ? (
           <small className="refuel-note">
-            Auftanken {formatSeconds(state.rocket.refuelTimer)}
+            Auftanken {formatSeconds(state.rocket.refuelTimer)} · Deuterium{' '}
+            {formatNumber(getRefuelDeuteriumCost(state))}
           </small>
         ) : null}
       </section>

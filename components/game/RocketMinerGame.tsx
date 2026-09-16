@@ -14,6 +14,7 @@ import {
   canBuildNewRocket,
   canPay,
   canPayCost,
+  getAdventureDeuteriumCost,
   getBuildingCost,
   getModuleCost,
   newRocketCost,
@@ -267,6 +268,23 @@ export function RocketMinerGame() {
     [],
   );
 
+  const startAdventure = useCallback(() => {
+    let started = false;
+    setState((current) => {
+      const cost = getAdventureDeuteriumCost(current);
+      if (current.resources.deuterium < cost) return current;
+      started = true;
+      return {
+        ...current,
+        resources: {
+          ...current.resources,
+          deuterium: current.resources.deuterium - cost,
+        },
+      };
+    });
+    return started;
+  }, []);
+
   const chooseWeaponUpgrade = useCallback((choice: WeaponUpgradeChoice) => {
     setState((current) => {
       const weaponLevel =
@@ -330,6 +348,7 @@ export function RocketMinerGame() {
               state={state}
               onChooseWeaponUpgrade={chooseWeaponUpgrade}
               onClaimReward={claimAdventureReward}
+              onStartAdventure={startAdventure}
             />
           ) : null}
         </div>

@@ -12,9 +12,8 @@ import type {
 
 const STORAGE_RESOURCES: ResourceKey[] = [
   'credits',
-  'wood',
   'metal',
-  'crystal',
+  'deuterium',
   'titan',
   'silicon',
   'alien',
@@ -30,21 +29,26 @@ const REFUEL_DURATION_SECONDS = 30;
 const asteroidTypes: Asteroid['type'][] = [
   'iron',
   'titan',
-  'crystal',
+  'deuterium',
   'silicon',
   'alien',
 ];
 
 const asteroidResource: Record<Asteroid['type'], ResourceKey> = {
   iron: 'metal',
-  titan: 'metal',
-  crystal: 'wood',
-  silicon: 'wood',
-  alien: 'credits',
+  titan: 'titan',
+  deuterium: 'deuterium',
+  silicon: 'silicon',
+  alien: 'alien',
 };
 
 export const formatNumber = (value: number) =>
   Math.floor(value).toLocaleString('de-DE');
+
+export const formatRate = (value: number) =>
+  value > 0 && value < 1
+    ? value.toLocaleString('de-DE', { maximumFractionDigits: 1 })
+    : formatNumber(value);
 
 export const formatSeconds = (seconds: number) => {
   const safeSeconds = Math.max(0, Math.ceil(seconds));
@@ -77,10 +81,32 @@ export const getCollectorRange = (state: GameState) =>
 export const getRocketSpeed = (state: GameState) =>
   5.2 + getModuleLevel(state, 'engine') * 1.35;
 
+const getTotalModuleLevels = (state: GameState) =>
+  state.modules.reduce((total, module) => total + module.level, 0);
+
 export const getFuelDrain = (state: GameState) => {
   const energyLevel = getModuleLevel(state, 'energyCore');
-  return clamp(0.22 / (1 + Math.max(0, energyLevel - 1) * 0.22), 0.09, 0.22);
+  const moduleLoad = getTotalModuleLevels(state) * 0.018;
+  return clamp(
+    (0.16 + moduleLoad) / (1 + Math.max(0, energyLevel - 1) * 0.18),
+    0.12,
+    0.9,
+  );
 };
+
+export const getRefuelDeuteriumCost = (state: GameState) =>
+  Math.ceil(
+    state.rocket.fuelMax *
+      (0.42 + getTotalModuleLevels(state) * 0.025),
+  );
+
+export const getAdventureDeuteriumCost = (state: GameState) =>
+  Math.ceil(
+    18 +
+      getModuleLevel(state, 'engine') * 2 +
+      getModuleLevel(state, 'weapon') * 3 +
+      getModuleLevel(state, 'shield') * 2,
+  );
 
 export const getReturnDuration = (state: GameState) => {
   const sectorBonus = state.currentSector === 'beta' ? 24 : 0;
@@ -105,7 +131,7 @@ export const getSectorLabel = (sector: SectorKey) =>
 export const getSectorDanger = (sector: SectorKey) => (sector === 'beta' ? 4 : 2);
 
 export const getProductionPerMinute = (buildings: Building[]) => {
-  const production = { credits: 0, wood: 0, metal: 0, crystal: 0 };
+  const production = { credits: 0, metal: 0, deuterium: 0 };
 
   buildings.forEach((building) => {
     Object.entries(building.production).forEach(([key, value]) => {
@@ -196,14 +222,14 @@ export const getModuleCost = (key: ModuleKey, level: number) => {
   const shared = {
     credits: 280 * scale,
     titan: 18 * scale,
-    crystal: 12 * scale,
+    deuterium: 5 * scale,
   };
 
   if (key === 'weapon') return { ...shared, silicon: 16 * scale, ...alienCost(4) };
   if (key === 'shield') return { ...shared, silicon: 18 * scale, ...alienCost(3) };
   if (key === 'laser') return { ...shared, titan: 28 * scale };
   if (key === 'cargo') return { ...shared, silicon: 14 * scale };
-  if (key === 'collector') return { ...shared, crystal: 22 * scale };
+  if (key === 'collector') return { ...shared, deuterium: 7 * scale };
   if (key === 'energyCore') return { ...shared, silicon: 18 * scale };
   return { ...shared, titan: 22 * scale };
 };
@@ -211,8 +237,7 @@ export const getModuleCost = (key: ModuleKey, level: number) => {
 export const getBuildingCost = (building: Building) => {
   const cost = {
     credits: 210 * (building.level + 1),
-    wood: 70 * (building.level + 1),
-    metal: 62 * (building.level + 1),
+    metal: 92 * (building.level + 1),
   };
 
   return building.key === 'power' ? cost : { ...cost, energy: 50 };
@@ -223,7 +248,7 @@ export const canUnlockBeta = (state: GameState) =>
 
 export const unlockBetaCost: Partial<ResourceBag> = {
   titan: 220,
-  crystal: 180,
+  deuterium: 90,
   energy: 350,
 };
 
@@ -233,6 +258,7 @@ export const newRocketCost: Partial<ResourceBag> = {
   energy: 900,
   titan: 520,
   silicon: 360,
+  deuterium: 180,
   alien: 90,
 };
 
@@ -457,9 +483,16 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
       (1 - rocket.refuelTimer / Math.max(rocket.refuelDuration, 1));
 
     if (rocket.refuelTimer <= 0) {
-      rocket.fuel = rocket.fuelMax;
-      rocket.status = 'collecting';
-      rocket.refuelTimer = 0;
+      const deuteriumCost = getRefuelDeuteriumCost({ ...state, rocket });
+      if (resources.deuterium >= deuteriumCost) {
+        resources.deuterium -= deuteriumCost;
+        rocket.fuel = rocket.fuelMax;
+        rocket.status = 'collecting';
+        rocket.refuelTimer = 0;
+      } else {
+        rocket.fuel = 0;
+        rocket.refuelTimer = 5;
+      }
     }
 
     return {

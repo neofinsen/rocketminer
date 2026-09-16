@@ -2,6 +2,7 @@ import { Mail, Menu, Settings, Trophy } from 'lucide-react';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
   formatNumber,
+  formatRate,
   getEnergyCapacity,
   getFreeEnergy,
   getProductionPerMinute,
@@ -12,10 +13,9 @@ import { ResourceIcon } from './ResourceIcon';
 
 const topResources: ResourceKey[] = [
   'credits',
-  'wood',
   'metal',
   'energy',
-  'crystal',
+  'deuterium',
   'alien',
 ];
 
@@ -52,7 +52,7 @@ export function TopBar({ state }: { state: GameState }) {
                   ? 'frei'
                   : resource === 'alien'
                     ? 'Abenteuer'
-                  : `+${formatNumber(
+                  : `+${formatRate(
                       production[resource as keyof typeof production] ?? 0,
                     )}/min`}
               </small>

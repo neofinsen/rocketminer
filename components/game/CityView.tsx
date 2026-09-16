@@ -7,6 +7,7 @@ import {
   canBuildNewRocket,
   canPayCost,
   formatNumber,
+  formatRate,
   getBuildingCost,
   getEnergyCapacity,
   getFreeEnergy,
@@ -38,11 +39,6 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
     size: 'medium',
     variant: 'civic',
     sprite: 'townhall',
-  },
-  sawmill: {
-    size: 'medium',
-    variant: 'bio',
-    sprite: 'sawmill',
   },
   quarry: {
     size: 'medium',
@@ -180,7 +176,7 @@ export function CityView({
             const slot = buildSlots.find(
               (item) => item.id === state.cityPlacements[building.key],
             );
-            if (!slot) return null;
+            if (!slot || !visual) return null;
 
             const cost = getBuildingCost(building);
             const affordable = canPayCost(state, cost);
@@ -219,7 +215,7 @@ export function CityView({
                     <span key={resource} className="output-chip">
                       <ResourceIcon resource={resource as ResourceKey} />
                       {resource === 'energy' ? 'Kap.' : '+'}
-                      {formatNumber((value ?? 0) * building.level)}
+                      {formatRate((value ?? 0) * building.level)}
                     </span>
                   ))}
                 </span>
