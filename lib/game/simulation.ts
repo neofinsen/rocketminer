@@ -9,6 +9,7 @@ import type {
   SectorKey,
 } from './types';
 import { getMetalDemandPerMinute, getProductionPerMinute } from './economy';
+import { getIdleLaserInterval, queueIdleProjectile } from './idleLaser';
 
 const STORAGE_RESOURCES: ResourceKey[] = [
   'credits',
@@ -554,6 +555,7 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
   }
 
   rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * getFuelDrain(state));
+  rocket.idleLaserTimer = Math.max(0, rocket.idleLaserTimer - deltaSeconds);
   if (rocket.fuel <= 0) {
     const returning = startCargoReturn({ ...state, rocket });
     Object.assign(rocket, {
@@ -582,6 +584,19 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
         .map((text) => ({ ...text, y: text.y - deltaSeconds * 7 }))
         .filter((text) => text.y > 8),
     };
+  }
+
+  if (asteroids.length && rocket.idleLaserTimer <= 0) {
+    const idleShot = queueIdleProjectile({
+      rocket,
+      asteroids,
+      projectiles,
+      nextId,
+      laserDamage: getLaserDamage(state),
+    });
+    projectiles = idleShot.projectiles;
+    nextId = idleShot.nextId;
+    rocket.idleLaserTimer = getIdleLaserInterval(state);
   }
 
   const grabbed = fragments.find((item) => item.id === rocket.grabbedFragmentId);

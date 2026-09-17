@@ -198,6 +198,7 @@ export const INITIAL_STATE: GameState = {
     returnDuration: 30,
     grabTimer: 0,
     grabDuration: 1.4,
+    idleLaserTimer: 7,
     cargo: {},
   },
   asteroids: [
