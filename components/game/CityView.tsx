@@ -25,6 +25,7 @@ import {
   getBuildingUpgradeBenefits,
 } from '@/lib/game/upgradeInfo';
 import { ResourceIcon } from './ResourceIcon';
+import { CostList } from './CostList';
 import { UpgradeTooltip } from './UpgradeTooltip';
 import buildingSheetImage from './assets/rocketminer-building-sheet-desert.png';
 import terrainImage from './assets/rocketminer-city-terrain-desert.png';
@@ -46,8 +47,8 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
   },
   quarry: {
     size: 'medium',
-    variant: 'mine',
-    sprite: 'quarry',
+    variant: 'research',
+    sprite: 'research',
   },
   forge: {
     size: 'medium',
@@ -78,13 +79,13 @@ const cityLayout: Record<BuildingKey, BuildingVisual> = {
 
 const buildSlots = [
   { id: 'slot-01', x: 12.5, y: 12 },
-  { id: 'slot-02', x: 40, y: 35 },
-  { id: 'slot-03', x: 55, y: 36 },
-  { id: 'slot-04', x: 70, y: 39 },
-  { id: 'slot-05', x: 34, y: 56 },
-  { id: 'slot-06', x: 50, y: 55 },
-  { id: 'slot-07', x: 65, y: 58 },
-  { id: 'slot-08', x: 48, y: 73 },
+  { id: 'slot-02', x: 30, y: 23 },
+  { id: 'slot-03', x: 58, y: 25 },
+  { id: 'slot-04', x: 79, y: 30 },
+  { id: 'slot-05', x: 25, y: 58 },
+  { id: 'slot-06', x: 49, y: 53 },
+  { id: 'slot-07', x: 72, y: 61 },
+  { id: 'slot-08', x: 42, y: 78 },
 ] as const;
 
 const formatSignedRate = (value: number) => {
@@ -247,6 +248,7 @@ export function CityView({
                   benefits={getBuildingUpgradeBenefits(building)}
                   cost={cost}
                   label={`Ausbau auf Stufe ${building.level + 1}`}
+                  state={state}
                 />
               </button>
             );
@@ -288,7 +290,9 @@ export function CityView({
                     <span className={`picker-building-icon sprite-${visual.sprite}`} />
                     <span>
                       <strong>{building.name}</strong>
-                      <small>{formatCostTitle(cost)}</small>
+                      <small>
+                        <CostList cost={cost} state={state} />
+                      </small>
                     </span>
                     <span>Bauen</span>
                   </button>
@@ -309,7 +313,9 @@ export function CityView({
                   ? 'Bauauftrag bereit'
                   : `Raumfahrtzentrum Stufe 3 und Forschung noetig`}
             </span>
-            <small>Kosten: {formatCostTitle(newRocketCost)}</small>
+            <small>
+              Kosten: <CostList cost={newRocketCost} state={state} />
+            </small>
             <button
               disabled={!rocketBuildable}
               onClick={onBuildNewRocket}

@@ -18,6 +18,7 @@ import {
 } from '@/lib/game/simulation';
 import type { GameState, ModuleKey } from '@/lib/game/types';
 import { getModuleUpgradeBenefits } from '@/lib/game/upgradeInfo';
+import { CostList } from './CostList';
 import { UpgradeTooltip } from './UpgradeTooltip';
 
 const moduleCopy: Record<ModuleKey, string> = {
@@ -74,8 +75,7 @@ export function RocketView({
               <h3>{module.name}</h3>
               <p>{moduleCopy[module.key]}</p>
               <small>
-                Kosten: {formatNumber(cost.credits ?? 0)} Credits,{' '}
-                {formatNumber(cost.metal ?? 0)} Metall
+                Kosten: <CostList cost={cost} state={state} />
               </small>
               <button
                 disabled={!affordable}
@@ -87,6 +87,7 @@ export function RocketView({
                 benefits={getModuleUpgradeBenefits(module)}
                 cost={cost}
                 label={`Upgrade auf Stufe ${module.level + 1}`}
+                state={state}
               />
             </article>
           );

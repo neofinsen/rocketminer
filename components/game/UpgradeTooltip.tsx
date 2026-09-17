@@ -1,29 +1,23 @@
-import type { ResourceBag, ResourceKey } from '@/lib/game/types';
-import { formatNumber } from '@/lib/game/simulation';
-import { ResourceIcon } from './ResourceIcon';
+import type { GameState, ResourceBag } from '@/lib/game/types';
+import { CostList } from './CostList';
 
 export function UpgradeTooltip({
   benefits,
   cost,
   label = 'Upgrade',
+  state,
 }: {
   benefits: string[];
   cost: Partial<ResourceBag>;
   label?: string;
+  state?: GameState;
 }) {
   return (
     <span className="upgrade-toolbar" aria-hidden="true">
       <span className="upgrade-toolbar-title">{label}</span>
       <span className="upgrade-toolbar-section">
         <strong>Kosten</strong>
-        <span className="upgrade-cost-list">
-          {Object.entries(cost).map(([resource, value]) => (
-            <span key={resource}>
-              <ResourceIcon resource={resource as ResourceKey} />
-              {formatNumber(value ?? 0)}
-            </span>
-          ))}
-        </span>
+        <CostList className="upgrade-cost-list" cost={cost} state={state} />
       </span>
       <span className="upgrade-toolbar-section">
         <strong>Bringt</strong>

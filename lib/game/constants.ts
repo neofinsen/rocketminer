@@ -58,24 +58,24 @@ export const INITIAL_BUILDINGS: Building[] = [
   },
   {
     key: 'quarry',
-    name: 'Steinbruch',
+    name: 'Synthesizer',
     level: 0,
-    icon: 'stone',
-    production: { titan: 5 },
+    icon: 'synth',
+    production: { deuterium: 0.6 },
   },
   {
     key: 'forge',
     name: 'Schmiede',
     level: 0,
     icon: 'forge',
-    production: { silicon: 4, credits: 4 },
+    production: { titan: 4, silicon: 4 },
   },
   {
     key: 'research',
     name: 'Forschungszentrum',
     level: 0,
     icon: 'dome',
-    production: { deuterium: 0.08 },
+    production: {},
   },
   {
     key: 'spaceport',
@@ -96,18 +96,18 @@ export const INITIAL_BUILDINGS: Building[] = [
     name: 'Lager',
     level: 0,
     icon: 'warehouse',
-    production: { credits: 3 },
+    production: {},
   },
 ];
 
 export const INITIAL_CITY_PLACEMENTS: CityPlacements = {
-  townhall: 'slot-06',
+  townhall: 'slot-05',
   quarry: 'slot-07',
-  forge: 'slot-02',
-  research: 'slot-08',
+  forge: 'slot-03',
+  research: 'slot-04',
   spaceport: 'slot-01',
-  power: 'slot-04',
-  warehouse: 'slot-03',
+  power: 'slot-08',
+  warehouse: 'slot-02',
 };
 
 export const QUEST_CHAIN: Quest[] = [

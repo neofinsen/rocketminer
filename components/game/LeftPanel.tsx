@@ -147,6 +147,7 @@ export function LeftPanel({
                   benefits={getModuleUpgradeBenefits(module)}
                   cost={cost}
                   label={`Stufe ${module.level + 1}`}
+                  state={state}
                 />
               </button>
             );

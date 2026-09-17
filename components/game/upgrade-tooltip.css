@@ -82,7 +82,7 @@
   gap: 5px;
 }
 
-.upgrade-cost-list span {
+.upgrade-cost-list .cost-item {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -92,6 +92,12 @@
   padding: 3px 5px;
   color: #e7f2fb;
   font-size: 12px;
+}
+
+.upgrade-cost-list .cost-item.missing {
+  border-color: rgba(255, 94, 94, 0.58);
+  background: rgba(87, 17, 17, 0.78);
+  color: #ff9b9b;
 }
 
 .upgrade-cost-list .resource-icon {

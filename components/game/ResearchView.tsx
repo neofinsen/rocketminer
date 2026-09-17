@@ -23,10 +23,10 @@ import {
   TECH_TREE,
   type TechNode,
 } from '@/lib/game/research';
-import { canPayCost, formatNumber } from '@/lib/game/simulation';
-import type { GameState, ResourceKey, TechKey } from '@/lib/game/types';
+import { canPayCost } from '@/lib/game/simulation';
+import type { GameState, TechKey } from '@/lib/game/types';
 import { getTechResearchBenefits } from '@/lib/game/upgradeInfo';
-import { ResourceIcon } from './ResourceIcon';
+import { CostList } from './CostList';
 import { UpgradeTooltip } from './UpgradeTooltip';
 
 const icons: Record<TechKey, typeof Atom> = {
@@ -147,19 +147,13 @@ export function ResearchView({
                 <span>{tech.effect}</span>
               </span>
               <span className="tech-status">{getStatus(state, tech)}</span>
-              <span className="tech-cost">
-                {Object.entries(cost).map(([resource, value]) => (
-                  <span key={resource}>
-                    <ResourceIcon resource={resource as ResourceKey} />
-                    {formatNumber(value ?? 0)}
-                  </span>
-                ))}
-              </span>
+              <CostList className="tech-cost" cost={cost} state={state} />
               {statusClass !== 'complete' ? (
                 <UpgradeTooltip
                   benefits={getTechResearchBenefits(tech)}
                   cost={cost}
                   label="Forschen"
+                  state={state}
                 />
               ) : null}
             </button>

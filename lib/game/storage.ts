@@ -33,6 +33,8 @@ const mergeBuildings = (savedBuildings: unknown): Building[] => {
     return {
       ...building,
       ...savedBuilding,
+      name: building.name,
+      icon: building.icon,
       production: building.production,
     };
   });
