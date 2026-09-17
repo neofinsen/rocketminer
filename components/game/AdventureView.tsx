@@ -331,6 +331,8 @@ export function AdventureView({
               nextId += 1;
               return [];
             });
+            explosions.push({ id: nextId, x: current.playerX, y: current.playerY, timer: 0.72, kind: 'nova' });
+            nextId += 1;
             pulseTimer = 8;
             message = 'Nova-Puls entlaedt sich';
           }
@@ -635,7 +637,7 @@ export function AdventureView({
           ))}
           {combat.explosions.map((explosion) => (
             <span
-              className="combat-explosion"
+              className={`combat-explosion ${explosion.kind ?? 'blast'}`}
               key={explosion.id}
               style={{ left: `${explosion.x}%`, top: `${explosion.y}%` }}
             />

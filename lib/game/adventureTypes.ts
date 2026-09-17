@@ -35,6 +35,7 @@ export type Explosion = {
   x: number;
   y: number;
   timer: number;
+  kind?: 'blast' | 'nova';
 };
 
 export type XpOrb = {
