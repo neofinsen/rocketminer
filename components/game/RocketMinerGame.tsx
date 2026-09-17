@@ -114,6 +114,22 @@ export function RocketMinerGame() {
   const hitAsteroid = (id: number) =>
     setState((current) => queueProjectile(current, id));
 
+  const toggleIdleMode = () =>
+    setState((current) =>
+      current.rocket.status === 'collecting'
+        ? {
+            ...current,
+            rocket: {
+              ...current.rocket,
+              idleMode: !current.rocket.idleMode,
+              idleLaserTimer: !current.rocket.idleMode
+                ? Math.min(current.rocket.idleLaserTimer, 1.2)
+                : current.rocket.idleLaserTimer,
+            },
+          }
+        : current,
+    );
+
   const upgradeModule = (key: ModuleKey) => {
     setState((current) => {
       const rocketModule = current.modules.find((item) => item.key === key);
@@ -370,7 +386,11 @@ export function RocketMinerGame() {
     <main className="game-shell">
       <TopBar state={state} />
       <div className="game-layout">
-        <LeftPanel state={state} onUpgradeModule={upgradeModule} />
+        <LeftPanel
+          state={state}
+          onToggleIdle={toggleIdleMode}
+          onUpgradeModule={upgradeModule}
+        />
         <div className="center-stage">
           {state.view === 'space' ? (
             <SpaceScene state={state} onHitAsteroid={hitAsteroid} />

@@ -78,6 +78,7 @@ export interface RocketState {
   grabbedFragmentId?: number;
   grabTimer: number;
   grabDuration: number;
+  idleMode: boolean;
   idleLaserTimer: number;
   cargo: Partial<ResourceBag>;
 }

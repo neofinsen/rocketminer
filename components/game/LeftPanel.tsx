@@ -4,6 +4,7 @@ import {
   ChevronsUp,
   Crosshair,
   Gauge,
+  MousePointerClick,
   Orbit,
   Shield,
   Swords,
@@ -54,9 +55,11 @@ const adventureModules: ModuleKey[] = ['engine', 'weapon', 'shield'];
 
 export function LeftPanel({
   state,
+  onToggleIdle,
   onUpgradeModule,
 }: {
   state: GameState;
+  onToggleIdle: () => void;
   onUpgradeModule: (key: ModuleKey) => void;
 }) {
   const cargoUsed = getCargoUsed(state);
@@ -106,6 +109,17 @@ export function LeftPanel({
           <span className="rocket-image-mini" />
           <span className="rocket-flame-mini" />
         </div>
+        {state.view === 'space' ? (
+          <button
+            className={state.rocket.idleMode ? 'idle-toggle active' : 'idle-toggle'}
+            disabled={state.rocket.status !== 'collecting'}
+            onClick={onToggleIdle}
+            type="button"
+          >
+            <MousePointerClick size={15} />
+            IDLE {state.rocket.idleMode ? 'AN' : 'AUS'}
+          </button>
+        ) : null}
         <div className="fuel-row">
           <strong>Treibstoff</strong>
           <Progress className="game-progress" value={fuelPercent} />

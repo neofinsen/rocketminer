@@ -224,6 +224,7 @@ export function loadGameState(): GameState {
         grabTimer: saved.rocket?.grabTimer ?? 0,
         grabDuration:
           saved.rocket?.grabDuration ?? INITIAL_STATE.rocket.grabDuration,
+        idleMode: saved.rocket?.idleMode ?? INITIAL_STATE.rocket.idleMode,
         idleLaserTimer:
           saved.rocket?.idleLaserTimer ?? INITIAL_STATE.rocket.idleLaserTimer,
         cargo: normalizeCargo(saved.rocket?.cargo),

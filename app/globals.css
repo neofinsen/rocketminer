@@ -318,6 +318,36 @@
   text-transform: uppercase;
 }
 
+.idle-toggle {
+  align-self: center;
+  justify-self: start;
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 180, 45, 0.5);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(45, 35, 24, 0.94), rgba(19, 23, 25, 0.96));
+  color: #ffe5a9;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 0 12px;
+}
+
+.idle-toggle.active {
+  border-color: rgba(120, 235, 126, 0.78);
+  background: linear-gradient(180deg, rgba(39, 88, 49, 0.92), rgba(18, 36, 28, 0.96));
+  color: #b9ffbd;
+  box-shadow: 0 0 16px rgba(102, 235, 126, 0.22);
+}
+
+.idle-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .refuel-note {
   grid-column: 1 / -1;
   color: #ffd88b;

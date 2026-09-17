@@ -295,6 +295,10 @@ export const queueProjectile = (
     ...state,
     projectiles: [...state.projectiles, projectile],
     nextId: state.nextId + 1,
+    rocket: {
+      ...state.rocket,
+      idleMode: false,
+    },
   };
 };
 
@@ -554,7 +558,9 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
     };
   }
 
-  rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * getFuelDrain(state));
+  if (!rocket.idleMode) {
+    rocket.fuel = Math.max(0, rocket.fuel - deltaSeconds * getFuelDrain(state));
+  }
   rocket.idleLaserTimer = Math.max(0, rocket.idleLaserTimer - deltaSeconds);
   if (rocket.fuel <= 0) {
     const returning = startCargoReturn({ ...state, rocket });
@@ -586,7 +592,7 @@ export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
     };
   }
 
-  if (asteroids.length && rocket.idleLaserTimer <= 0) {
+  if (rocket.idleMode && asteroids.length && rocket.idleLaserTimer <= 0) {
     const idleShot = queueIdleProjectile({
       rocket,
       asteroids,
