@@ -15,7 +15,6 @@
   filter:
     saturate(0.92)
     drop-shadow(0 10px 12px rgba(0, 0, 0, 0.35));
-  transform: rotate(var(--rocket-art-rotation, 0deg)) scale(0.9);
 }
 
 .rocket-flame-mini,
@@ -51,7 +50,6 @@
   filter:
     saturate(0.92)
     contrast(0.96);
-  transform: rotate(var(--rocket-art-rotation, 0deg)) scale(0.9);
 }
 
 .rocket-flame {

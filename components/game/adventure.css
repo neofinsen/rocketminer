@@ -159,7 +159,6 @@
   inset: 0;
   background: var(--rocket-image) center / contain no-repeat;
   content: '';
-  transform: rotate(var(--rocket-art-rotation, 0deg)) scale(0.9);
 }
 
 .player-ship-marker::after {
