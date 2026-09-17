@@ -50,7 +50,6 @@ import { AdventureView } from './AdventureView';
 import { MainMenu } from './MainMenu';
 import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
-import { TutorialGuide } from './TutorialGuide';
 import './adventure.css';
 import './main-menu.css';
 import './space-assets.css';
@@ -457,7 +456,6 @@ export function RocketMinerGame() {
   return (
     <main className="game-shell">
       <TopBar state={state} />
-      <TutorialGuide state={state} onChangeView={setView} />
       <div className="game-layout">
         <LeftPanel
           state={state}

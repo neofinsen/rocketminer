@@ -264,7 +264,9 @@ function QuestCard({ state }: { state: GameState }) {
 
   return (
     <div className={state.tutorialActive ? 'quest-card tutorial' : 'quest-card'}>
-      <h2>{state.tutorialActive ? 'Tutorial' : 'Aktuelle Quest'}</h2>
+      <h2>
+        {state.tutorialActive ? `Tutorial · Schritt ${state.questIndex + 1}` : 'Aktuelle Quest'}
+      </h2>
       <p>{state.quest.done ? 'Quest-Kette abgeschlossen' : title}</p>
       <small>{hint}</small>
       <Progress className="game-progress quest-progress" value={percent} />
