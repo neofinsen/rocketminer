@@ -1,0 +1,129 @@
+.main-menu {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background:
+    linear-gradient(rgba(6, 12, 19, 0.62), rgba(6, 12, 19, 0.86)),
+    url('./assets/rocketminer-combat-bg-desert-salvage.png') center / cover,
+    #081421;
+  padding: 34px;
+}
+
+.main-menu-panel {
+  display: grid;
+  width: min(1180px, 100%);
+  gap: 18px;
+  border: 1px solid rgba(190, 132, 62, 0.58);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(20, 27, 32, 0.95), rgba(9, 13, 18, 0.98)),
+    #10161d;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.48);
+  padding: 28px;
+}
+
+.main-menu-kicker {
+  color: #ffd88b;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.main-menu h1 {
+  margin: 0;
+  color: #f7fbff;
+  font-size: 34px;
+  letter-spacing: 0;
+}
+
+.main-menu p {
+  max-width: 640px;
+  margin: 0;
+  color: #b9c7d6;
+  font-size: 15px;
+}
+
+.main-menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.main-menu-actions button,
+.menu-back-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 180, 45, 0.62);
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(115, 79, 35, 0.92), rgba(44, 31, 20, 0.96));
+  color: #fff4d8;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0 16px;
+}
+
+.main-menu-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.rocket-select-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rocket-select-card {
+  display: grid;
+  min-height: 232px;
+  align-content: end;
+  justify-items: start;
+  border: 1px solid rgba(164, 203, 231, 0.22);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(92, 105, 112, 0.2), transparent 58%),
+    rgba(8, 18, 30, 0.78);
+  color: #eff7ff;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 12px;
+  text-align: left;
+}
+
+.rocket-select-card img {
+  width: 100%;
+  height: 148px;
+  border-radius: 6px;
+  background: rgba(2, 7, 11, 0.36);
+  object-fit: contain;
+  object-position: center;
+  opacity: 0.96;
+}
+
+.rocket-select-card strong {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.rocket-select-card small {
+  color: #77e48d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.rocket-select-card.locked {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.rocket-select-card.locked img {
+  filter: grayscale(1) brightness(0.72);
+  opacity: 0.78;
+}
+
+.rocket-select-card.locked small {
+  color: #b2bbc6;
+}

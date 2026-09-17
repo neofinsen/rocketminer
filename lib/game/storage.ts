@@ -14,6 +14,9 @@ import type {
 
 const SAVE_KEY = 'rocketminer-save-v3';
 
+export const hasSavedGame = () =>
+  typeof window !== 'undefined' && Boolean(window.localStorage.getItem(SAVE_KEY));
+
 const asArray = <T,>(value: unknown, fallback: T[]) =>
   Array.isArray(value) ? (value as T[]) : fallback;
 

@@ -23,7 +23,12 @@ import {
   startCargoReturn,
   tickGame,
 } from '@/lib/game/simulation';
-import { loadGameState, resetGameState, saveGameState } from '@/lib/game/storage';
+import {
+  hasSavedGame,
+  loadGameState,
+  resetGameState,
+  saveGameState,
+} from '@/lib/game/storage';
 import type {
   BuildingKey,
   GameState,
@@ -39,15 +44,22 @@ import { LeftPanel } from './LeftPanel';
 import { ResearchView } from './ResearchView';
 import { RightPanel } from './RightPanel';
 import { AdventureView } from './AdventureView';
+import { MainMenu } from './MainMenu';
 import { SpaceScene } from './SpaceScene';
 import { TopBar } from './TopBar';
 import './adventure.css';
+import './main-menu.css';
 import './space-assets.css';
 
 const GAME_TICK_SECONDS = 0.05;
+type ShellMode = 'menu' | 'game';
+type MainMenuMode = 'home' | 'rocket-select';
 
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
+  const [shellMode, setShellMode] = useState<ShellMode>('menu');
+  const [menuMode, setMenuMode] = useState<MainMenuMode>('home');
+  const [hasSave, setHasSave] = useState(false);
   const lastFrame = useRef<number | null>(null);
   const saveLoaded = useRef(false);
   const latestState = useRef(state);
@@ -56,6 +68,7 @@ export function RocketMinerGame() {
     const loaded = syncQuestProgress(loadGameState());
     saveLoaded.current = true;
     latestState.current = loaded;
+    setHasSave(hasSavedGame());
     setState(loaded);
   }, []);
 
@@ -324,7 +337,34 @@ export function RocketMinerGame() {
     resetGameState();
     lastFrame.current = null;
     setState(INITIAL_STATE);
+    setHasSave(false);
+    setShellMode('menu');
+    setMenuMode('home');
   };
+
+  const startNewRun = () => {
+    resetGameState();
+    const newState = { ...INITIAL_STATE, view: 'adventure' as const };
+    latestState.current = newState;
+    saveLoaded.current = true;
+    lastFrame.current = null;
+    setState(newState);
+    setHasSave(false);
+    setShellMode('game');
+  };
+
+  if (shellMode === 'menu') {
+    return (
+      <MainMenu
+        hasSave={hasSave}
+        mode={menuMode}
+        onContinue={() => setShellMode('game')}
+        onNewRun={() => setMenuMode('rocket-select')}
+        onSelectStarter={startNewRun}
+        onSetMode={setMenuMode}
+      />
+    );
+  }
 
   return (
     <main className="game-shell">
