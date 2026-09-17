@@ -178,6 +178,10 @@
   text-shadow: 0 0 10px rgba(255, 167, 44, 0.18);
 }
 
+.quest-card.tutorial {
+  border-color: rgba(105, 214, 255, 0.62);
+}
+
 .module-row,
 .primary-action,
 .building-card button,

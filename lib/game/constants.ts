@@ -113,8 +113,8 @@ export const INITIAL_CITY_PLACEMENTS: CityPlacements = {
 
 export const QUEST_CHAIN: Quest[] = [
   {
-    title: 'Zerstoere deinen ersten grossen Asteroiden',
-    hint: 'Klicke einen grossen Asteroiden im Weltraum, bis seine HP auf 0 fallen.',
+    title: 'Zerstoere deinen ersten grossen Meteoriten',
+    hint: 'Meteoriten liefern Metall fuer deine Basis.',
     goal: 'destroy',
     current: 0,
     target: 1,
@@ -123,7 +123,7 @@ export const QUEST_CHAIN: Quest[] = [
   },
   {
     title: 'Verbessere den Bergbau-Laser auf Stufe 2',
-    hint: 'Der Laser macht jeden Klick wertvoller.',
+    hint: 'Der Laser zerlegt Meteoriten schneller.',
     goal: 'module',
     targetKey: 'laser',
     current: 1,
@@ -132,8 +132,8 @@ export const QUEST_CHAIN: Quest[] = [
     done: false,
   },
   {
-    title: 'Sammle 200 Metall fuer die Werft',
-    hint: 'Meteoriten liefern die Baustoffe fuer deine Basis.',
+    title: 'Sammle 200 Metall fuer deine Basis',
+    hint: 'Ohne Metall koennen deine Gebaeude nicht weiter produzieren.',
     goal: 'collect',
     targetKey: 'metal',
     current: 0,
@@ -143,7 +143,7 @@ export const QUEST_CHAIN: Quest[] = [
   },
   {
     title: 'Baue das Forschungszentrum auf Stufe 2',
-    hint: 'Forschung bereitet neue Sektoren und spaetere Technologien vor.',
+    hint: 'Das Forschungszentrum schaltet wichtige Technologien frei.',
     goal: 'building',
     targetKey: 'research',
     current: 1,
@@ -153,7 +153,7 @@ export const QUEST_CHAIN: Quest[] = [
   },
   {
     title: 'Bereite den Raketenneubau vor',
-    hint: 'Erforsche die neue Rakete und baue sie spaeter im Raumfahrtzentrum.',
+    hint: 'Neue Raketen entstehen spaeter im Raumfahrtzentrum.',
     goal: 'building',
     targetKey: 'spaceport',
     current: 1,
@@ -178,6 +178,7 @@ export const INITIAL_STATE: GameState = {
   },
   selectedRocket: 'starter',
   unlockedRockets: ['starter'],
+  tutorialActive: false,
   currentSector: 'alpha',
   unlockedSectors: ['alpha'],
   collectedTotals: {},

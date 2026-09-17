@@ -274,6 +274,7 @@ export function RocketMinerGame() {
         newRocketBuilt: false,
         weaponUpgrades: INITIAL_STATE.weaponUpgrades,
         weaponAchievement: undefined,
+        tutorialActive: false,
         nextId: INITIAL_STATE.nextId,
       };
     });
@@ -415,6 +416,25 @@ export function RocketMinerGame() {
     setShellMode('game');
   };
 
+  const startTutorial = () => {
+    resetGameState();
+    const { bestRun, unlockedRockets } = latestState.current;
+    const newState = {
+      ...INITIAL_STATE,
+      bestRun,
+      unlockedRockets,
+      currentRun: undefined,
+      tutorialActive: true,
+      view: 'space' as const,
+    };
+    latestState.current = newState;
+    saveLoaded.current = true;
+    lastFrame.current = null;
+    setState(newState);
+    setHasSave(false);
+    setShellMode('game');
+  };
+
   if (shellMode === 'menu') {
     return (
       <MainMenu
@@ -427,6 +447,7 @@ export function RocketMinerGame() {
         onNewRun={() => setMenuMode('rocket-select')}
         onSelectRocket={startNewRun}
         onSetMode={setMenuMode}
+        onStartTutorial={startTutorial}
         unlockedRockets={state.unlockedRockets}
       />
     );

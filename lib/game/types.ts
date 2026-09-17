@@ -168,6 +168,7 @@ export interface GameState {
   unlockedRockets: RocketKey[];
   bestRun?: RunRecord;
   currentRun?: RunRecord;
+  tutorialActive: boolean;
   questIndex: number;
   resources: ResourceBag;
   currentSector: SectorKey;

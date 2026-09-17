@@ -227,6 +227,7 @@ export function loadGameState(): GameState {
       unlockedRockets: normalizeUnlockedRockets(saved.unlockedRockets),
       bestRun: normalizeRunRecord(saved.bestRun),
       currentRun: normalizeRunRecord(saved.currentRun),
+      tutorialActive: saved.tutorialActive ?? INITIAL_STATE.tutorialActive,
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,

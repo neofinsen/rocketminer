@@ -1,4 +1,4 @@
-import { FlaskConical, Play, RotateCcw } from 'lucide-react';
+import { BookOpen, FlaskConical, Play, RotateCcw } from 'lucide-react';
 import { getAssetUrl, ROCKET_CATALOG } from '@/lib/game/rocketCatalog';
 import type { RocketKey, RunRecord } from '@/lib/game/types';
 
@@ -14,6 +14,7 @@ export function MainMenu({
   onNewRun,
   onSelectRocket,
   onSetMode,
+  onStartTutorial,
   unlockedRockets,
 }: {
   bestRun?: RunRecord;
@@ -25,6 +26,7 @@ export function MainMenu({
   onNewRun: () => void;
   onSelectRocket: (rocket: RocketKey) => void;
   onSetMode: (mode: MenuMode) => void;
+  onStartTutorial: () => void;
   unlockedRockets: RocketKey[];
 }) {
   const adminMode = mode === 'admin';
@@ -84,6 +86,10 @@ export function MainMenu({
               <button onClick={onNewRun} type="button">
                 <RotateCcw size={18} />
                 Neuen Run starten
+              </button>
+              <button onClick={onStartTutorial} type="button">
+                <BookOpen size={18} />
+                Tutorial starten
               </button>
               <button onClick={() => onSetMode('admin')} type="button">
                 <FlaskConical size={18} />

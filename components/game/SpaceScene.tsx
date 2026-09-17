@@ -34,6 +34,29 @@ const smallRocks = Array.from({ length: 18 }, (_, index) => ({
   size: 8 + (index % 4) * 4,
 }));
 
+const TUTORIAL_STEPS = [
+  {
+    title: 'Metall aus Meteoriten holen',
+    hint: 'Klicke auf einen grossen Meteoriten. Deine Rakete schiesst und sammelt Metall ein.',
+  },
+  {
+    title: 'Bergbau-Laser verbessern',
+    hint: 'Links findest du die Weltraum-Module. Mehr Laser-Schaden macht aktives Klicken staerker.',
+  },
+  {
+    title: 'Metallvorrat sichern',
+    hint: 'Metall kommt nur aus dem Weltraum. Wenn es fehlt, stoppen deine Produktionsgebaeude.',
+  },
+  {
+    title: 'Forschung vorbereiten',
+    hint: 'Wechsle in die Stadt und baue das Forschungszentrum. Danach lohnt sich der Forschungsbaum.',
+  },
+  {
+    title: 'Neue Rakete vorbereiten',
+    hint: 'Das Raumfahrtzentrum baut spaeter neue Raketen, wenn Forschung und Gebaeudestufe passen.',
+  },
+];
+
 function AsteroidSprite({
   asteroid,
   onHit,
@@ -233,12 +256,17 @@ export function SpaceScene({
 
 function QuestCard({ state }: { state: GameState }) {
   const percent = (state.quest.current / state.quest.target) * 100;
+  const tutorialStep = state.tutorialActive
+    ? TUTORIAL_STEPS[state.questIndex]
+    : undefined;
+  const title = tutorialStep?.title ?? state.quest.title;
+  const hint = tutorialStep?.hint ?? state.quest.hint;
 
   return (
-    <div className="quest-card">
-      <h2>Aktuelle Quest</h2>
-      <p>{state.quest.done ? 'Quest-Kette abgeschlossen' : state.quest.title}</p>
-      <small>{state.quest.hint}</small>
+    <div className={state.tutorialActive ? 'quest-card tutorial' : 'quest-card'}>
+      <h2>{state.tutorialActive ? 'Tutorial' : 'Aktuelle Quest'}</h2>
+      <p>{state.quest.done ? 'Quest-Kette abgeschlossen' : title}</p>
+      <small>{hint}</small>
       <Progress className="game-progress quest-progress" value={percent} />
       <span>
         {state.quest.current} / {state.quest.target}
