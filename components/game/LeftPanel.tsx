@@ -100,7 +100,7 @@ export function LeftPanel({
         }
       >
         <div>
-          <h2>RAKETE: EXPLORER I</h2>
+          <h2>RAKETE: {rocket.name}</h2>
           <p>
             {rocket.name} - {status} - {getSectorLabel(state.currentSector)}
           </p>

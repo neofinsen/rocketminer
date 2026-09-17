@@ -43,14 +43,23 @@
   font-size: 15px;
 }
 
+.run-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 430px));
+  gap: 12px;
+}
+
 .best-run-card {
   display: grid;
-  max-width: 430px;
   gap: 4px;
   border: 1px solid rgba(255, 180, 45, 0.42);
   border-radius: 8px;
   background: linear-gradient(180deg, rgba(51, 36, 21, 0.9), rgba(13, 20, 26, 0.92));
   padding: 14px 16px;
+}
+
+.best-run-card.current {
+  border-color: rgba(102, 219, 255, 0.36);
 }
 
 .best-run-card span {

@@ -1,11 +1,12 @@
 import { FlaskConical, Play, RotateCcw } from 'lucide-react';
 import { getAssetUrl, ROCKET_CATALOG } from '@/lib/game/rocketCatalog';
-import type { BestRun, RocketKey } from '@/lib/game/types';
+import type { RocketKey, RunRecord } from '@/lib/game/types';
 
 type MenuMode = 'home' | 'rocket-select' | 'admin';
 
 export function MainMenu({
   bestRun,
+  currentRun,
   hasSave,
   mode,
   onContinue,
@@ -15,7 +16,8 @@ export function MainMenu({
   onSetMode,
   unlockedRockets,
 }: {
-  bestRun?: BestRun;
+  bestRun?: RunRecord;
+  currentRun?: RunRecord;
   hasSave: boolean;
   mode: MenuMode;
   onContinue: () => void;
@@ -28,6 +30,9 @@ export function MainMenu({
   const adminMode = mode === 'admin';
   const bestRunRocket = bestRun
     ? ROCKET_CATALOG.find((rocket) => rocket.key === bestRun.rocket)
+    : undefined;
+  const currentRunRocket = currentRun
+    ? ROCKET_CATALOG.find((rocket) => rocket.key === currentRun.rocket)
     : undefined;
 
   return (
@@ -43,20 +48,33 @@ export function MainMenu({
 
         {mode === 'home' ? (
           <>
-            <div className="best-run-card">
-              <span>Bester Run</span>
-              {bestRun ? (
-                <strong>
-                  Welle {bestRun.wave} · Run-Level {bestRun.runLevel}
-                </strong>
-              ) : (
-                <strong>Noch kein Run gespeichert</strong>
-              )}
-              <small>
-                {bestRun
-                  ? `${bestRunRocket?.name ?? 'Unbekannte Rakete'} · spaeter bereit fuer Bestenlisten`
-                  : 'Starte ein Abenteuer, damit hier dein Fortschritt sichtbar wird.'}
-              </small>
+            <div className="run-summary-grid">
+              <div className="best-run-card">
+                <span>Bester Run{bestRun?.status === 'active' ? ' · aktuell' : ''}</span>
+                {bestRun ? (
+                  <strong>Welle {bestRun.wave} · Run-Level {bestRun.runLevel}</strong>
+                ) : (
+                  <strong>Noch kein Run gespeichert</strong>
+                )}
+                <small>
+                  {bestRun
+                    ? `${bestRunRocket?.name ?? 'Unbekannte Rakete'} · spaeter bereit fuer Bestenlisten`
+                    : 'Starte ein Abenteuer, damit hier dein Fortschritt sichtbar wird.'}
+                </small>
+              </div>
+              <div className="best-run-card current">
+                <span>Aktueller Run</span>
+                {currentRun ? (
+                  <strong>Welle {currentRun.wave} · Run-Level {currentRun.runLevel}</strong>
+                ) : (
+                  <strong>Kein laufender Run</strong>
+                )}
+                <small>
+                  {currentRun
+                    ? `${currentRunRocket?.name ?? 'Unbekannte Rakete'} · nicht abgeschlossen`
+                    : 'Sobald du ein Abenteuer startest, steht der Zwischenstand hier.'}
+                </small>
+              </div>
             </div>
             <div className="main-menu-actions">
               <button disabled={!hasSave} onClick={onContinue} type="button">

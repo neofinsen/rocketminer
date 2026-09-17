@@ -361,22 +361,27 @@ export function RocketMinerGame() {
     });
   }, []);
 
-  const recordBestRun = useCallback((summary: { wave: number; runLevel: number }) => {
+  const recordRun = useCallback((summary: {
+    status: 'active' | 'finished';
+    wave: number;
+    runLevel: number;
+  }) => {
     setState((current) => {
       const best = current.bestRun;
       const improved =
         !best ||
         summary.wave > best.wave ||
         (summary.wave === best.wave && summary.runLevel > best.runLevel);
-      if (!improved) return current;
+      const runRecord = {
+        ...summary,
+        rocket: current.selectedRocket,
+        at: Date.now(),
+      };
 
       return {
         ...current,
-        bestRun: {
-          ...summary,
-          rocket: current.selectedRocket,
-          at: Date.now(),
-        },
+        currentRun: summary.status === 'active' ? runRecord : undefined,
+        bestRun: improved ? runRecord : best,
       };
     });
   }, []);
@@ -399,6 +404,7 @@ export function RocketMinerGame() {
       selectedRocket: rocket,
       unlockedRockets,
       bestRun,
+      currentRun: undefined,
       view: 'adventure' as const,
     };
     latestState.current = newState;
@@ -416,6 +422,7 @@ export function RocketMinerGame() {
         mode={menuMode}
         onAdminRun={startNewRun}
         bestRun={state.bestRun}
+        currentRun={state.currentRun}
         onContinue={() => setShellMode('game')}
         onNewRun={() => setMenuMode('rocket-select')}
         onSelectRocket={startNewRun}
@@ -454,7 +461,7 @@ export function RocketMinerGame() {
               state={state}
               onChooseWeaponUpgrade={chooseWeaponUpgrade}
               onClaimReward={claimAdventureReward}
-              onRecordRun={recordBestRun}
+              onRecordRun={recordRun}
               onStartAdventure={startAdventure}
             />
           ) : null}

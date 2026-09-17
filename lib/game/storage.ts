@@ -2,12 +2,12 @@ import { INITIAL_CITY_PLACEMENTS, INITIAL_STATE, QUEST_CHAIN } from './constants
 import { clampResourcesToStorage } from './simulation';
 import type {
   Asteroid,
-  BestRun,
   Building,
   Fragment,
   GameState,
   ResourceBag,
   RocketModule,
+  RunRecord,
   RocketKey,
   SectorKey,
   ViewKey,
@@ -81,9 +81,9 @@ const normalizeUnlockedRockets = (rockets: unknown): RocketKey[] => {
   return valid.includes('starter') ? valid : ['starter', ...valid];
 };
 
-const normalizeBestRun = (bestRun: unknown): BestRun | undefined => {
-  if (!bestRun || typeof bestRun !== 'object') return undefined;
-  const saved = bestRun as Partial<BestRun>;
+const normalizeRunRecord = (run: unknown): RunRecord | undefined => {
+  if (!run || typeof run !== 'object') return undefined;
+  const saved = run as Partial<RunRecord>;
   const wave = typeof saved.wave === 'number' ? Math.max(0, saved.wave) : 0;
   const runLevel =
     typeof saved.runLevel === 'number' ? Math.max(0, saved.runLevel) : 0;
@@ -94,6 +94,7 @@ const normalizeBestRun = (bestRun: unknown): BestRun | undefined => {
     runLevel,
     rocket: normalizeRocketKey(saved.rocket),
     at: typeof saved.at === 'number' ? saved.at : Date.now(),
+    status: saved.status === 'active' ? 'active' : 'finished',
   };
 };
 
@@ -224,7 +225,8 @@ export function loadGameState(): GameState {
       projectiles: [],
       selectedRocket: normalizeRocketKey(saved.selectedRocket),
       unlockedRockets: normalizeUnlockedRockets(saved.unlockedRockets),
-      bestRun: normalizeBestRun(saved.bestRun),
+      bestRun: normalizeRunRecord(saved.bestRun),
+      currentRun: normalizeRunRecord(saved.currentRun),
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,

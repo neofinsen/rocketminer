@@ -44,20 +44,14 @@ const XP_MAGNET_RADIUS = 17;
 const MAX_RAPID_FIRE_UPGRADES = 5;
 const MAX_MULTI_SHOT_UPGRADES = 4;
 
-const getFireCooldown = (
-  weaponLevel: number,
-  rapidFireLevel: number,
-) => {
+const getFireCooldown = (weaponLevel: number, rapidFireLevel: number) => {
   const base = Math.max(0.34, 1.15 - weaponLevel * 0.035);
   const boost = Math.min(0.5, rapidFireLevel * 0.1);
   return base * (1 - boost);
 };
 
 const getPlayerMaxHp = (state: GameState) =>
-  84 +
-  getModuleLevel(state, 'energyCore') * 18 +
-  getModuleLevel(state, 'cargo') * 7 +
-  getShieldStrength(state);
+  84 + getModuleLevel(state, 'energyCore') * 18 + getModuleLevel(state, 'cargo') * 7 + getShieldStrength(state);
 
 export function AdventureView({
   state,
@@ -69,7 +63,7 @@ export function AdventureView({
   state: GameState;
   onClaimReward: (reward: Partial<ResourceBag>) => void;
   onChooseWeaponUpgrade: (choice: WeaponUpgradeChoice) => void;
-  onRecordRun: (summary: { wave: number; runLevel: number }) => void;
+  onRecordRun: (summary: { status: 'active' | 'finished'; wave: number; runLevel: number }) => void;
   onStartAdventure: () => boolean;
 }) {
   const [combat, setCombat] = useState<CombatState>(() =>
@@ -232,11 +226,16 @@ export function AdventureView({
   }, [combat.log, combat.status, combat.wave, onClaimReward]);
 
   useEffect(() => {
+    if (combat.status !== 'running' && combat.status !== 'choosing') return;
+    onRecordRun({ status: 'active', wave: combat.wave, runLevel: combat.runLevel });
+  }, [combat.status, combat.wave, combat.runLevel, onRecordRun]);
+
+  useEffect(() => {
     if (combat.status !== 'defeat' && combat.status !== 'victory') return;
     const key = `${combat.status}-${combat.wave}-${combat.runLevel}`;
     if (reportedRun.current === key) return;
     reportedRun.current = key;
-    onRecordRun({ wave: combat.wave, runLevel: combat.runLevel });
+    onRecordRun({ status: 'finished', wave: combat.wave, runLevel: combat.runLevel });
   }, [combat.status, combat.wave, combat.runLevel, onRecordRun]);
 
   useEffect(() => {
@@ -575,7 +574,7 @@ export function AdventureView({
 
       <div className="adventure-arena">
         <div className="rocket-combat-card">
-          <span className="combat-tag">Explorer I</span>
+          <span className="combat-tag">{rocket.genre}</span>
           <h3>{rocket.name}</h3>
           <Progress className="game-progress" value={playerPercent} />
           <span>Huelle {formatNumber(combat.playerHp)} / {formatNumber(combat.playerMaxHp)}</span>
