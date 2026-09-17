@@ -11,6 +11,36 @@ import neonCyber from '@/components/game/assets/rocketminer-rocket-neon-cyber-v2
 import stealthDeepspace from '@/components/game/assets/rocketminer-rocket-stealth-deepspace-v2.png';
 import volcanicMiner from '@/components/game/assets/rocketminer-rocket-volcanic-miner-v2.png';
 import starterCombat from '@/components/game/assets/rocketminer-adventure-bg-desert-orbit.png';
+import starterEnemy0 from '@/components/game/assets/rocketminer-enemy-0.png';
+import starterEnemy1 from '@/components/game/assets/rocketminer-enemy-1.png';
+import starterEnemy2 from '@/components/game/assets/rocketminer-enemy-2.png';
+import alienEnemy0 from '@/components/game/assets/rocketminer-enemy-alien-0.png';
+import alienEnemy1 from '@/components/game/assets/rocketminer-enemy-alien-1.png';
+import alienEnemy2 from '@/components/game/assets/rocketminer-enemy-alien-2.png';
+import colonyEnemy0 from '@/components/game/assets/rocketminer-enemy-colony-0.png';
+import colonyEnemy1 from '@/components/game/assets/rocketminer-enemy-colony-1.png';
+import colonyEnemy2 from '@/components/game/assets/rocketminer-enemy-colony-2.png';
+import crystalEnemy0 from '@/components/game/assets/rocketminer-enemy-crystal-0.png';
+import crystalEnemy1 from '@/components/game/assets/rocketminer-enemy-crystal-1.png';
+import crystalEnemy2 from '@/components/game/assets/rocketminer-enemy-crystal-2.png';
+import iceEnemy0 from '@/components/game/assets/rocketminer-enemy-ice-0.png';
+import iceEnemy1 from '@/components/game/assets/rocketminer-enemy-ice-1.png';
+import iceEnemy2 from '@/components/game/assets/rocketminer-enemy-ice-2.png';
+import militaryEnemy0 from '@/components/game/assets/rocketminer-enemy-military-0.png';
+import militaryEnemy1 from '@/components/game/assets/rocketminer-enemy-military-1.png';
+import militaryEnemy2 from '@/components/game/assets/rocketminer-enemy-military-2.png';
+import neonEnemy0 from '@/components/game/assets/rocketminer-enemy-neon-0.png';
+import neonEnemy1 from '@/components/game/assets/rocketminer-enemy-neon-1.png';
+import neonEnemy2 from '@/components/game/assets/rocketminer-enemy-neon-2.png';
+import relicEnemy0 from '@/components/game/assets/rocketminer-enemy-relic-0.png';
+import relicEnemy1 from '@/components/game/assets/rocketminer-enemy-relic-1.png';
+import relicEnemy2 from '@/components/game/assets/rocketminer-enemy-relic-2.png';
+import stealthEnemy0 from '@/components/game/assets/rocketminer-enemy-stealth-0.png';
+import stealthEnemy1 from '@/components/game/assets/rocketminer-enemy-stealth-1.png';
+import stealthEnemy2 from '@/components/game/assets/rocketminer-enemy-stealth-2.png';
+import volcanicEnemy0 from '@/components/game/assets/rocketminer-enemy-volcanic-0.png';
+import volcanicEnemy1 from '@/components/game/assets/rocketminer-enemy-volcanic-1.png';
+import volcanicEnemy2 from '@/components/game/assets/rocketminer-enemy-volcanic-2.png';
 import advancedColonyBg from '@/components/game/assets/rocketminer-combat-bg-advanced-colony.png';
 import alienBiotechBg from '@/components/game/assets/rocketminer-combat-bg-alien-biotech.png';
 import ancientRelicBg from '@/components/game/assets/rocketminer-combat-bg-ancient-relic.png';
@@ -30,6 +60,7 @@ export const ROCKET_CATALOG: Array<{
   name: string;
   genre: string;
   unlocked: boolean;
+  enemyAssets: [unknown, unknown, unknown];
   rocketAsset: unknown;
   worldAsset: unknown;
 }> = [
@@ -38,19 +69,20 @@ export const ROCKET_CATALOG: Array<{
     name: 'Rostige Starterrakete',
     genre: 'Wuesten-Orbit',
     unlocked: true,
+    enemyAssets: [starterEnemy0, starterEnemy1, starterEnemy2],
     rocketAsset: starterRocket,
     worldAsset: starterCombat,
   },
-  { key: 'desert', name: 'Wuesten-Salvage', genre: 'Schrottwueste', unlocked: false, rocketAsset: desertSalvage, worldAsset: desertSalvageBg },
-  { key: 'ice', name: 'Eis-Expedition', genre: 'Eisfeld', unlocked: false, rocketAsset: iceExpedition, worldAsset: iceExpeditionBg },
-  { key: 'neon', name: 'Neon-Cyber', genre: 'Neon-Korridor', unlocked: false, rocketAsset: neonCyber, worldAsset: neonCyberBg },
-  { key: 'alien', name: 'Alien-Biotech', genre: 'Organische Zone', unlocked: false, rocketAsset: alienBiotech, worldAsset: alienBiotechBg },
-  { key: 'volcanic', name: 'Vulkan-Miner', genre: 'Vulkanfeld', unlocked: false, rocketAsset: volcanicMiner, worldAsset: volcanicMinerBg },
-  { key: 'relic', name: 'Relikt-Schiff', genre: 'Altes Relikt', unlocked: false, rocketAsset: ancientRelic, worldAsset: ancientRelicBg },
-  { key: 'military', name: 'Militaer-Frachter', genre: 'Kriegszone', unlocked: false, rocketAsset: industrialMilitary, worldAsset: industrialMilitaryBg },
-  { key: 'crystal', name: 'Kristall-Scout', genre: 'Kristallnebel', unlocked: false, rocketAsset: crystalSurvey, worldAsset: crystalSurveyBg },
-  { key: 'stealth', name: 'Stealth-Jaeger', genre: 'Tiefraum', unlocked: false, rocketAsset: stealthDeepspace, worldAsset: stealthDeepspaceBg },
-  { key: 'colony', name: 'Kolonie-Explorer', genre: 'Koloniefront', unlocked: false, rocketAsset: advancedColony, worldAsset: advancedColonyBg },
+  { key: 'desert', name: 'Wuesten-Salvage', genre: 'Schrottwueste', unlocked: false, enemyAssets: [starterEnemy0, starterEnemy1, starterEnemy2], rocketAsset: desertSalvage, worldAsset: desertSalvageBg },
+  { key: 'ice', name: 'Eis-Expedition', genre: 'Eisfeld', unlocked: false, enemyAssets: [iceEnemy0, iceEnemy1, iceEnemy2], rocketAsset: iceExpedition, worldAsset: iceExpeditionBg },
+  { key: 'neon', name: 'Neon-Cyber', genre: 'Neon-Korridor', unlocked: false, enemyAssets: [neonEnemy0, neonEnemy1, neonEnemy2], rocketAsset: neonCyber, worldAsset: neonCyberBg },
+  { key: 'alien', name: 'Alien-Biotech', genre: 'Organische Zone', unlocked: false, enemyAssets: [alienEnemy0, alienEnemy1, alienEnemy2], rocketAsset: alienBiotech, worldAsset: alienBiotechBg },
+  { key: 'volcanic', name: 'Vulkan-Miner', genre: 'Vulkanfeld', unlocked: false, enemyAssets: [volcanicEnemy0, volcanicEnemy1, volcanicEnemy2], rocketAsset: volcanicMiner, worldAsset: volcanicMinerBg },
+  { key: 'relic', name: 'Relikt-Schiff', genre: 'Altes Relikt', unlocked: false, enemyAssets: [relicEnemy0, relicEnemy1, relicEnemy2], rocketAsset: ancientRelic, worldAsset: ancientRelicBg },
+  { key: 'military', name: 'Militaer-Frachter', genre: 'Kriegszone', unlocked: false, enemyAssets: [militaryEnemy0, militaryEnemy1, militaryEnemy2], rocketAsset: industrialMilitary, worldAsset: industrialMilitaryBg },
+  { key: 'crystal', name: 'Kristall-Scout', genre: 'Kristallnebel', unlocked: false, enemyAssets: [crystalEnemy0, crystalEnemy1, crystalEnemy2], rocketAsset: crystalSurvey, worldAsset: crystalSurveyBg },
+  { key: 'stealth', name: 'Stealth-Jaeger', genre: 'Tiefraum', unlocked: false, enemyAssets: [stealthEnemy0, stealthEnemy1, stealthEnemy2], rocketAsset: stealthDeepspace, worldAsset: stealthDeepspaceBg },
+  { key: 'colony', name: 'Kolonie-Explorer', genre: 'Koloniefront', unlocked: false, enemyAssets: [colonyEnemy0, colonyEnemy1, colonyEnemy2], rocketAsset: advancedColony, worldAsset: advancedColonyBg },
 ];
 
 export const getRocketDefinition = (key: RocketKey) =>

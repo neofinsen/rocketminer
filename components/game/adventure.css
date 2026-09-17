@@ -191,7 +191,7 @@
   display: block;
   width: 150px;
   height: 88px;
-  background-image: url('./assets/rocketminer-enemy-0.png');
+  background-image: var(--enemy-image-0);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -205,11 +205,11 @@
 }
 
 .enemy-fighter.variant-1 .enemy-sprite {
-  background-image: url('./assets/rocketminer-enemy-1.png');
+  background-image: var(--enemy-image-1);
 }
 
 .enemy-fighter.variant-2 .enemy-sprite {
-  background-image: url('./assets/rocketminer-enemy-2.png');
+  background-image: var(--enemy-image-2);
 }
 
 .enemy-mini-progress {

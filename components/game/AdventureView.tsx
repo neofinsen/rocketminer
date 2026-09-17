@@ -550,6 +550,9 @@ export function AdventureView({
       style={
         {
           '--adventure-bg-image': `url(${getAssetUrl(rocket.worldAsset)})`,
+          '--enemy-image-0': `url(${getAssetUrl(rocket.enemyAssets[0])})`,
+          '--enemy-image-1': `url(${getAssetUrl(rocket.enemyAssets[1])})`,
+          '--enemy-image-2': `url(${getAssetUrl(rocket.enemyAssets[2])})`,
           '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
         } as CSSProperties
       }
