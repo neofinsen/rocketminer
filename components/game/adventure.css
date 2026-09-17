@@ -150,9 +150,16 @@
   width: 96px;
   height: 126px;
   transform: translate(-50%, -50%) rotate(var(--player-angle, 90deg));
-  background: var(--rocket-image) center / contain no-repeat;
   filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.44));
   transition: left 0.05s linear, top 0.05s linear;
+}
+
+.player-ship-marker::before {
+  position: absolute;
+  inset: 0;
+  background: var(--rocket-image) center / contain no-repeat;
+  content: '';
+  transform: rotate(var(--rocket-art-rotation, 0deg)) scale(0.9);
 }
 
 .player-ship-marker::after {

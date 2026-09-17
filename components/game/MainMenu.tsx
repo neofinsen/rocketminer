@@ -1,4 +1,5 @@
 import { FlaskConical, Play, RotateCcw } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import { getAssetUrl, ROCKET_CATALOG } from '@/lib/game/rocketCatalog';
 import type { RocketKey } from '@/lib/game/types';
 
@@ -64,6 +65,11 @@ export function MainMenu({
                     adminMode ? onAdminRun(rocket.key) : onSelectRocket(rocket.key)
                   }
                   type="button"
+                  style={
+                    {
+                      '--rocket-art-rotation': `${rocket.artRotationDeg}deg`,
+                    } as CSSProperties
+                  }
                 >
                   <img alt="" src={getAssetUrl(rocket.rocketAsset)} />
                   <strong>{rocket.name}</strong>

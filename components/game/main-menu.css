@@ -101,6 +101,7 @@
   object-fit: contain;
   object-position: center;
   opacity: 0.96;
+  transform: rotate(var(--rocket-art-rotation, 0deg)) scale(0.9);
 }
 
 .rocket-select-card strong {

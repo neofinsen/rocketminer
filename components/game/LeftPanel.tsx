@@ -94,6 +94,7 @@ export function LeftPanel({
         style={
           {
             '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
+            '--rocket-art-rotation': `${rocket.artRotationDeg}deg`,
           } as CSSProperties
         }
       >

@@ -138,6 +138,7 @@ export function SpaceScene({
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
           '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
+          '--rocket-art-rotation': `${rocket.artRotationDeg}deg`,
           '--sector-bg-image': `url(${getAssetUrl(worldImage)})`,
         } as CSSProperties
       }

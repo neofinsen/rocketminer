@@ -30,6 +30,7 @@ export const ROCKET_CATALOG: Array<{
   name: string;
   genre: string;
   unlocked: boolean;
+  artRotationDeg: number;
   rocketAsset: unknown;
   worldAsset: unknown;
 }> = [
@@ -38,19 +39,20 @@ export const ROCKET_CATALOG: Array<{
     name: 'Rostige Starterrakete',
     genre: 'Wuesten-Orbit',
     unlocked: true,
+    artRotationDeg: 0,
     rocketAsset: starterRocket,
     worldAsset: starterCombat,
   },
-  { key: 'desert', name: 'Wuesten-Salvage', genre: 'Schrottwueste', unlocked: false, rocketAsset: desertSalvage, worldAsset: desertSalvageBg },
-  { key: 'ice', name: 'Eis-Expedition', genre: 'Eisfeld', unlocked: false, rocketAsset: iceExpedition, worldAsset: iceExpeditionBg },
-  { key: 'neon', name: 'Neon-Cyber', genre: 'Neon-Korridor', unlocked: false, rocketAsset: neonCyber, worldAsset: neonCyberBg },
-  { key: 'alien', name: 'Alien-Biotech', genre: 'Organische Zone', unlocked: false, rocketAsset: alienBiotech, worldAsset: alienBiotechBg },
-  { key: 'volcanic', name: 'Vulkan-Miner', genre: 'Vulkanfeld', unlocked: false, rocketAsset: volcanicMiner, worldAsset: volcanicMinerBg },
-  { key: 'relic', name: 'Relikt-Schiff', genre: 'Altes Relikt', unlocked: false, rocketAsset: ancientRelic, worldAsset: ancientRelicBg },
-  { key: 'military', name: 'Militaer-Frachter', genre: 'Kriegszone', unlocked: false, rocketAsset: industrialMilitary, worldAsset: industrialMilitaryBg },
-  { key: 'crystal', name: 'Kristall-Scout', genre: 'Kristallnebel', unlocked: false, rocketAsset: crystalSurvey, worldAsset: crystalSurveyBg },
-  { key: 'stealth', name: 'Stealth-Jaeger', genre: 'Tiefraum', unlocked: false, rocketAsset: stealthDeepspace, worldAsset: stealthDeepspaceBg },
-  { key: 'colony', name: 'Kolonie-Explorer', genre: 'Koloniefront', unlocked: false, rocketAsset: advancedColony, worldAsset: advancedColonyBg },
+  { key: 'desert', name: 'Wuesten-Salvage', genre: 'Schrottwueste', unlocked: false, artRotationDeg: -24, rocketAsset: desertSalvage, worldAsset: desertSalvageBg },
+  { key: 'ice', name: 'Eis-Expedition', genre: 'Eisfeld', unlocked: false, artRotationDeg: -10, rocketAsset: iceExpedition, worldAsset: iceExpeditionBg },
+  { key: 'neon', name: 'Neon-Cyber', genre: 'Neon-Korridor', unlocked: false, artRotationDeg: -12, rocketAsset: neonCyber, worldAsset: neonCyberBg },
+  { key: 'alien', name: 'Alien-Biotech', genre: 'Organische Zone', unlocked: false, artRotationDeg: -16, rocketAsset: alienBiotech, worldAsset: alienBiotechBg },
+  { key: 'volcanic', name: 'Vulkan-Miner', genre: 'Vulkanfeld', unlocked: false, artRotationDeg: -18, rocketAsset: volcanicMiner, worldAsset: volcanicMinerBg },
+  { key: 'relic', name: 'Relikt-Schiff', genre: 'Altes Relikt', unlocked: false, artRotationDeg: -12, rocketAsset: ancientRelic, worldAsset: ancientRelicBg },
+  { key: 'military', name: 'Militaer-Frachter', genre: 'Kriegszone', unlocked: false, artRotationDeg: 2, rocketAsset: industrialMilitary, worldAsset: industrialMilitaryBg },
+  { key: 'crystal', name: 'Kristall-Scout', genre: 'Kristallnebel', unlocked: false, artRotationDeg: -24, rocketAsset: crystalSurvey, worldAsset: crystalSurveyBg },
+  { key: 'stealth', name: 'Stealth-Jaeger', genre: 'Tiefraum', unlocked: false, artRotationDeg: -28, rocketAsset: stealthDeepspace, worldAsset: stealthDeepspaceBg },
+  { key: 'colony', name: 'Kolonie-Explorer', genre: 'Koloniefront', unlocked: false, artRotationDeg: -26, rocketAsset: advancedColony, worldAsset: advancedColonyBg },
 ];
 
 export const getRocketDefinition = (key: RocketKey) =>
