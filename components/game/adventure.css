@@ -116,6 +116,50 @@
   font-size: 14px;
 }
 
+.rocket-orientation-preview {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  border-top: 1px solid rgba(164, 203, 231, 0.14);
+  padding-top: 12px;
+}
+
+.rocket-orientation-preview strong {
+  color: #ffe0a3;
+  font-size: 13px;
+}
+
+.rocket-orientation-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.rocket-orientation-card {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rocket-orientation-card img {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(164, 203, 231, 0.16);
+  border-radius: 6px;
+  object-fit: cover;
+  transform: rotate(var(--preview-rotation));
+}
+
+.rocket-orientation-card small {
+  max-width: 100%;
+  overflow: hidden;
+  color: #aebccc;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .adventure-view .wave-field {
   position: relative;
   padding: 20px;

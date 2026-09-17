@@ -43,6 +43,7 @@ import type { CombatState, Mode, Shot } from '@/lib/game/adventureTypes';
 import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 import { RunChoicePanel } from './RunChoicePanel';
+import { RocketOrientationPreview } from './RocketOrientationPreview';
 
 const TICK_SECONDS = 0.05;
 const ADVENTURE_SPEED_SCALE = 3.9;
@@ -584,6 +585,7 @@ export function AdventureView({
           {pendingWeaponMilestone ? (
             <small>Upgrade bereit bei Waffenmodul {pendingWeaponMilestone}.</small>
           ) : null}
+          <RocketOrientationPreview />
         </div>
 
         <div className="wave-field">
