@@ -122,7 +122,7 @@
   overflow: hidden;
   background:
     linear-gradient(rgba(5, 12, 20, 0.2), rgba(5, 12, 20, 0.46)),
-    url('./assets/rocketminer-adventure-bg-desert-orbit.png') center / cover,
+    var(--adventure-bg-image) center / cover,
     #081421;
 }
 

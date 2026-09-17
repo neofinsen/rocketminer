@@ -11,6 +11,19 @@ export type ViewKey = 'space' | 'city' | 'research' | 'adventure';
 
 export type SectorKey = 'alpha' | 'beta';
 
+export type RocketKey =
+  | 'starter'
+  | 'desert'
+  | 'ice'
+  | 'neon'
+  | 'alien'
+  | 'volcanic'
+  | 'relic'
+  | 'military'
+  | 'crystal'
+  | 'stealth'
+  | 'colony';
+
 export type ResourceBag = Record<ResourceKey, number>;
 
 export type ModuleKey =
@@ -142,6 +155,7 @@ export interface WeaponUpgrades {
 export interface GameState {
   view: ViewKey;
   level: number;
+  selectedRocket: RocketKey;
   questIndex: number;
   resources: ResourceBag;
   currentSector: SectorKey;

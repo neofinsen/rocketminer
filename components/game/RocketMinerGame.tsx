@@ -33,6 +33,7 @@ import type {
   BuildingKey,
   GameState,
   ModuleKey,
+  RocketKey,
   ResourceBag,
   TechKey,
   ViewKey,
@@ -53,7 +54,7 @@ import './space-assets.css';
 
 const GAME_TICK_SECONDS = 0.05;
 type ShellMode = 'menu' | 'game';
-type MainMenuMode = 'home' | 'rocket-select';
+type MainMenuMode = 'home' | 'rocket-select' | 'admin';
 
 export function RocketMinerGame() {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
@@ -358,9 +359,13 @@ export function RocketMinerGame() {
     setMenuMode('home');
   };
 
-  const startNewRun = () => {
+  const startNewRun = (rocket: RocketKey = 'starter') => {
     resetGameState();
-    const newState = { ...INITIAL_STATE, view: 'adventure' as const };
+    const newState = {
+      ...INITIAL_STATE,
+      selectedRocket: rocket,
+      view: 'adventure' as const,
+    };
     latestState.current = newState;
     saveLoaded.current = true;
     lastFrame.current = null;
@@ -374,9 +379,10 @@ export function RocketMinerGame() {
       <MainMenu
         hasSave={hasSave}
         mode={menuMode}
+        onAdminRun={startNewRun}
         onContinue={() => setShellMode('game')}
         onNewRun={() => setMenuMode('rocket-select')}
-        onSelectStarter={startNewRun}
+        onSelectRocket={startNewRun}
         onSetMode={setMenuMode}
       />
     );

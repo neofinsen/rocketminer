@@ -7,6 +7,7 @@ import type {
   GameState,
   ResourceBag,
   RocketModule,
+  RocketKey,
   SectorKey,
   ViewKey,
   WeaponUpgrades,
@@ -52,6 +53,24 @@ const normalizeView = (view: unknown): ViewKey => {
 
 const normalizeSector = (sector: unknown): SectorKey =>
   sector === 'beta' ? 'beta' : 'alpha';
+
+const normalizeRocketKey = (key: unknown): RocketKey => {
+  const valid: RocketKey[] = [
+    'starter',
+    'desert',
+    'ice',
+    'neon',
+    'alien',
+    'volcanic',
+    'relic',
+    'military',
+    'crystal',
+    'stealth',
+    'colony',
+  ];
+
+  return valid.includes(key as RocketKey) ? (key as RocketKey) : 'starter';
+};
 
 const normalizeUnlockedSectors = (sectors: unknown): SectorKey[] => {
   const valid = asArray<SectorKey>(sectors, ['alpha']).filter(
@@ -178,6 +197,7 @@ export function loadGameState(): GameState {
       cityPlacements: normalizeCityPlacements(saved.cityPlacements),
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
+      selectedRocket: normalizeRocketKey(saved.selectedRocket),
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,

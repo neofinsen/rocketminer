@@ -25,13 +25,10 @@ import {
   getRocketSpeed,
   getSectorLabel,
 } from '@/lib/game/simulation';
+import { getAssetUrl, getRocketDefinition } from '@/lib/game/rocketCatalog';
 import type { GameState, ModuleKey } from '@/lib/game/types';
 import { formatCostTitle, getModuleUpgradeBenefits } from '@/lib/game/upgradeInfo';
 import { UpgradeTooltip } from './UpgradeTooltip';
-import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
-
-const getAssetUrl = (asset: unknown) =>
-  typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const moduleIcons: Record<ModuleKey, React.ReactNode> = {
   engine: <Gauge size={20} />,
@@ -65,6 +62,7 @@ export function LeftPanel({
   const cargoUsed = getCargoUsed(state);
   const cargoCapacity = getCargoCapacity(state);
   const fuelPercent = getFuelPercent(state);
+  const rocket = getRocketDefinition(state.selectedRocket);
   const status =
     state.rocket.status === 'returning'
       ? 'Rueckflug'
@@ -95,14 +93,14 @@ export function LeftPanel({
         className="panel-block rocket-card"
         style={
           {
-            '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
+            '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
           } as CSSProperties
         }
       >
         <div>
           <h2>RAKETE: EXPLORER I</h2>
           <p>
-            {status} - {getSectorLabel(state.currentSector)}
+            {rocket.name} - {status} - {getSectorLabel(state.currentSector)}
           </p>
         </div>
         <div className="rocket-preview" aria-hidden="true">

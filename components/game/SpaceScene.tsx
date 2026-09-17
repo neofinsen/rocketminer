@@ -7,6 +7,7 @@ import {
   getSectorDanger,
   getSectorLabel,
 } from '@/lib/game/simulation';
+import { getAssetUrl, getRocketDefinition } from '@/lib/game/rocketCatalog';
 import type {
   Asteroid,
   DamageText,
@@ -16,12 +17,8 @@ import type {
 } from '@/lib/game/types';
 import asteroidSheetImage from './assets/rocketminer-asteroid-sheet-desert.png';
 import dropSheetImage from './assets/rocketminer-drop-sheet-desert.png';
-import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 import sectorAlphaImage from './assets/sector-alpha-bg-space.png';
 import sectorBetaImage from './assets/sector-beta-bg-space.png';
-
-const getAssetUrl = (asset: unknown) =>
-  typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const starSeeds = Array.from({ length: 90 }, (_, index) => ({
   id: index,
@@ -128,6 +125,9 @@ export function SpaceScene({
 }) {
   const sectorImage =
     state.currentSector === 'beta' ? sectorBetaImage : sectorAlphaImage;
+  const rocket = getRocketDefinition(state.selectedRocket);
+  const worldImage =
+    state.selectedRocket === 'starter' ? sectorImage : rocket.worldAsset;
 
   return (
     <section
@@ -137,8 +137,8 @@ export function SpaceScene({
         {
           '--asteroid-sheet-image': `url(${getAssetUrl(asteroidSheetImage)})`,
           '--drop-sheet-image': `url(${getAssetUrl(dropSheetImage)})`,
-          '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
-          '--sector-bg-image': `url(${getAssetUrl(sectorImage)})`,
+          '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
+          '--sector-bg-image': `url(${getAssetUrl(worldImage)})`,
         } as CSSProperties
       }
     >
@@ -200,7 +200,7 @@ export function SpaceScene({
           top: `${state.rocket.y}%`,
           transform: `translate(-50%, -50%) rotate(${state.rocket.angle}deg)`,
         }}
-        aria-label="Explorer I"
+        aria-label={rocket.name}
       >
         <span className="rocket-image" />
         <span className="rocket-flame" />

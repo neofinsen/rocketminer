@@ -175,6 +175,7 @@ export const INITIAL_STATE: GameState = {
     silicon: 180,
     alien: 45,
   },
+  selectedRocket: 'starter',
   currentSector: 'alpha',
   unlockedSectors: ['alpha'],
   collectedTotals: {},

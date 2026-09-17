@@ -1,58 +1,37 @@
-import { Play, RotateCcw } from 'lucide-react';
-import starterRocket from './assets/rocketminer-starter-rocket-desert.png';
-import advancedColony from './assets/rocketminer-rocket-advanced-colony.png';
-import alienBiotech from './assets/rocketminer-rocket-alien-biotech.png';
-import ancientRelic from './assets/rocketminer-rocket-ancient-relic.png';
-import crystalSurvey from './assets/rocketminer-rocket-crystal-survey.png';
-import desertSalvage from './assets/rocketminer-rocket-desert-salvage.png';
-import iceExpedition from './assets/rocketminer-rocket-ice-expedition.png';
-import industrialMilitary from './assets/rocketminer-rocket-industrial-military.png';
-import neonCyber from './assets/rocketminer-rocket-neon-cyber.png';
-import stealthDeepspace from './assets/rocketminer-rocket-stealth-deepspace.png';
-import volcanicMiner from './assets/rocketminer-rocket-volcanic-miner.png';
+import { FlaskConical, Play, RotateCcw } from 'lucide-react';
+import { getAssetUrl, ROCKET_CATALOG } from '@/lib/game/rocketCatalog';
+import type { RocketKey } from '@/lib/game/types';
 
-type MenuMode = 'home' | 'rocket-select';
-
-const getAssetUrl = (asset: unknown) =>
-  typeof asset === 'string' ? asset : (asset as { src: string }).src;
-
-const rockets = [
-  { key: 'starter', name: 'Rostige Starterrakete', asset: starterRocket, unlocked: true },
-  { key: 'desert', name: 'Wuesten-Salvage', asset: desertSalvage, unlocked: false },
-  { key: 'ice', name: 'Eis-Expedition', asset: iceExpedition, unlocked: false },
-  { key: 'neon', name: 'Neon-Cyber', asset: neonCyber, unlocked: false },
-  { key: 'alien', name: 'Alien-Biotech', asset: alienBiotech, unlocked: false },
-  { key: 'volcanic', name: 'Vulkan-Miner', asset: volcanicMiner, unlocked: false },
-  { key: 'relic', name: 'Relikt-Schiff', asset: ancientRelic, unlocked: false },
-  { key: 'military', name: 'Militaer-Frachter', asset: industrialMilitary, unlocked: false },
-  { key: 'crystal', name: 'Kristall-Scout', asset: crystalSurvey, unlocked: false },
-  { key: 'stealth', name: 'Stealth-Jaeger', asset: stealthDeepspace, unlocked: false },
-  { key: 'colony', name: 'Kolonie-Explorer', asset: advancedColony, unlocked: false },
-];
+type MenuMode = 'home' | 'rocket-select' | 'admin';
 
 export function MainMenu({
   hasSave,
   mode,
   onContinue,
+  onAdminRun,
   onNewRun,
-  onSelectStarter,
+  onSelectRocket,
   onSetMode,
 }: {
   hasSave: boolean;
   mode: MenuMode;
   onContinue: () => void;
+  onAdminRun: (rocket: RocketKey) => void;
   onNewRun: () => void;
-  onSelectStarter: () => void;
+  onSelectRocket: (rocket: RocketKey) => void;
   onSetMode: (mode: MenuMode) => void;
 }) {
+  const adminMode = mode === 'admin';
+
   return (
     <main className="main-menu">
       <section className="main-menu-panel">
         <span className="main-menu-kicker">Rocketminer</span>
-        <h1>Abenteuer starten</h1>
+        <h1>{adminMode ? 'Admin-Testlabor' : 'Abenteuer starten'}</h1>
         <p>
-          Waehle spaeter deine freigeschaltete Rakete. Im Moment ist nur die
-          Starterrakete einsatzbereit.
+          {adminMode
+            ? 'Teste jede Rakete mit ihrer eigenen Welt, ohne Freischaltung.'
+            : 'Waehle spaeter deine freigeschaltete Rakete. Im Moment ist nur die Starterrakete einsatzbereit.'}
         </p>
 
         {mode === 'home' ? (
@@ -65,23 +44,35 @@ export function MainMenu({
               <RotateCcw size={18} />
               Neuen Run starten
             </button>
+            <button onClick={() => onSetMode('admin')} type="button">
+              <FlaskConical size={18} />
+              Admin-Testpanel
+            </button>
           </div>
         ) : (
           <>
             <div className="rocket-select-grid">
-              {rockets.map((rocket) => (
+              {ROCKET_CATALOG.map((rocket) => {
+                const enabled = adminMode || rocket.unlocked;
+
+                return (
                 <button
-                  className={rocket.unlocked ? 'rocket-select-card' : 'rocket-select-card locked'}
-                  disabled={!rocket.unlocked}
+                  className={enabled ? 'rocket-select-card' : 'rocket-select-card locked'}
+                  disabled={!enabled}
                   key={rocket.key}
-                  onClick={rocket.unlocked ? onSelectStarter : undefined}
+                  onClick={() =>
+                    adminMode ? onAdminRun(rocket.key) : onSelectRocket(rocket.key)
+                  }
                   type="button"
                 >
-                  <img alt="" src={getAssetUrl(rocket.asset)} />
+                  <img alt="" src={getAssetUrl(rocket.rocketAsset)} />
                   <strong>{rocket.name}</strong>
-                  <small>{rocket.unlocked ? 'Bereit' : 'Gesperrt'}</small>
+                  <small>
+                    {adminMode ? `Admin · ${rocket.genre}` : rocket.unlocked ? 'Bereit' : 'Gesperrt'}
+                  </small>
                 </button>
-              ))}
+                );
+              })}
             </div>
             <button className="menu-back-button" onClick={() => onSetMode('home')} type="button">
               Zurueck

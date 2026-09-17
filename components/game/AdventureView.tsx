@@ -39,9 +39,9 @@ import {
   getShieldStrength,
   getWeaponDamage,
 } from '@/lib/game/simulation';
+import { getAssetUrl, getRocketDefinition } from '@/lib/game/rocketCatalog';
 import type { CombatState, Mode, Shot } from '@/lib/game/adventureTypes';
 import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
-import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
 import { RunChoicePanel } from './RunChoicePanel';
 
 const TICK_SECONDS = 0.05;
@@ -52,9 +52,6 @@ const XP_PICKUP_RADIUS = 5.8;
 const XP_MAGNET_RADIUS = 17;
 const MAX_RAPID_FIRE_UPGRADES = 5;
 const MAX_MULTI_SHOT_UPGRADES = 4;
-
-const getAssetUrl = (asset: unknown) =>
-  typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const getFireCooldown = (
   weaponLevel: number,
@@ -92,6 +89,7 @@ export function AdventureView({
   const weaponLevel = getModuleLevel(state, 'weapon');
   const laserLevel = getModuleLevel(state, 'laser');
   const rapidFireLevel = state.weaponUpgrades.rapidFire;
+  const rocket = getRocketDefinition(state.selectedRocket);
   const multiShotLevel = state.weaponUpgrades.multiShot;
   const baseProjectileCount = 1 + multiShotLevel;
   const playerDamage = getRunPlayerDamage(basePlayerDamage, combat.runUpgrades);
@@ -551,7 +549,8 @@ export function AdventureView({
       aria-label="Abenteuer"
       style={
         {
-          '--rocket-image': `url(${getAssetUrl(rocketImage)})`,
+          '--adventure-bg-image': `url(${getAssetUrl(rocket.worldAsset)})`,
+          '--rocket-image': `url(${getAssetUrl(rocket.rocketAsset)})`,
         } as CSSProperties
       }
     >
@@ -572,7 +571,7 @@ export function AdventureView({
       <div className="adventure-arena">
         <div className="rocket-combat-card">
           <span className="combat-tag">Explorer I</span>
-          <h3>Rostige Starterrakete</h3>
+          <h3>{rocket.name}</h3>
           <Progress className="game-progress" value={playerPercent} />
           <span>Huelle {formatNumber(combat.playerHp)} / {formatNumber(combat.playerMaxHp)}</span>
           <small>Run-Level {combat.runLevel} · XP {formatNumber(combat.runXp)} / {formatNumber(combat.runXpTarget)}</small>
