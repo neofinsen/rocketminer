@@ -92,11 +92,19 @@
   background:
     linear-gradient(180deg, rgba(38, 42, 43, 0.96), rgba(9, 12, 15, 0.98)),
     url('/rocketminer-ui-kit-concept-1.png') 66% 5% / 1120px auto;
-  padding: 0 8px;
+  padding: 6px 8px;
   box-shadow:
     inset 0 1px 0 rgba(255, 220, 147, 0.16),
     inset 0 -2px 0 rgba(0, 0, 0, 0.55),
     0 8px 14px rgba(0, 0, 0, 0.18);
+}
+
+.resource-image-wrap {
+  z-index: 1;
+}
+
+.resource-readout {
+  z-index: 1;
 }
 
 .resource-cell::before,

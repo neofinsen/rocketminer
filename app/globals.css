@@ -162,11 +162,37 @@
 }
 
 .resource-cell {
-  gap: 6px;
-  padding: 0 7px;
+  gap: 5px;
+  padding: 5px 6px;
   border-left: 1px solid var(--border);
   min-width: 0;
   overflow: hidden;
+}
+
+.resource-image-wrap {
+  display: grid;
+  width: 42px;
+  min-width: 42px;
+  justify-items: center;
+  gap: 1px;
+  color: #cbd8e4;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.resource-image {
+  width: 31px;
+  height: 31px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 5px 5px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 7px rgba(89, 207, 255, 0.1));
+}
+
+.resource-readout {
+  min-width: 0;
 }
 
 .resource-icon {

@@ -12,7 +12,13 @@ import {
   getStorageCapacity,
 } from '@/lib/game/simulation';
 import type { GameState, ResourceKey } from '@/lib/game/types';
-import { ResourceIcon } from './ResourceIcon';
+import alienIcon from './assets/rocketminer-resource-alien.png';
+import creditsIcon from './assets/rocketminer-resource-credits.png';
+import deuteriumIcon from './assets/rocketminer-resource-deuterium.png';
+import energyIcon from './assets/rocketminer-resource-energy.png';
+import metalIcon from './assets/rocketminer-resource-metal.png';
+import siliconIcon from './assets/rocketminer-resource-silicon.png';
+import titanIcon from './assets/rocketminer-resource-titan.png';
 
 const topResources: ResourceKey[] = [
   'credits',
@@ -23,6 +29,19 @@ const topResources: ResourceKey[] = [
   'deuterium',
   'alien',
 ];
+
+const resourceImages: Record<ResourceKey, unknown> = {
+  credits: creditsIcon,
+  metal: metalIcon,
+  energy: energyIcon,
+  deuterium: deuteriumIcon,
+  titan: titanIcon,
+  silicon: siliconIcon,
+  alien: alienIcon,
+};
+
+const getAssetUrl = (asset: unknown) =>
+  typeof asset === 'string' ? asset : (asset as { src: string }).src;
 
 const formatSignedRate = (value: number) => {
   if (Math.abs(value) < 0.05) return '+0/min';
@@ -49,8 +68,15 @@ export function TopBar({ state }: { state: GameState }) {
       <nav className="resource-strip" aria-label="Ressourcen">
         {topResources.map((resource) => (
           <div className="resource-cell" key={resource}>
-            <ResourceIcon resource={resource} />
-            <div>
+            <span className="resource-image-wrap" aria-hidden="true">
+              <img
+                alt=""
+                className="resource-image"
+                src={getAssetUrl(resourceImages[resource])}
+              />
+              <span>{RESOURCE_LABELS[resource]}</span>
+            </span>
+            <div className="resource-readout">
               <strong>
                 {resource === 'energy'
                   ? `${formatNumber(freeEnergy)} / ${formatNumber(energyCapacity)}`
