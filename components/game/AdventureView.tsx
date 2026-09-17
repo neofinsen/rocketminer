@@ -1,8 +1,4 @@
-import {
-  FastForward,
-  RotateCcw,
-  Shield,
-} from 'lucide-react';
+import { FastForward, RotateCcw, Shield } from 'lucide-react';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -26,12 +22,7 @@ import {
   type RunSkillKey,
   type RunUpgradeKey,
 } from '@/lib/game/adventureRun';
-import {
-  createCombat,
-  createIdleCombat,
-  createPlayerShots,
-  getAimTarget,
-} from '@/lib/game/adventureCombat';
+import { createCombat, createIdleCombat, createPlayerShots, getAimTarget } from '@/lib/game/adventureCombat';
 import {
   formatNumber,
   getAdventureDeuteriumCost,
@@ -72,11 +63,13 @@ export function AdventureView({
   state,
   onClaimReward,
   onChooseWeaponUpgrade,
+  onRecordRun,
   onStartAdventure,
 }: {
   state: GameState;
   onClaimReward: (reward: Partial<ResourceBag>) => void;
   onChooseWeaponUpgrade: (choice: WeaponUpgradeChoice) => void;
+  onRecordRun: (summary: { wave: number; runLevel: number }) => void;
   onStartAdventure: () => boolean;
 }) {
   const [combat, setCombat] = useState<CombatState>(() =>
@@ -84,6 +77,7 @@ export function AdventureView({
   );
   const keys = useRef(new Set<string>());
   const pendingRewards = useRef<Partial<ResourceBag>[]>([]);
+  const reportedRun = useRef('');
   const basePlayerDamage = useMemo(() => getWeaponDamage(state), [state]);
   const shieldStrength = getShieldStrength(state);
   const weaponLevel = getModuleLevel(state, 'weapon');
@@ -236,6 +230,14 @@ export function AdventureView({
 
     onClaimReward(totalReward);
   }, [combat.log, combat.status, combat.wave, onClaimReward]);
+
+  useEffect(() => {
+    if (combat.status !== 'defeat' && combat.status !== 'victory') return;
+    const key = `${combat.status}-${combat.wave}-${combat.runLevel}`;
+    if (reportedRun.current === key) return;
+    reportedRun.current = key;
+    onRecordRun({ wave: combat.wave, runLevel: combat.runLevel });
+  }, [combat.status, combat.wave, combat.runLevel, onRecordRun]);
 
   useEffect(() => {
     if (combat.status !== 'running') return undefined;

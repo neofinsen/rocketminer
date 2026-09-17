@@ -1,10 +1,11 @@
 import { FlaskConical, Play, RotateCcw } from 'lucide-react';
 import { getAssetUrl, ROCKET_CATALOG } from '@/lib/game/rocketCatalog';
-import type { RocketKey } from '@/lib/game/types';
+import type { BestRun, RocketKey } from '@/lib/game/types';
 
 type MenuMode = 'home' | 'rocket-select' | 'admin';
 
 export function MainMenu({
+  bestRun,
   hasSave,
   mode,
   onContinue,
@@ -14,6 +15,7 @@ export function MainMenu({
   onSetMode,
   unlockedRockets,
 }: {
+  bestRun?: BestRun;
   hasSave: boolean;
   mode: MenuMode;
   onContinue: () => void;
@@ -24,6 +26,9 @@ export function MainMenu({
   unlockedRockets: RocketKey[];
 }) {
   const adminMode = mode === 'admin';
+  const bestRunRocket = bestRun
+    ? ROCKET_CATALOG.find((rocket) => rocket.key === bestRun.rocket)
+    : undefined;
 
   return (
     <main className="main-menu">
@@ -37,20 +42,37 @@ export function MainMenu({
         </p>
 
         {mode === 'home' ? (
-          <div className="main-menu-actions">
-            <button disabled={!hasSave} onClick={onContinue} type="button">
-              <Play size={18} />
-              Alten Spielstand fortsetzen
-            </button>
-            <button onClick={onNewRun} type="button">
-              <RotateCcw size={18} />
-              Neuen Run starten
-            </button>
-            <button onClick={() => onSetMode('admin')} type="button">
-              <FlaskConical size={18} />
-              Admin-Testpanel
-            </button>
-          </div>
+          <>
+            <div className="best-run-card">
+              <span>Bester Run</span>
+              {bestRun ? (
+                <strong>
+                  Welle {bestRun.wave} · Run-Level {bestRun.runLevel}
+                </strong>
+              ) : (
+                <strong>Noch kein Run gespeichert</strong>
+              )}
+              <small>
+                {bestRun
+                  ? `${bestRunRocket?.name ?? 'Unbekannte Rakete'} · spaeter bereit fuer Bestenlisten`
+                  : 'Starte ein Abenteuer, damit hier dein Fortschritt sichtbar wird.'}
+              </small>
+            </div>
+            <div className="main-menu-actions">
+              <button disabled={!hasSave} onClick={onContinue} type="button">
+                <Play size={18} />
+                Alten Spielstand fortsetzen
+              </button>
+              <button onClick={onNewRun} type="button">
+                <RotateCcw size={18} />
+                Neuen Run starten
+              </button>
+              <button onClick={() => onSetMode('admin')} type="button">
+                <FlaskConical size={18} />
+                Admin-Testpanel
+              </button>
+            </div>
+          </>
         ) : (
           <>
             <div className="rocket-select-grid">

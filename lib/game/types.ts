@@ -153,11 +153,19 @@ export interface WeaponUpgrades {
   claimedLevels: number[];
 }
 
+export interface BestRun {
+  wave: number;
+  runLevel: number;
+  rocket: RocketKey;
+  at: number;
+}
+
 export interface GameState {
   view: ViewKey;
   level: number;
   selectedRocket: RocketKey;
   unlockedRockets: RocketKey[];
+  bestRun?: BestRun;
   questIndex: number;
   resources: ResourceBag;
   currentSector: SectorKey;

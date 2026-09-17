@@ -43,6 +43,33 @@
   font-size: 15px;
 }
 
+.best-run-card {
+  display: grid;
+  max-width: 430px;
+  gap: 4px;
+  border: 1px solid rgba(255, 180, 45, 0.42);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(51, 36, 21, 0.9), rgba(13, 20, 26, 0.92));
+  padding: 14px 16px;
+}
+
+.best-run-card span {
+  color: #ffd88b;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.best-run-card strong {
+  color: #f7fbff;
+  font-size: 20px;
+}
+
+.best-run-card small {
+  color: #b9c7d6;
+  font-size: 13px;
+}
+
 .main-menu-actions {
   display: flex;
   flex-wrap: wrap;
