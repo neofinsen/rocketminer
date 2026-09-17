@@ -7,10 +7,10 @@ const items: Array<{
   label: string;
   icon: React.ComponentType<{ size?: number }>;
 }> = [
-  { key: 'space', label: 'Weltraum', icon: Satellite },
+  { key: 'adventure', label: 'Abenteuer', icon: Compass },
   { key: 'city', label: 'Stadt', icon: LandPlot },
   { key: 'research', label: 'Forschung', icon: FlaskConical },
-  { key: 'adventure', label: 'Abenteuer', icon: Compass },
+  { key: 'space', label: 'Weltraum', icon: Satellite },
 ];
 
 export function BottomDock({

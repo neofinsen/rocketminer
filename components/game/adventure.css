@@ -137,6 +137,7 @@
 
 .player-ship-marker,
 .enemy-fighter,
+.xp-orb,
 .combat-shot,
 .combat-explosion,
 .wave-field p,
@@ -211,6 +212,25 @@
   margin: 4px auto 0;
 }
 
+.run-xp-progress {
+  margin-top: 6px;
+}
+
+.xp-orb {
+  z-index: 4;
+  width: 13px;
+  height: 13px;
+  border: 1px solid rgba(183, 255, 202, 0.78);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #eaffb0 0 18%, #65f0aa 42%, #1b7657 72%);
+  box-shadow:
+    0 0 9px rgba(100, 255, 174, 0.82),
+    0 0 18px rgba(81, 221, 255, 0.36);
+  transform: translate(-50%, -50%);
+  transition: left 0.05s linear, top 0.05s linear;
+}
+
 .combat-shot {
   z-index: 6;
   width: 12px;
@@ -269,6 +289,65 @@
   opacity: 0.46;
 }
 
+.run-choice-panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 12;
+  display: grid;
+  width: min(720px, calc(100% - 48px));
+  gap: 12px;
+  border: 1px solid rgba(255, 211, 124, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(25, 34, 42, 0.96), rgba(12, 19, 26, 0.98)),
+    #121b24;
+  padding: 18px;
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.42);
+  transform: translate(-50%, -50%);
+}
+
+.run-choice-panel strong {
+  color: #ffe0a3;
+  font-size: 18px;
+}
+
+.run-choice-panel small {
+  color: #bac7d4;
+  font-size: 13px;
+}
+
+.run-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.run-choice-grid button {
+  display: grid;
+  min-height: 122px;
+  align-content: start;
+  gap: 8px;
+  border: 1px solid rgba(255, 211, 124, 0.28);
+  border-radius: 7px;
+  background: rgba(109, 73, 34, 0.28);
+  color: #f9f4e9;
+  cursor: pointer;
+  padding: 12px;
+  text-align: left;
+}
+
+.run-choice-grid button:hover {
+  border-color: rgba(255, 223, 155, 0.76);
+  background: rgba(139, 92, 39, 0.42);
+}
+
+.run-choice-grid span {
+  color: #fff1c5;
+  font-size: 14px;
+  font-weight: 900;
+}
+
 .reward-card {
   padding: 18px;
 }
@@ -306,7 +385,7 @@
 
 .wave-track {
   display: grid;
-  grid-template-columns: repeat(20, 1fr);
+  grid-template-columns: repeat(30, 1fr);
   gap: 5px;
 }
 

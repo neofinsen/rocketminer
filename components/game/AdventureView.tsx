@@ -5,87 +5,56 @@ import {
 } from 'lucide-react';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
-import { RESOURCE_LABELS } from '@/lib/game/constants';
+import {
+  ADVENTURE_MAX_WAVE,
+  createEnemies,
+  getBaseRunSummary,
+  getEnemyStats,
+  getEnemyXpDrop,
+  getRunFireCooldown,
+  getRunChoicesForLevel,
+  MAX_RUN_PROJECTILES,
+  MAX_RUN_RAPID_FIRE,
+  getRunPlayerDamage,
+  getRunPlayerMaxHp,
+  getRunPlayerSpeed,
+  getRunProjectileCount,
+  getRunXpTarget,
+  getWaveReward,
+  rewardText,
+  type RunChoice,
+  type RunSkillKey,
+  type RunUpgradeKey,
+} from '@/lib/game/adventureRun';
+import {
+  createCombat,
+  createIdleCombat,
+  createPlayerShots,
+  getAimTarget,
+} from '@/lib/game/adventureCombat';
 import {
   formatNumber,
   getAdventureDeuteriumCost,
   getModuleLevel,
-  getRocketSpeed,
   getShieldStrength,
   getWeaponDamage,
 } from '@/lib/game/simulation';
+import type { CombatState, Mode, Shot } from '@/lib/game/adventureTypes';
 import type { GameState, ResourceBag, WeaponUpgradeChoice } from '@/lib/game/types';
 import rocketImage from './assets/rocketminer-starter-rocket-desert.png';
+import { RunChoicePanel } from './RunChoicePanel';
 
-type Mode = 'auto';
-type RunStatus = 'idle' | 'running' | 'victory' | 'defeat';
-
-type Enemy = {
-  id: number;
-  variant: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  hp: number;
-  maxHp: number;
-  shotTimer: number;
-};
-
-type Shot = {
-  id: number;
-  owner: 'player' | 'enemy';
-  x: number;
-  y: number;
-  targetX: number;
-  targetY: number;
-  enemyId?: number;
-  damage: number;
-};
-
-type Explosion = {
-  id: number;
-  x: number;
-  y: number;
-  timer: number;
-};
-
-type CombatState = {
-  mode: Mode;
-  status: RunStatus;
-  wave: number;
-  enemies: Enemy[];
-  shots: Shot[];
-  explosions: Explosion[];
-  playerX: number;
-  playerY: number;
-  playerAngle: number;
-  playerVx: number;
-  playerVy: number;
-  playerHp: number;
-  playerMaxHp: number;
-  fireTimer: number;
-  message: string;
-  log: string[];
-  nextId: number;
-};
-
-const MAX_WAVE = 20;
-const PLAYER_START = { x: 30, y: 54 };
 const TICK_SECONDS = 0.05;
 const ADVENTURE_SPEED_SCALE = 3.9;
 const ENEMY_HIT_RADIUS = 4.4;
+const NOVA_RADIUS = 14;
+const XP_PICKUP_RADIUS = 5.8;
+const XP_MAGNET_RADIUS = 17;
 const MAX_RAPID_FIRE_UPGRADES = 5;
 const MAX_MULTI_SHOT_UPGRADES = 4;
 
 const getAssetUrl = (asset: unknown) =>
   typeof asset === 'string' ? asset : (asset as { src: string }).src;
-
-const getEnemyStats = (wave: number) => ({
-  hp: Math.round(42 + Math.pow(wave, 1.34) * 24),
-  damage: Math.round(8 + wave * 4.8),
-  cadence: Math.max(0.9, 2.3 - wave * 0.045),
-});
 
 const getFireCooldown = (
   weaponLevel: number,
@@ -102,114 +71,6 @@ const getPlayerMaxHp = (state: GameState) =>
   getModuleLevel(state, 'cargo') * 7 +
   getShieldStrength(state);
 
-const getAlienDrop = (wave: number) => {
-  if (wave < 4) return 0;
-  const chance = Math.min(0.22, 0.06 + wave * 0.007);
-  if (Math.random() > chance) return 0;
-  return 1 + (wave >= 14 && Math.random() < 0.18 ? 1 : 0);
-};
-
-const getWaveReward = (wave: number): Partial<ResourceBag> => ({
-  credits: 80 + wave * 28,
-  titan: 10 + wave * 4,
-  deuterium: wave >= 4 ? 2 + Math.floor(wave / 4) : 0,
-  silicon: wave >= 3 ? 5 + wave * 2 : 0,
-  alien: getAlienDrop(wave),
-});
-
-const rewardText = (reward: Partial<ResourceBag>) =>
-  Object.entries(reward)
-    .filter(([, value]) => (value ?? 0) > 0)
-    .map(
-      ([key, value]) =>
-        `${RESOURCE_LABELS[key as keyof ResourceBag]} +${formatNumber(value ?? 0)}`,
-    )
-    .join(', ');
-
-const createEnemies = (wave: number, startId: number) => {
-  const stats = getEnemyStats(wave);
-  const count = Math.min(12, 3 + Math.floor(wave * 0.75));
-
-  return Array.from({ length: count }, (_, index) => ({
-    id: startId + index,
-    variant: (wave + index) % 3,
-    x: 18 + ((startId + index * 19) % 72),
-    y: 18 + ((startId * 7 + index * 23) % 62),
-    vx: index % 2 === 0 ? 5.2 + wave * 0.22 : -5.8 - wave * 0.2,
-    vy: index % 3 === 0 ? 4.4 + wave * 0.16 : -4.2 - wave * 0.14,
-    hp: stats.hp + index * 10,
-    maxHp: stats.hp + index * 10,
-    shotTimer: stats.cadence + index * 0.48,
-  }));
-};
-
-const createCombat = (state: GameState, mode: Mode): CombatState => ({
-  mode,
-  status: 'running',
-  wave: 1,
-  enemies: createEnemies(1, 1),
-  shots: [],
-  explosions: [],
-  playerX: PLAYER_START.x,
-  playerY: PLAYER_START.y,
-  playerAngle: 90,
-  playerVx: 0,
-  playerVy: 4.8,
-  playerHp: getPlayerMaxHp(state),
-  playerMaxHp: getPlayerMaxHp(state),
-  fireTimer: 0.35,
-  message: 'Welle 1 gestartet - steuere mit WASD oder Pfeiltasten',
-  log: [],
-  nextId: 10,
-});
-
-const createIdleCombat = (state: GameState): CombatState => ({
-  mode: 'auto',
-  status: 'idle',
-  wave: 1,
-  enemies: [],
-  shots: [],
-  explosions: [],
-  playerX: PLAYER_START.x,
-  playerY: PLAYER_START.y,
-  playerAngle: 90,
-  playerVx: 0,
-  playerVy: 4.8,
-  playerHp: getPlayerMaxHp(state),
-  playerMaxHp: getPlayerMaxHp(state),
-  fireTimer: 0,
-  message: 'Bereit fuer den ersten Einsatz',
-  log: [],
-  nextId: 1,
-});
-
-const getAimTarget = (enemies: Enemy[], x: number, y: number) =>
-  [...enemies].sort(
-    (a, b) =>
-      Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y),
-  )[0];
-
-const createPlayerShots = (
-  current: CombatState,
-  target: Enemy,
-  damage: number,
-  startId: number,
-  projectileCount: number,
-): Shot[] => {
-  const count = Math.max(1, Math.min(5, projectileCount));
-  const center = (count - 1) / 2;
-  return Array.from({ length: count }, (_, index) => ({
-    id: startId + index,
-    owner: 'player' as const,
-    x: current.playerX,
-    y: current.playerY + (index - center) * 2.2,
-    targetX: target.x,
-    targetY: target.y,
-    enemyId: target.id,
-    damage,
-  }));
-};
-
 export function AdventureView({
   state,
   onClaimReward,
@@ -221,18 +82,20 @@ export function AdventureView({
   onChooseWeaponUpgrade: (choice: WeaponUpgradeChoice) => void;
   onStartAdventure: () => boolean;
 }) {
-  const [combat, setCombat] = useState<CombatState>(() => createIdleCombat(state));
+  const [combat, setCombat] = useState<CombatState>(() =>
+    createIdleCombat(getPlayerMaxHp(state)),
+  );
   const keys = useRef(new Set<string>());
   const pendingRewards = useRef<Partial<ResourceBag>[]>([]);
-  const playerDamage = useMemo(() => getWeaponDamage(state), [state]);
+  const basePlayerDamage = useMemo(() => getWeaponDamage(state), [state]);
   const shieldStrength = getShieldStrength(state);
-  const engineLevel = getModuleLevel(state, 'engine');
   const weaponLevel = getModuleLevel(state, 'weapon');
   const laserLevel = getModuleLevel(state, 'laser');
-  const shieldLevel = getModuleLevel(state, 'shield');
   const rapidFireLevel = state.weaponUpgrades.rapidFire;
   const multiShotLevel = state.weaponUpgrades.multiShot;
-  const projectileCount = 1 + multiShotLevel;
+  const baseProjectileCount = 1 + multiShotLevel;
+  const playerDamage = getRunPlayerDamage(basePlayerDamage, combat.runUpgrades);
+  const projectileCount = getRunProjectileCount(baseProjectileCount, combat.runUpgrades);
   const rapidFirePercent = Math.min(50, rapidFireLevel * 10);
   const hasWeaponUpgradeChoice =
     rapidFireLevel < MAX_RAPID_FIRE_UPGRADES ||
@@ -243,8 +106,12 @@ export function AdventureView({
         (_, index) => (index + 1) * 5,
       ).find((level) => !state.weaponUpgrades.claimedLevels.includes(level))
     : undefined;
-  const playerSpeed = getRocketSpeed(state) * ADVENTURE_SPEED_SCALE;
-  const fireCooldown = getFireCooldown(weaponLevel, rapidFireLevel);
+  const playerSpeed = getRunPlayerSpeed(state, ADVENTURE_SPEED_SCALE, combat.runUpgrades, combat.runSkill);
+  const fireCooldown = getRunFireCooldown(
+    getFireCooldown(weaponLevel, rapidFireLevel),
+    combat.runUpgrades,
+    combat.runSkill,
+  );
   const adventureCost = getAdventureDeuteriumCost(state);
   const canStartAdventure = state.resources.deuterium >= adventureCost;
 
@@ -266,7 +133,7 @@ export function AdventureView({
       }));
       return;
     }
-    setCombat(createCombat(state, mode));
+    setCombat(createCombat(getPlayerMaxHp(state), mode));
   };
 
   useEffect(() => {
@@ -294,11 +161,11 @@ export function AdventureView({
     const reward = getWaveReward(current.wave);
     pendingRewards.current.push(reward);
 
-    if (current.wave >= MAX_WAVE) {
+    if (current.wave >= ADVENTURE_MAX_WAVE) {
       return {
         ...current,
         status: 'victory',
-        message: 'Alle 20 Wellen geschafft',
+        message: `Alle ${ADVENTURE_MAX_WAVE} Test-Wellen geschafft`,
         log: [`Welle ${current.wave}: ${rewardText(reward)}`, ...current.log].slice(0, 5),
       };
     }
@@ -316,6 +183,44 @@ export function AdventureView({
       log: [`Welle ${current.wave}: ${rewardText(reward)}`, ...current.log].slice(0, 5),
       nextId: current.nextId + enemies.length,
     };
+  };
+
+  const chooseRunChoice = (choice: RunChoice) => {
+    setCombat((current) => {
+      if (current.status !== 'choosing') return current;
+      const next = { ...current };
+
+      if (choice.kind === 'skill') {
+        next.runSkill = choice.key as RunSkillKey;
+        next.message = `${choice.title} aktiv fuer diesen Run`;
+        return { ...next, status: 'running', choices: [] };
+      }
+
+      const key = choice.key as RunUpgradeKey;
+      if (key === 'multiShot' && baseProjectileCount + next.runUpgrades.multiShot >= MAX_RUN_PROJECTILES) {
+        return current;
+      }
+      if (key === 'rapidFire' && next.runUpgrades.rapidFire >= MAX_RUN_RAPID_FIRE) {
+        return current;
+      }
+      next.runUpgrades = {
+        ...next.runUpgrades,
+        [key]: key === 'multiShot'
+          ? Math.min(MAX_RUN_PROJECTILES - baseProjectileCount, next.runUpgrades[key] + 1)
+          : next.runUpgrades[key] + 1,
+      };
+
+      if (key === 'plating') {
+        next.playerMaxHp = getRunPlayerMaxHp(
+          getPlayerMaxHp(state),
+          next.runUpgrades,
+        );
+        next.playerHp = Math.min(next.playerMaxHp, next.playerHp + 35);
+      }
+
+      next.message = `${choice.title} gewaehlt`;
+      return { ...next, status: 'running', choices: [] };
+    });
   };
 
   useEffect(() => {
@@ -349,6 +254,7 @@ export function AdventureView({
             timer: explosion.timer - TICK_SECONDS,
           }))
           .filter((explosion) => explosion.timer > 0);
+        let xpOrbs = [...(current.xpOrbs ?? [])];
         const stats = getEnemyStats(current.wave);
         const inputX =
           (keys.current.has('d') || keys.current.has('arrowright') ? 1 : 0) -
@@ -387,7 +293,7 @@ export function AdventureView({
         });
 
         const spawnedShots: Shot[] = [];
-        const armedEnemies = enemies.map((enemy) => {
+        let armedEnemies = enemies.map((enemy) => {
           if (enemy.shotTimer > 0) return enemy;
           spawnedShots.push({
             id: nextId,
@@ -401,6 +307,34 @@ export function AdventureView({
           nextId += 1;
           return { ...enemy, shotTimer: stats.cadence };
         });
+        let pulseTimer = current.pulseTimer;
+
+        if (current.runSkill === 'novaPulse') {
+          pulseTimer = Math.max(0, pulseTimer - TICK_SECONDS);
+          if (pulseTimer <= 0) {
+            armedEnemies = armedEnemies.flatMap((enemy) => {
+              const distance = Math.hypot(
+                enemy.x - current.playerX,
+                enemy.y - current.playerY,
+              );
+              if (distance > NOVA_RADIUS) return [enemy];
+              const hp = enemy.hp - Math.round(playerDamage * 0.72);
+              if (hp > 0) return [{ ...enemy, hp }];
+              explosions.push({ id: nextId, x: enemy.x, y: enemy.y, timer: 0.58 });
+              nextId += 1;
+              xpOrbs.push({
+                id: nextId,
+                x: enemy.x,
+                y: enemy.y,
+                amount: getEnemyXpDrop(current.wave),
+              });
+              nextId += 1;
+              return [];
+            });
+            pulseTimer = 8;
+            message = 'Nova-Puls entlaedt sich';
+          }
+        }
 
         let fireTimer = Math.max(0, current.fireTimer - TICK_SECONDS);
         if (fireTimer <= 0 && armedEnemies.length) {
@@ -414,6 +348,19 @@ export function AdventureView({
           );
           spawnedShots.push(...shots);
           nextId += shots.length;
+          if (current.runSkill === 'droneWing') {
+            spawnedShots.push({
+              id: nextId,
+              owner: 'player',
+              x: current.playerX,
+              y: current.playerY + 6,
+              targetX: target.x,
+              targetY: target.y,
+              enemyId: target.id,
+              damage: Math.round(playerDamage * 0.45),
+            });
+            nextId += 1;
+          }
           fireTimer = fireCooldown;
           message =
             projectileCount > 1
@@ -477,10 +424,59 @@ export function AdventureView({
             if (hp > 0) return [{ ...enemy, hp }];
             explosions.push({ id: nextId, x: enemy.x, y: enemy.y, timer: 0.58 });
             nextId += 1;
+            xpOrbs.push({
+              id: nextId,
+              x: enemy.x,
+              y: enemy.y,
+              amount: getEnemyXpDrop(current.wave),
+            });
+            nextId += 1;
             message = 'Gegner zerstoert';
             return [];
           });
         });
+
+        let gainedXp = 0;
+        xpOrbs = xpOrbs.flatMap((orb) => {
+          const distance = Math.hypot(orb.x - playerX, orb.y - playerY);
+          if (distance <= XP_PICKUP_RADIUS) {
+            gainedXp += orb.amount;
+            return [];
+          }
+          if (distance <= XP_MAGNET_RADIUS) {
+            const pull = Math.min(1, (XP_MAGNET_RADIUS - distance) / XP_MAGNET_RADIUS);
+            return [{
+              ...orb,
+              x: orb.x + (playerX - orb.x) * pull * 0.16,
+              y: orb.y + (playerY - orb.y) * pull * 0.16,
+            }];
+          }
+          return [orb];
+        });
+
+        let runLevel = current.runLevel;
+        let runXp = current.runXp + gainedXp;
+        let runXpTarget = current.runXpTarget;
+        let status = current.status;
+        let choices = current.choices;
+
+        if (runXp >= runXpTarget) {
+          runXp -= runXpTarget;
+          runLevel += 1;
+          runXpTarget = getRunXpTarget(runLevel);
+          choices = getRunChoicesForLevel(
+            runLevel,
+            baseProjectileCount,
+            current.runUpgrades,
+          );
+          status = 'choosing';
+          message =
+            runLevel % 10 === 0
+              ? `Run-Level ${runLevel}: Spezialskill waehlen`
+              : `Run-Level ${runLevel}: Upgrade waehlen`;
+        } else if (gainedXp > 0) {
+          message = `XP +${formatNumber(gainedXp)}`;
+        }
 
         if (playerHp <= 0) {
           return {
@@ -495,6 +491,10 @@ export function AdventureView({
             enemies: remainingEnemies,
             shots: movingShots,
             explosions,
+            xpOrbs,
+            runLevel,
+            runXp,
+            runXpTarget,
             message: `Rakete in Welle ${current.wave} verloren`,
             nextId,
           };
@@ -503,8 +503,9 @@ export function AdventureView({
         const updated: CombatState = {
           ...current,
           enemies: remainingEnemies,
-          shots: movingShots,
+          shots: status === 'choosing' ? [] : movingShots,
           explosions,
+          xpOrbs,
           playerX,
           playerY,
           playerAngle,
@@ -512,10 +513,17 @@ export function AdventureView({
           playerVy,
           playerHp,
           fireTimer,
+          pulseTimer,
+          runLevel,
+          runXp,
+          runXpTarget,
+          status,
+          choices,
           message,
           nextId,
         };
 
+        if (status === 'choosing') return updated;
         if (!remainingEnemies.length) return finishWave(updated);
         return updated;
       });
@@ -533,6 +541,7 @@ export function AdventureView({
   ]);
 
   const playerPercent = (combat.playerHp / combat.playerMaxHp) * 100;
+  const xpPercent = (combat.runXp / Math.max(1, combat.runXpTarget)) * 100;
 
   return (
     <section
@@ -545,10 +554,7 @@ export function AdventureView({
       }
     >
       <div className="adventure-header">
-        <div>
-          <h2>Abenteuer</h2>
-          <p>Steuere mit WASD oder Pfeiltasten. Die Rakete feuert automatisch.</p>
-        </div>
+        <div><h2>Abenteuer</h2><p>Steuere mit WASD oder Pfeiltasten. Die Rakete feuert automatisch.</p></div>
         <div className="adventure-actions">
           <button onClick={() => startRun('auto')}>
             <FastForward size={17} />
@@ -566,26 +572,27 @@ export function AdventureView({
           <span className="combat-tag">Explorer I</span>
           <h3>Rostige Starterrakete</h3>
           <Progress className="game-progress" value={playerPercent} />
-          <span>
-            Huelle {formatNumber(combat.playerHp)} / {formatNumber(combat.playerMaxHp)}
-          </span>
-          <small>
-            Triebwerk {engineLevel} · Waffenmodul {weaponLevel} · Schildmodul{' '}
-            {shieldLevel} · Laser {laserLevel} · Schaden {formatNumber(playerDamage)}
-          </small>
-          <small>
-            Waffenbonus: Schussrate +{rapidFirePercent}% · Geschosse{' '}
-            {projectileCount}/5
-          </small>
+          <span>Huelle {formatNumber(combat.playerHp)} / {formatNumber(combat.playerMaxHp)}</span>
+          <small>Run-Level {combat.runLevel} · XP {formatNumber(combat.runXp)} / {formatNumber(combat.runXpTarget)}</small>
+          <Progress className="game-progress run-xp-progress" value={xpPercent} />
+          <small>{getBaseRunSummary(state)} · Laser {laserLevel} · Schaden {formatNumber(playerDamage)}</small>
+          <small>Waffenbonus: Schussrate +{rapidFirePercent}% · Geschosse {projectileCount}/5</small>
+          <small>Run: Feuer +{combat.runUpgrades.rapidFire * 12}% · Multi +{combat.runUpgrades.multiShot} · Panzerung +{combat.runUpgrades.plating * 35}</small>
+          <small>Spezial: {combat.runSkill ? combat.runSkill : 'noch keiner'}</small>
           {pendingWeaponMilestone ? (
             <small>Upgrade bereit bei Waffenmodul {pendingWeaponMilestone}.</small>
           ) : null}
         </div>
 
         <div className="wave-field">
-          <span className="wave-count">
-            Welle {combat.status === 'idle' ? 0 : combat.wave} / {MAX_WAVE}
-          </span>
+          <span className="wave-count">Welle {combat.status === 'idle' ? 0 : combat.wave} / {ADVENTURE_MAX_WAVE}</span>
+          {combat.status === 'choosing' ? (
+            <RunChoicePanel
+              choices={combat.choices}
+              onChoose={chooseRunChoice}
+              runLevel={combat.runLevel}
+            />
+          ) : null}
           <span
             className="player-ship-marker"
             style={
@@ -610,6 +617,14 @@ export function AdventureView({
                 value={(enemy.hp / enemy.maxHp) * 100}
               />
             </span>
+          ))}
+          {(combat.xpOrbs ?? []).map((orb) => (
+            <span
+              className="xp-orb"
+              key={orb.id}
+              style={{ left: `${orb.x}%`, top: `${orb.y}%` }}
+              title={`XP +${formatNumber(orb.amount)}`}
+            />
           ))}
           {combat.shots.map((shot) => (
             <span
@@ -666,7 +681,7 @@ export function AdventureView({
       </div>
 
       <div className="wave-track" aria-hidden="true">
-        {Array.from({ length: MAX_WAVE }, (_, index) => (
+        {Array.from({ length: ADVENTURE_MAX_WAVE }, (_, index) => (
           <span
             className={index + 1 < combat.wave ? 'cleared' : ''}
             key={index}
