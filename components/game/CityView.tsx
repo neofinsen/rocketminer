@@ -1,6 +1,11 @@
 'use client';
 
 import { RESOURCE_LABELS } from '@/lib/game/constants';
+import {
+  getEffectiveProductionPerMinute,
+  getMetalDemandPerMinute,
+  isProductionBlockedByMetal,
+} from '@/lib/game/economy';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import {
@@ -13,7 +18,6 @@ import {
   getFreeEnergy,
   getStorageCapacity,
   newRocketCost,
-  getProductionPerMinute,
 } from '@/lib/game/simulation';
 import type { BuildingKey, GameState, ResourceKey } from '@/lib/game/types';
 import {
@@ -83,6 +87,11 @@ const buildSlots = [
   { id: 'slot-08', x: 48, y: 73 },
 ] as const;
 
+const formatSignedRate = (value: number) => {
+  if (Math.abs(value) < 0.05) return '+0/min';
+  return `${value > 0 ? '+' : ''}${formatRate(value)}/min`;
+};
+
 export function CityView({
   state,
   onBuildAtSlot,
@@ -95,7 +104,9 @@ export function CityView({
   onUpgradeBuilding: (key: BuildingKey) => void;
 }) {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
-  const production = getProductionPerMinute(state.buildings);
+  const production = getEffectiveProductionPerMinute(state);
+  const productionBlocked = isProductionBlockedByMetal(state);
+  const metalDemand = getMetalDemandPerMinute(state.buildings);
   const freeEnergy = getFreeEnergy(state);
   const energyCapacity = getEnergyCapacity(state);
   const storageCapacity = getStorageCapacity(state);
@@ -119,16 +130,29 @@ export function CityView({
           <p>Futuristische Kolonie mit Raumhafen, Energieachse und Industriebezirk.</p>
         </div>
         <div className="city-totals">
-          {Object.entries(production).map(([key, value]) => (
+          {Object.entries(production)
+            .filter(([, value]) => Math.abs(value ?? 0) > 0)
+            .map(([key, value]) => (
             <span key={key}>
-              {RESOURCE_LABELS[key as keyof typeof RESOURCE_LABELS]} +
-              {formatNumber(value)}/min
+              {RESOURCE_LABELS[key as keyof typeof RESOURCE_LABELS]}{' '}
+              {formatSignedRate(value ?? 0)}
             </span>
           ))}
           <span>Energie {formatNumber(freeEnergy)} / {formatNumber(energyCapacity)}</span>
           <span>Lager {formatNumber(storageCapacity)}</span>
         </div>
       </div>
+      {productionBlocked ? (
+        <div className="city-production-alert">
+          Produktion gedrosselt: Es fehlt Metall als Ausgangsmaterial. Baue
+          Meteoriten im Weltraum ab, damit die Gebaeude wieder voll arbeiten.
+        </div>
+      ) : metalDemand > 0 ? (
+        <div className="city-production-note">
+          Gebaeude verbrauchen {formatRate(metalDemand)}/min Metall als
+          Ausgangsmaterial.
+        </div>
+      ) : null}
 
       <div
         className="city-map"

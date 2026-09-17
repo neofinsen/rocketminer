@@ -27,10 +27,15 @@ const mergeModules = (savedModules: unknown): RocketModule[] => {
 
 const mergeBuildings = (savedBuildings: unknown): Building[] => {
   const saved = asArray(savedBuildings, []);
-  return INITIAL_STATE.buildings.map((building) => ({
-    ...building,
-    ...saved.find((item) => item.key === building.key),
-  }));
+  return INITIAL_STATE.buildings.map((building) => {
+    const savedBuilding = saved.find((item) => item.key === building.key);
+
+    return {
+      ...building,
+      ...savedBuilding,
+      production: building.production,
+    };
+  });
 };
 
 const normalizeView = (view: unknown): ViewKey => {
@@ -85,23 +90,17 @@ const normalizeResourceBag = (resources: unknown): ResourceBag => {
   };
 };
 
-const normalizeResourceKey = (resource: unknown) => {
-  if (resource === 'crystal') return 'deuterium';
-  if (resource === 'wood') return 'metal';
-  return resource;
-};
-
 const normalizeAsteroids = (asteroids: unknown): Asteroid[] =>
   asArray(asteroids, INITIAL_STATE.asteroids).map((asteroid) => ({
     ...asteroid,
-    type: asteroid.type === 'crystal' ? 'deuterium' : asteroid.type,
-    resource: normalizeResourceKey(asteroid.resource) as Asteroid['resource'],
+    type: 'iron',
+    resource: 'metal',
   }));
 
 const normalizeFragments = (fragments: unknown): Fragment[] =>
   asArray(fragments, INITIAL_STATE.fragments).map((fragment) => ({
     ...fragment,
-    resource: normalizeResourceKey(fragment.resource) as Fragment['resource'],
+    resource: 'metal',
   }));
 
 const normalizeCargo = (cargo: unknown): Partial<ResourceBag> => {
@@ -109,11 +108,13 @@ const normalizeCargo = (cargo: unknown): Partial<ResourceBag> => {
     ? (cargo as Partial<ResourceBag> & { crystal?: number; wood?: number })
     : {};
   const { crystal, wood, ...currentCargo } = saved;
+  const convertedCargo = Object.entries(currentCargo).reduce(
+    (total, [, value]) => total + (value ?? 0),
+    0,
+  );
 
   return {
-    ...currentCargo,
-    deuterium: (saved.deuterium ?? 0) + (crystal ?? 0),
-    metal: (saved.metal ?? 0) + (wood ?? 0),
+    metal: convertedCargo + (crystal ?? 0) + (wood ?? 0),
   };
 };
 

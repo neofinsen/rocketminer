@@ -157,13 +157,13 @@
 
 .resource-strip {
   display: grid;
-  grid-template-columns: repeat(5, minmax(94px, 1fr));
+  grid-template-columns: repeat(7, minmax(74px, 1fr));
   min-width: 0;
 }
 
 .resource-cell {
-  gap: 8px;
-  padding: 0 10px;
+  gap: 6px;
+  padding: 0 7px;
   border-left: 1px solid var(--border);
   min-width: 0;
   overflow: hidden;

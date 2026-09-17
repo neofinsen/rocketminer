@@ -10,13 +10,7 @@ import {
 import type { GameState, ResourceKey } from '@/lib/game/types';
 import { ResourceIcon } from './ResourceIcon';
 
-const cargoResources: ResourceKey[] = [
-  'metal',
-  'titan',
-  'deuterium',
-  'silicon',
-  'alien',
-];
+const cargoResources: ResourceKey[] = ['metal'];
 
 export function RightPanel({
   state,
@@ -71,17 +65,7 @@ export function RightPanel({
           <div>
             <ResourceIcon resource="metal" />
             <span>Metall</span>
-            <strong>+32 /s</strong>
-          </div>
-          <div>
-            <ResourceIcon resource="titan" />
-            <span>Titan</span>
-            <strong>+14 /s</strong>
-          </div>
-          <div>
-            <ResourceIcon resource="deuterium" />
-            <span>Deuterium</span>
-            <strong>selten</strong>
+            <strong>Meteoriten</strong>
           </div>
         </div>
       </section>

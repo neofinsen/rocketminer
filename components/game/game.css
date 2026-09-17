@@ -132,6 +132,24 @@
   font-size: 13px;
 }
 
+.city-production-alert,
+.city-production-note {
+  margin: -8px 0 14px;
+  border: 1px solid rgba(255, 207, 103, 0.38);
+  border-radius: 7px;
+  background: rgba(44, 31, 17, 0.82);
+  padding: 9px 12px;
+  color: #ffe1a3;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.city-production-alert {
+  border-color: rgba(255, 98, 76, 0.56);
+  background: rgba(66, 24, 20, 0.86);
+  color: #ffd0c5;
+}
+
 .research-header {
   align-items: center;
 }

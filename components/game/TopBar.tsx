@@ -1,11 +1,14 @@
 import { Mail, Menu, Settings, Trophy } from 'lucide-react';
 import { RESOURCE_LABELS } from '@/lib/game/constants';
 import {
+  getEffectiveProductionPerMinute,
+  isProductionBlockedByMetal,
+} from '@/lib/game/economy';
+import {
   formatNumber,
   formatRate,
   getEnergyCapacity,
   getFreeEnergy,
-  getProductionPerMinute,
   getStorageCapacity,
 } from '@/lib/game/simulation';
 import type { GameState, ResourceKey } from '@/lib/game/types';
@@ -15,12 +18,20 @@ const topResources: ResourceKey[] = [
   'credits',
   'metal',
   'energy',
+  'titan',
+  'silicon',
   'deuterium',
   'alien',
 ];
 
+const formatSignedRate = (value: number) => {
+  if (Math.abs(value) < 0.05) return '+0/min';
+  return `${value > 0 ? '+' : ''}${formatRate(value)}/min`;
+};
+
 export function TopBar({ state }: { state: GameState }) {
-  const production = getProductionPerMinute(state.buildings);
+  const production = getEffectiveProductionPerMinute(state);
+  const productionBlocked = isProductionBlockedByMetal(state);
   const freeEnergy = getFreeEnergy(state);
   const energyCapacity = getEnergyCapacity(state);
   const storageCapacity = getStorageCapacity(state);
@@ -52,9 +63,9 @@ export function TopBar({ state }: { state: GameState }) {
                   ? 'frei'
                   : resource === 'alien'
                     ? 'Abenteuer'
-                  : `+${formatRate(
-                      production[resource as keyof typeof production] ?? 0,
-                    )}/min`}
+                  : productionBlocked && resource !== 'metal'
+                    ? 'Metall fehlt'
+                    : formatSignedRate(production[resource] ?? 0)}
               </small>
             </div>
             <span className="sr-only">{RESOURCE_LABELS[resource]}</span>

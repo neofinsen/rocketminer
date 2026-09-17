@@ -1,6 +1,5 @@
 import type {
   Asteroid,
-  Building,
   Fragment,
   GameState,
   ModuleKey,
@@ -9,6 +8,7 @@ import type {
   ResourceKey,
   SectorKey,
 } from './types';
+import { getMetalDemandPerMinute, getProductionPerMinute } from './economy';
 
 const STORAGE_RESOURCES: ResourceKey[] = [
   'credits',
@@ -26,20 +26,14 @@ export const BASE_POSITION = { x: 9, y: 78 };
 const UNLOAD_DURATION_SECONDS = 30;
 const REFUEL_DURATION_SECONDS = 30;
 
-const asteroidTypes: Asteroid['type'][] = [
-  'iron',
-  'titan',
-  'deuterium',
-  'silicon',
-  'alien',
-];
+const asteroidTypes: Asteroid['type'][] = ['iron'];
 
 const asteroidResource: Record<Asteroid['type'], ResourceKey> = {
   iron: 'metal',
-  titan: 'titan',
-  deuterium: 'deuterium',
-  silicon: 'silicon',
-  alien: 'alien',
+  titan: 'metal',
+  deuterium: 'metal',
+  silicon: 'metal',
+  alien: 'metal',
 };
 
 export const formatNumber = (value: number) =>
@@ -129,19 +123,6 @@ export const getSectorLabel = (sector: SectorKey) =>
   sector === 'beta' ? 'Sektor Beta' : 'Sektor Alpha';
 
 export const getSectorDanger = (sector: SectorKey) => (sector === 'beta' ? 4 : 2);
-
-export const getProductionPerMinute = (buildings: Building[]) => {
-  const production = { credits: 0, metal: 0, deuterium: 0 };
-
-  buildings.forEach((building) => {
-    Object.entries(building.production).forEach(([key, value]) => {
-      if (key === 'energy') return;
-      production[key as keyof typeof production] += (value ?? 0) * building.level;
-    });
-  });
-
-  return production;
-};
 
 export const getEnergyCapacity = (state: GameState) =>
   state.resources.energy +
@@ -317,9 +298,7 @@ export const queueProjectile = (
 };
 
 function spawnAsteroid(nextId: number, state: GameState): Asteroid {
-  const available =
-    state.currentSector === 'beta' ? asteroidTypes : asteroidTypes.slice(0, 4);
-  const type = available[nextId % available.length];
+  const type = asteroidTypes[nextId % asteroidTypes.length];
   const sectorBonus = state.currentSector === 'beta' ? 520 : 0;
   const hp = 1250 + (nextId % 4) * 360 + sectorBonus;
 
@@ -453,11 +432,21 @@ const updateRocketMovement = (
 };
 
 export const tickGame = (state: GameState, deltaSeconds: number): GameState => {
-  const production = getProductionPerMinute(state.buildings);
   let resources = { ...state.resources };
   const collectedTotals = { ...state.collectedTotals };
+  const production = getProductionPerMinute(state.buildings);
+  const metalDemandPerMinute = getMetalDemandPerMinute(state.buildings);
+  const neededMetal = (metalDemandPerMinute * deltaSeconds) / 60;
+  const productionScale =
+    neededMetal > 0 ? clamp(resources.metal / neededMetal, 0, 1) : 1;
+
+  if (neededMetal > 0) {
+    resources.metal = Math.max(0, resources.metal - neededMetal * productionScale);
+  }
+
   Object.entries(production).forEach(([key, perMinute]) => {
-    resources[key as ResourceKey] += (perMinute * deltaSeconds) / 60;
+    resources[key as ResourceKey] +=
+      ((perMinute ?? 0) * productionScale * deltaSeconds) / 60;
   });
   resources = clampResourcesToStorage(state, resources);
 
