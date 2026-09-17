@@ -87,3 +87,8 @@ export const ROCKET_CATALOG: Array<{
 
 export const getRocketDefinition = (key: RocketKey) =>
   ROCKET_CATALOG.find((rocket) => rocket.key === key) ?? ROCKET_CATALOG[0];
+
+export const ROCKET_UNLOCK_ORDER = ROCKET_CATALOG.map((rocket) => rocket.key);
+
+export const getNextUnlockableRocket = (unlocked: RocketKey[]) =>
+  ROCKET_UNLOCK_ORDER.find((rocket) => !unlocked.includes(rocket));

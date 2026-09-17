@@ -8,7 +8,9 @@ import {
   getTechCost,
   INITIAL_RESEARCH,
   isTechAvailable,
+  TECH_TREE,
 } from '@/lib/game/research';
+import { getNextUnlockableRocket } from '@/lib/game/rocketCatalog';
 import {
   addResources,
   canBuildNewRocket,
@@ -218,13 +220,22 @@ export function RocketMinerGame() {
         return current;
       }
 
+      const research = {
+        ...current.research,
+        [key]: true,
+      };
+      const completedTree = TECH_TREE.every((item) => research[item.key]);
+      const nextRocket = completedTree
+        ? getNextUnlockableRocket(current.unlockedRockets)
+        : undefined;
+
       return {
         ...current,
         resources: payCost(current.resources, cost),
-        research: {
-          ...current.research,
-          [key]: true,
-        },
+        research,
+        unlockedRockets: nextRocket
+          ? [...current.unlockedRockets, nextRocket]
+          : current.unlockedRockets,
       };
     });
   };
@@ -361,9 +372,11 @@ export function RocketMinerGame() {
 
   const startNewRun = (rocket: RocketKey = 'starter') => {
     resetGameState();
+    const unlockedRockets = latestState.current.unlockedRockets;
     const newState = {
       ...INITIAL_STATE,
       selectedRocket: rocket,
+      unlockedRockets,
       view: 'adventure' as const,
     };
     latestState.current = newState;
@@ -384,6 +397,7 @@ export function RocketMinerGame() {
         onNewRun={() => setMenuMode('rocket-select')}
         onSelectRocket={startNewRun}
         onSetMode={setMenuMode}
+        unlockedRockets={state.unlockedRockets}
       />
     );
   }

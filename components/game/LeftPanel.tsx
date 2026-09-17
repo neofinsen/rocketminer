@@ -36,6 +36,7 @@ const moduleIcons: Record<ModuleKey, React.ReactNode> = {
   cargo: <Box size={20} />,
   laser: <Crosshair size={20} />,
   energyCore: <BatteryCharging size={20} />,
+  idle: <MousePointerClick size={20} />,
   weapon: <Swords size={20} />,
   shield: <Shield size={20} />,
 };
@@ -46,6 +47,7 @@ const spaceModules: ModuleKey[] = [
   'cargo',
   'laser',
   'energyCore',
+  'idle',
 ];
 
 const adventureModules: ModuleKey[] = ['engine', 'weapon', 'shield'];

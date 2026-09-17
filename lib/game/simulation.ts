@@ -74,7 +74,10 @@ export const getCollectorRange = (state: GameState) =>
   24 + getModuleLevel(state, 'collector') * 7;
 
 export const getRocketSpeed = (state: GameState) =>
-  5.2 + getModuleLevel(state, 'engine') * 1.35;
+  (5.2 + getModuleLevel(state, 'engine') * 1.35) *
+  (state.rocket.idleMode
+    ? 1 + Math.max(0, getModuleLevel(state, 'idle') - 1) * 0.035
+    : 1);
 
 const getTotalModuleLevels = (state: GameState) =>
   state.modules.reduce((total, module) => total + module.level, 0);
@@ -213,6 +216,7 @@ export const getModuleCost = (key: ModuleKey, level: number) => {
   if (key === 'cargo') return { ...shared, silicon: 14 * scale };
   if (key === 'collector') return { ...shared, deuterium: 7 * scale };
   if (key === 'energyCore') return { ...shared, silicon: 18 * scale };
+  if (key === 'idle') return { credits: 240 * scale, metal: 130 * scale, deuterium: 3 * scale };
   return { ...shared, titan: 22 * scale };
 };
 

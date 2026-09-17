@@ -32,6 +32,7 @@ export type ModuleKey =
   | 'cargo'
   | 'laser'
   | 'energyCore'
+  | 'idle'
   | 'weapon'
   | 'shield';
 
@@ -156,6 +157,7 @@ export interface GameState {
   view: ViewKey;
   level: number;
   selectedRocket: RocketKey;
+  unlockedRockets: RocketKey[];
   questIndex: number;
   resources: ResourceBag;
   currentSector: SectorKey;

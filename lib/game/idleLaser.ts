@@ -7,7 +7,13 @@ const getLaserLevel = (state: GameState) =>
   state.modules.find((module) => module.key === 'laser')?.level ?? 1;
 
 export const getIdleLaserInterval = (state: GameState) =>
-  clamp((14 - getLaserLevel(state) * 0.45) * 0.58, 4.5, 8);
+  clamp(
+    (14 - getLaserLevel(state) * 0.45) *
+      0.58 /
+      (1 + Math.max(0, (state.modules.find((module) => module.key === 'idle')?.level ?? 1) - 1) * 0.08),
+    3.2,
+    8,
+  );
 
 export const getIdleLaserDamage = (laserDamage: number) =>
   Math.max(24, Math.round(laserDamage * 0.24));

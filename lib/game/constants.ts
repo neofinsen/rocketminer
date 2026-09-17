@@ -44,6 +44,7 @@ export const INITIAL_MODULES: RocketModule[] = [
   { key: 'cargo', name: 'Frachtraum', level: 1, icon: 'cargo' },
   { key: 'laser', name: 'Bergbau-Laser', level: 1, icon: 'laser' },
   { key: 'energyCore', name: 'Energiemodul', level: 1, icon: 'energy' },
+  { key: 'idle', name: 'Idle-Automatik', level: 1, icon: 'idle' },
   { key: 'weapon', name: 'Waffenmodul', level: 1, icon: 'weapon' },
   { key: 'shield', name: 'Schildmodul', level: 1, icon: 'shield' },
 ];
@@ -176,6 +177,7 @@ export const INITIAL_STATE: GameState = {
     alien: 45,
   },
   selectedRocket: 'starter',
+  unlockedRockets: ['starter'],
   currentSector: 'alpha',
   unlockedSectors: ['alpha'],
   collectedTotals: {},

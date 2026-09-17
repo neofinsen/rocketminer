@@ -12,6 +12,7 @@ export function MainMenu({
   onNewRun,
   onSelectRocket,
   onSetMode,
+  unlockedRockets,
 }: {
   hasSave: boolean;
   mode: MenuMode;
@@ -20,6 +21,7 @@ export function MainMenu({
   onNewRun: () => void;
   onSelectRocket: (rocket: RocketKey) => void;
   onSetMode: (mode: MenuMode) => void;
+  unlockedRockets: RocketKey[];
 }) {
   const adminMode = mode === 'admin';
 
@@ -53,7 +55,7 @@ export function MainMenu({
           <>
             <div className="rocket-select-grid">
               {ROCKET_CATALOG.map((rocket) => {
-                const enabled = adminMode || rocket.unlocked;
+                const enabled = adminMode || unlockedRockets.includes(rocket.key);
 
                 return (
                 <button
@@ -68,7 +70,7 @@ export function MainMenu({
                   <img alt="" src={getAssetUrl(rocket.rocketAsset)} />
                   <strong>{rocket.name}</strong>
                   <small>
-                    {adminMode ? `Admin · ${rocket.genre}` : rocket.unlocked ? 'Bereit' : 'Gesperrt'}
+                    {adminMode ? `Admin · ${rocket.genre}` : enabled ? 'Bereit' : 'Forschung noetig'}
                   </small>
                 </button>
                 );

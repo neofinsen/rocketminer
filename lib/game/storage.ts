@@ -72,6 +72,14 @@ const normalizeRocketKey = (key: unknown): RocketKey => {
   return valid.includes(key as RocketKey) ? (key as RocketKey) : 'starter';
 };
 
+const normalizeUnlockedRockets = (rockets: unknown): RocketKey[] => {
+  const valid = asArray<RocketKey>(rockets, ['starter'])
+    .map(normalizeRocketKey)
+    .filter((rocket, index, all) => all.indexOf(rocket) === index);
+
+  return valid.includes('starter') ? valid : ['starter', ...valid];
+};
+
 const normalizeUnlockedSectors = (sectors: unknown): SectorKey[] => {
   const valid = asArray<SectorKey>(sectors, ['alpha']).filter(
     (sector) => sector === 'alpha' || sector === 'beta',
@@ -198,6 +206,7 @@ export function loadGameState(): GameState {
       research: { ...INITIAL_STATE.research, ...saved.research },
       projectiles: [],
       selectedRocket: normalizeRocketKey(saved.selectedRocket),
+      unlockedRockets: normalizeUnlockedRockets(saved.unlockedRockets),
       currentSector: normalizeSector(saved.currentSector),
       unlockedSectors: normalizeUnlockedSectors(saved.unlockedSectors),
       questIndex,

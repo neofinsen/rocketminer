@@ -3,6 +3,7 @@ import {
   Box,
   Crosshair,
   Gauge,
+  MousePointerClick,
   Orbit,
   Shield,
   Swords,
@@ -27,6 +28,7 @@ const moduleCopy: Record<ModuleKey, string> = {
   cargo: 'Mehr Platz fuer seltene Ressourcen im Frachtraum.',
   laser: 'Mehr Schaden pro Klick gegen grosse Asteroiden.',
   energyCore: 'Stabilere Versorgung fuer kuenftige Spezialmodule.',
+  idle: 'Verbessert den automatischen IDLE-Modus im Weltraum.',
   weapon: 'Mehr Kampfschaden in Abenteuern und hoehere Chancen in spaeteren Wellen.',
   shield: 'Mehr Schutz gegen gegnerische Treffer in Abenteuern.',
 };
@@ -37,6 +39,7 @@ const moduleIcons: Record<ModuleKey, React.ComponentType<{ size?: number }>> = {
   cargo: Box,
   laser: Crosshair,
   energyCore: BatteryCharging,
+  idle: MousePointerClick,
   weapon: Swords,
   shield: Shield,
 };

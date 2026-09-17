@@ -9,6 +9,7 @@ const moduleStats: Record<ModuleKey, (level: number) => string> = {
   cargo: (level) => `Frachtraum ${formatNumber(1100 + level * 520)}`,
   laser: (level) => `Laser ${formatNumber(260 + level * 95)} Schaden`,
   energyCore: (level) => `Treibstoffdauer ${getFuelMinutesAt(level)} min`,
+  idle: (level) => `IDLE Tempo +${Math.max(0, level - 1) * 3.5}% · Feuer +${Math.max(0, level - 1) * 8}%`,
   weapon: (level) => `Waffenmodul ${formatNumber(34 + level * 24)} Kampfschaden`,
   shield: (level) => `Schild ${formatNumber(level * 14)} Schutz`,
 };
